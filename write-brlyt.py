@@ -121,7 +121,7 @@ for c in chunks:
                 chunk += unparse_data(vars, 'pic', prefix='~pic')
                 for tc in vars['~pic.texcoords']:
                     chunk += struct.pack('>ffffffff', *tc)
-            elif typ != 'pan1':
+            elif typ not in ('pan1', 'bnd1'):
                 failz
         else:
             raise Exception('Unhandled type %s' % typ)
