@@ -372,11 +372,8 @@ void WriteBRLANTagData(tag_data* data, u16 count, FILE* fp)
 	tag_data writedata;
 	int i;
 	for(i = 0; i < count; i++) {
-		printf("%08x -> %08x\n", data[i].part1, be32(data[i].part1));
 		writedata.part1 = be32(data[i].part1);
-		printf("%08x -> %08x\n", data[i].part2, be32(data[i].part2));
 		writedata.part2 = be32(data[i].part2);
-		printf("%08x -> %08x\n\n", data[i].part3, be32(data[i].part3));
 		writedata.part3 = be32(data[i].part3);
 		fwrite(&writedata, sizeof(tag_data), 1, fp);
 	}
@@ -421,14 +418,15 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 		else
 			data = (tag_data**)realloc(data, sizeof(tag_data*) * head->entry_count);
 		data[x] = NULL;
-		tempnode = mxmlFindElement(subnode, tree, "type", NULL, NULL, MXML_DESCEND);
-		if(tempnode == NULL) {
-			printf("Couldn't find attribute \"type\"!\n");
-			exit(1);
-		}
 		memset(temp, 0, 256);
 		memset(temp2, 0, 256);
-		get_value(tempnode, temp, 24);
+ 		if(mxmlElementGetAttr(subnode, "type") != NULL)
+			strcpy(temp, mxmlElementGetAttr(subnode, "type"));
+		else{
+			printf("No type attribute found!\nSkipping this entry!\n");
+			head->entry_count--;
+			continue;
+		}
 		for(i = 0; i < strlen(temp); i++)
 			temp2[i] = toupper(temp[i]);
 		for(i = 0; (i < 16) && (strcmp(temp3[i - 1], temp2) != 0); i++);
@@ -460,9 +458,9 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 			}
 			get_value(tempnode, temp, 256);
 			*(f32*)(&(data[x][i].part2)) = atof(temp);
-			tempnode = mxmlFindElement(subsubnode, subsubnode, "interpolation", NULL, NULL, MXML_DESCEND);
+			tempnode = mxmlFindElement(subsubnode, subsubnode, "blend", NULL, NULL, MXML_DESCEND);
 			if(tempnode == NULL) {
-				printf("Couldn't find attribute \"interpolation\"!\n");
+				printf("Couldn't find attribute \"blend\"!\n");
 				exit(1);
 			}
 			get_value(tempnode, temp, 256);
@@ -504,7 +502,6 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 	free(data);
 	fclose(fp);
 	remove("temp.blan");
-	printf("All done.\n");
 	return filesz;
 }
 
@@ -512,21 +509,18 @@ void create_tag_from_xml(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32
 {
 	tag_header head;
 	brlan_entry entr;
-	mxml_node_t *tempnode = mxmlFindElement(node, tree, "name", NULL, NULL, MXML_DESCEND);
-	if(tempnode == NULL) {
-		printf("Couldn't find attribute \"name\"!\n");
-		exit(1);
-	}
-	memset(entr.name, 0, 20);
 	char temp[256];
-	get_value(tempnode, temp, 20);
-	strncpy(entr.name, temp, 20);
-	tempnode = mxmlFindElement(node, tree, "magic", NULL, NULL, MXML_DESCEND);
-	if(tempnode == NULL) {
-		printf("Couldn't find attribute \"magic\"!\n");
+	memset(entr.name, 0, 20);
+	if(mxmlElementGetAttr(node, "name") != NULL)
+		strcpy(entr.name, mxmlElementGetAttr(node, "name"));
+	else{
+	}
+	if(mxmlElementGetAttr(node, "type") != NULL)
+		strcpy(temp, mxmlElementGetAttr(node, "type"));
+	else{
+		printf("No type attribute found!\nQuitting!\n");
 		exit(1);
 	}
-	get_value(tempnode, temp, 5);
 	head.magic[0] = temp[0];
 	head.magic[1] = temp[1];
 	head.magic[2] = temp[2];
@@ -534,16 +528,15 @@ void create_tag_from_xml(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32
 	head.pad1 = 0;
 	head.pad2 = 0;
 	head.pad3 = 0;
-	tempnode = mxmlFindElement(node, tree, "type", NULL, NULL, MXML_DESCEND);
-	if(tempnode == NULL) {
-		printf("Couldn't find attribute \"type\"!\n");
+	if(mxmlElementGetAttr(node, "format") != NULL)
+		strcpy(temp, mxmlElementGetAttr(node, "format"));
+	else{
+		printf("No format attribute found!\nQuitting!\n");
 		exit(1);
 	}
 	int x;
-	get_value(tempnode, temp, 256);
 	for(x = 0; x < strlen(temp); x++)
 		temp[x] = toupper(temp[x]);
-	printf("%s\n", temp);
 	if(strcmp(temp, "NORMAL") == 0)
 		entr.flags = 0x01000000;
 	else if(strcmp(temp, "STRANGE") == 0)
@@ -645,12 +638,12 @@ void write_brlan(char *infile, char* outfile)
 	paihead.magic[3] = '1';
 	paihead.size = 0;
 	char temp[256];
-	mxml_node_t *tempnode = mxmlFindElement(tree, tree, "framesize", NULL, NULL, MXML_DESCEND);
-	if(tempnode == NULL) {
-		printf("Couldn't find attribute \"framesize\"!\n");
-		exit(1);
-	}
-	get_value(tempnode, temp, 256);
+	if(mxmlElementGetAttr(tree, "framesize") != NULL)
+		strcpy(temp, mxmlElementGetAttr(tree, "framesize"));
+	else{
+		printf("No framesize attribute found!\nDefaulting to 20.");
+		strcpy(temp, "20");
+	}	
 	paihead.framesize = atoi(temp);
 	paihead.flags = 1;
 	paihead.unk1 = 0;
@@ -684,7 +677,7 @@ void write_brlan(char *infile, char* outfile)
 
 void make_brlan(char* infile, char* outfile)
 {
-	printf("Starting xmlan file @ %s parsing.\n", infile);
+	printf("Parsing XMLAN @ %s.\n", infile);
 	write_brlan(infile, outfile);
 }
 
