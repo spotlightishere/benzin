@@ -378,7 +378,7 @@ void parse_brlan(char* filename)
 #endif // OLD_BRLAN_OUTSTYLE
 	}
 #ifndef OLD_BRLAN_OUTSTYLE
-	printf("</xmlan>\n</xml>\n");
+	printf("</xmlan>\n");
 #endif // OLD_BRLAN_OUTSTYLE
 	free(brlan_file);
 	fclose(fp);
