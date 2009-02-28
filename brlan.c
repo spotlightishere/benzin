@@ -13,6 +13,7 @@
 #include <ctype.h>
 #include <mxml.h>
 
+#include "general.h"
 #include "memfile.h"
 #include "types.h"
 #include "brlan.h"
@@ -31,6 +32,7 @@ fourcc tag_FourCCs[] = { "RLPA", "RLTS", "RLVI", "RLVC", "RLMC", "RLTP" };
 char tag_types_list[15][24];
 
 static size_t BRLAN_fileoffset = 0;
+FILE* xmlanout;
 
 static void BRLAN_ReadDataFromMemoryX(void* destination, void* input, size_t size)
 {
@@ -70,10 +72,15 @@ static void DisplayTagData(tag_data data, int z)
 	u32 p1 = be32(data.part1);
 	u32 p2 = be32(data.part2);
 	u32 p3 = be32(data.part3);
+#ifndef OLD_BRLAN_OUTSTYLE
+	printf("\t\t\t<triplet>\n\t\t\t\t<frame>%.6f</frame>\n\t\t\t\t<value>%.6f</value>\n\t\t\t\t<blend>%.6f</blend>\n\t\t\t</triplet>\n", *(f32*)(&p1), *(f32*)(&p2), *(f32*)(&p3));
+#endif // OLD_BRLAN_OUTSTYLE
+#ifdef OLD_BRLAN_OUTSTYLE
 	printf("					Triplet %d:\n", z);
 	printf("						Frame number: %f\n", *(f32*)(&p1));
 	printf("						Value: %f\n", *(f32*)(&p2));
 	printf("						Interpolation Value: %f\n", *(f32*)(&p3));
+#endif // OLD_BRLAN_OUTSTYLE
 }
 
 static int FourCCsMatch(fourcc cc1, fourcc cc2)
@@ -99,7 +106,9 @@ static void DisplayTagInformation(int idx, tag_header* heads, tag_entry** entrie
 	tag_entry* entries = entriesx[idx];
 	tag_entryinfo* entryinfos = entryinfosx[idx];
 	tag_data** datas = datasxx[idx];
+	int i, z;
 	
+#ifdef OLD_BRLAN_OUTSTYLE
 	printf("		Number of entries: %u\n", head.entry_count);
 
 // Why should we show padding? It's 0 every single time.
@@ -107,16 +116,21 @@ static void DisplayTagInformation(int idx, tag_header* heads, tag_entry** entrie
 	printf("		Unk2: %02x\n", head.pad2);
 	printf("		Unk3: %02x\n", head.pad3); */
 
-	int i, z;
 	printf("		Entries:\n");
+#endif // OLD_BRLAN_OUTSTYLE
 	for(i = 0; i < head.entry_count; i++) {
+#ifndef OLD_BRLAN_OUTSTYLE
+		if(be16(entryinfos[i].type) < 16)
+			printf("\t\t<entry type=\"%s\">\n", tag_types_list[be16(entryinfos[i].type)]);
+		else
+			printf("\t\t<entry type=\"%u\">\n", be16(entryinfos[i].type));
+#endif // OLD_BRLAN_OUTSTYLE
+#ifdef OLD_BRLAN_OUTSTYLE
 		printf("			Entry %u:\n", i);
-//		if(FourCCsMatch(head.magic, tag_FourCCs[0]) == 1) {
-			if(be16(entryinfos[i].type) < 16)
-				printf("				Type: %s (%04x)\n", tag_types_list[be16(entryinfos[i].type)], be16(entryinfos[i].type));
-			else
-				printf("				Type: Unknown (%04x)\n", be16(entryinfos[i].type));
-//		}
+		if(be16(entryinfos[i].type) < 16)
+			printf("				Type: %s (%04x)\n", tag_types_list[be16(entryinfos[i].type)], be16(entryinfos[i].type));
+		else
+			printf("				Type: Unknown (%04x)\n", be16(entryinfos[i].type));
 // User doesn't need to know the offset
 //		printf("				Offset: %lu\n", be32(entries[i].offset));
 
@@ -126,8 +140,12 @@ static void DisplayTagInformation(int idx, tag_header* heads, tag_entry** entrie
 		printf("				Unk3: %08x\n", be32(entryinfos[i].unk2)); */
 		printf("				Triplet Count: %u\n", be16(entryinfos[i].coord_count));
 		printf("				Triplets:\n");
+#endif // OLD_BRLAN_OUTSTYLE
 		for(z = 0; z < be16(entryinfos[i].coord_count); z++)
 			DisplayTagData(datas[i][z], z);
+#ifndef OLD_BRLAN_OUTSTYLE
+		printf("\t\t</entry>\n");
+#endif // OLD_BRLAN_OUTSTYLE
 	}
 }
 
@@ -178,6 +196,9 @@ void parse_brlan(char* filename)
 		printf("Error! Couldn't open %s!\n", filename);
 		exit(1);
 	}
+#ifndef OLD_BRLAN_OUTSTYLE
+	xmlanout = fopen("testout.xmlan", "wb+");
+#endif // OLD_BRLAN_OUTSTYLE
 	int i;
 	for(i = 0; i < 16; i++)
 		memset(tag_types_list[i], 0, 24);
@@ -297,6 +318,11 @@ void parse_brlan(char* filename)
 		dbgprintf("looping.\n");
 	}
 	
+#ifndef OLD_BRLAN_OUTSTYLE
+	printf("<?xml version=\"1.0\"?>\n" \
+	       "<xmlan framesize=\"%lu\">\n", be16(pai1_header.framesize));
+#endif // OLD_BRLAN_OUTSTYLE
+#ifdef OLD_BRLAN_OUTSTYLE
 	printf("Parsed BRLAN! Information:\n");
 	printf("Main header:\n");
 	printf("	Magic: %c%c%c%c\n", header.magic[0], header.magic[1], header.magic[2], header.magic[3]);
@@ -321,22 +347,39 @@ void parse_brlan(char* filename)
 //	printf("	Offset to Entries: 0x%08lx\n", be32(pai1_header.entry_offset));
 
 	printf("\nBRLAN entries:");
+#endif // OLD_BRLAN_OUTSTYLE
 	intag_cnt = 0;
 	for(i = 0; i < tagcount; i++) {
+#ifndef OLD_BRLAN_OUTSTYLE
+		printf("\t<tag ");
+		if(strlen(tag_entries[i].name) > 0)
+			printf("name=\"%s\" ", tag_entries[i].name);
+		printf("type=\"%c%c%c%c\" format=\"%s\">\n", CCs[i][0], CCs[i][1], CCs[i][2], CCs[i][3], be32(tag_entries[i].flags) == 0x01000000 ? "Normal" : "Strange");
+#endif // OLD_BRLAN_OUTSTYLE
+
+#ifdef OLD_BRLAN_OUTSTYLE
 		printf("\n	Entry %u:\n", i);
 		printf("		Name: %s\n", tag_entries[i].name);
 		printf("		Type: %s\n", be32(tag_entries[i].flags) == 0x01000000 ? "Normal" : "Strange");
 // Not important to user, why bother.
 //		printf("		Animation Header Length: %lu\n", be32(tag_entries[i].anim_header_len));		
 		printf("		FourCC: %c%c%c%c\n", CCs[i][0], CCs[i][1], CCs[i][2], CCs[i][3]);
+#endif // OLD_BRLAN_OUTSTYLE
 		if(FourCCInList(CCs[i]) == 1) {
-			dbgprintf("found tag. cnt %d.\n", intag_cnt);
 			DisplayTagInformation(intag_cnt, intag_heads, intag_entries, intag_entryinfos, intag_datas);
 			intag_cnt++;
 		}else{
+#ifdef OLD_BRLAN_OUTSTYLE
 			printf("		Sorry, this type is currently unknown.\n");
+#endif // OLD_BRLAN_OUTSTYLE
 		}
+#ifndef OLD_BRLAN_OUTSTYLE
+		printf("\t</tag>\n");
+#endif // OLD_BRLAN_OUTSTYLE
 	}
+#ifndef OLD_BRLAN_OUTSTYLE
+	printf("</xmlan>\n</xml>\n");
+#endif // OLD_BRLAN_OUTSTYLE
 	free(brlan_file);
 	fclose(fp);
 }
