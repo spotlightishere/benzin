@@ -13,6 +13,7 @@
 #include <ctype.h>
 #include <mxml.h>
 
+#include "general.h"
 #include "memfile.h"
 #include "types.h"
 #include "brlan.h"
@@ -31,6 +32,7 @@ fourcc tag_FourCCs[] = { "RLPA", "RLTS", "RLVI", "RLVC", "RLMC", "RLTP" };
 char tag_types_list[15][24];
 
 static size_t BRLAN_fileoffset = 0;
+FILE* xmlanout;
 
 static void BRLAN_ReadDataFromMemoryX(void* destination, void* input, size_t size)
 {
@@ -70,10 +72,15 @@ static void DisplayTagData(tag_data data, int z)
 	u32 p1 = be32(data.part1);
 	u32 p2 = be32(data.part2);
 	u32 p3 = be32(data.part3);
+#ifndef OLD_BRLAN_OUTSTYLE
+	printf("\t\t\t<triplet>\n\t\t\t\t<frame>%.6f</frame>\n\t\t\t\t<value>%.6f</value>\n\t\t\t\t<blend>%.6f</blend>\n\t\t\t</triplet>\n", *(f32*)(&p1), *(f32*)(&p2), *(f32*)(&p3));
+#endif // OLD_BRLAN_OUTSTYLE
+#ifdef OLD_BRLAN_OUTSTYLE
 	printf("					Triplet %d:\n", z);
 	printf("						Frame number: %f\n", *(f32*)(&p1));
 	printf("						Value: %f\n", *(f32*)(&p2));
 	printf("						Interpolation Value: %f\n", *(f32*)(&p3));
+#endif // OLD_BRLAN_OUTSTYLE
 }
 
 static int FourCCsMatch(fourcc cc1, fourcc cc2)
@@ -99,7 +106,9 @@ static void DisplayTagInformation(int idx, tag_header* heads, tag_entry** entrie
 	tag_entry* entries = entriesx[idx];
 	tag_entryinfo* entryinfos = entryinfosx[idx];
 	tag_data** datas = datasxx[idx];
+	int i, z;
 	
+#ifdef OLD_BRLAN_OUTSTYLE
 	printf("		Number of entries: %u\n", head.entry_count);
 
 // Why should we show padding? It's 0 every single time.
@@ -107,16 +116,21 @@ static void DisplayTagInformation(int idx, tag_header* heads, tag_entry** entrie
 	printf("		Unk2: %02x\n", head.pad2);
 	printf("		Unk3: %02x\n", head.pad3); */
 
-	int i, z;
 	printf("		Entries:\n");
+#endif // OLD_BRLAN_OUTSTYLE
 	for(i = 0; i < head.entry_count; i++) {
+#ifndef OLD_BRLAN_OUTSTYLE
+		if(be16(entryinfos[i].type) < 16)
+			printf("\t\t<entry type=\"%s\">\n", tag_types_list[be16(entryinfos[i].type)]);
+		else
+			printf("\t\t<entry type=\"%u\">\n", be16(entryinfos[i].type));
+#endif // OLD_BRLAN_OUTSTYLE
+#ifdef OLD_BRLAN_OUTSTYLE
 		printf("			Entry %u:\n", i);
-//		if(FourCCsMatch(head.magic, tag_FourCCs[0]) == 1) {
-			if(be16(entryinfos[i].type) < 16)
-				printf("				Type: %s (%04x)\n", tag_types_list[be16(entryinfos[i].type)], be16(entryinfos[i].type));
-			else
-				printf("				Type: Unknown (%04x)\n", be16(entryinfos[i].type));
-//		}
+		if(be16(entryinfos[i].type) < 16)
+			printf("				Type: %s (%04x)\n", tag_types_list[be16(entryinfos[i].type)], be16(entryinfos[i].type));
+		else
+			printf("				Type: Unknown (%04x)\n", be16(entryinfos[i].type));
 // User doesn't need to know the offset
 //		printf("				Offset: %lu\n", be32(entries[i].offset));
 
@@ -126,8 +140,12 @@ static void DisplayTagInformation(int idx, tag_header* heads, tag_entry** entrie
 		printf("				Unk3: %08x\n", be32(entryinfos[i].unk2)); */
 		printf("				Triplet Count: %u\n", be16(entryinfos[i].coord_count));
 		printf("				Triplets:\n");
+#endif // OLD_BRLAN_OUTSTYLE
 		for(z = 0; z < be16(entryinfos[i].coord_count); z++)
 			DisplayTagData(datas[i][z], z);
+#ifndef OLD_BRLAN_OUTSTYLE
+		printf("\t\t</entry>\n");
+#endif // OLD_BRLAN_OUTSTYLE
 	}
 }
 
@@ -178,6 +196,9 @@ void parse_brlan(char* filename)
 		printf("Error! Couldn't open %s!\n", filename);
 		exit(1);
 	}
+#ifndef OLD_BRLAN_OUTSTYLE
+	xmlanout = fopen("testout.xmlan", "wb+");
+#endif // OLD_BRLAN_OUTSTYLE
 	int i;
 	for(i = 0; i < 16; i++)
 		memset(tag_types_list[i], 0, 24);
@@ -297,6 +318,11 @@ void parse_brlan(char* filename)
 		dbgprintf("looping.\n");
 	}
 	
+#ifndef OLD_BRLAN_OUTSTYLE
+	printf("<?xml version=\"1.0\"?>\n" \
+	       "<xmlan framesize=\"%lu\">\n", be16(pai1_header.framesize));
+#endif // OLD_BRLAN_OUTSTYLE
+#ifdef OLD_BRLAN_OUTSTYLE
 	printf("Parsed BRLAN! Information:\n");
 	printf("Main header:\n");
 	printf("	Magic: %c%c%c%c\n", header.magic[0], header.magic[1], header.magic[2], header.magic[3]);
@@ -321,22 +347,39 @@ void parse_brlan(char* filename)
 //	printf("	Offset to Entries: 0x%08lx\n", be32(pai1_header.entry_offset));
 
 	printf("\nBRLAN entries:");
+#endif // OLD_BRLAN_OUTSTYLE
 	intag_cnt = 0;
 	for(i = 0; i < tagcount; i++) {
+#ifndef OLD_BRLAN_OUTSTYLE
+		printf("\t<tag ");
+		if(strlen(tag_entries[i].name) > 0)
+			printf("name=\"%s\" ", tag_entries[i].name);
+		printf("type=\"%c%c%c%c\" format=\"%s\">\n", CCs[i][0], CCs[i][1], CCs[i][2], CCs[i][3], be32(tag_entries[i].flags) == 0x01000000 ? "Normal" : "Strange");
+#endif // OLD_BRLAN_OUTSTYLE
+
+#ifdef OLD_BRLAN_OUTSTYLE
 		printf("\n	Entry %u:\n", i);
 		printf("		Name: %s\n", tag_entries[i].name);
 		printf("		Type: %s\n", be32(tag_entries[i].flags) == 0x01000000 ? "Normal" : "Strange");
 // Not important to user, why bother.
 //		printf("		Animation Header Length: %lu\n", be32(tag_entries[i].anim_header_len));		
 		printf("		FourCC: %c%c%c%c\n", CCs[i][0], CCs[i][1], CCs[i][2], CCs[i][3]);
+#endif // OLD_BRLAN_OUTSTYLE
 		if(FourCCInList(CCs[i]) == 1) {
-			dbgprintf("found tag. cnt %d.\n", intag_cnt);
 			DisplayTagInformation(intag_cnt, intag_heads, intag_entries, intag_entryinfos, intag_datas);
 			intag_cnt++;
 		}else{
+#ifdef OLD_BRLAN_OUTSTYLE
 			printf("		Sorry, this type is currently unknown.\n");
+#endif // OLD_BRLAN_OUTSTYLE
 		}
+#ifndef OLD_BRLAN_OUTSTYLE
+		printf("\t</tag>\n");
+#endif // OLD_BRLAN_OUTSTYLE
 	}
+#ifndef OLD_BRLAN_OUTSTYLE
+	printf("</xmlan>\n");
+#endif // OLD_BRLAN_OUTSTYLE
 	free(brlan_file);
 	fclose(fp);
 }
@@ -372,11 +415,8 @@ void WriteBRLANTagData(tag_data* data, u16 count, FILE* fp)
 	tag_data writedata;
 	int i;
 	for(i = 0; i < count; i++) {
-		printf("%08x -> %08x\n", data[i].part1, be32(data[i].part1));
 		writedata.part1 = be32(data[i].part1);
-		printf("%08x -> %08x\n", data[i].part2, be32(data[i].part2));
 		writedata.part2 = be32(data[i].part2);
-		printf("%08x -> %08x\n\n", data[i].part3, be32(data[i].part3));
 		writedata.part3 = be32(data[i].part3);
 		fwrite(&writedata, sizeof(tag_data), 1, fp);
 	}
@@ -421,14 +461,15 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 		else
 			data = (tag_data**)realloc(data, sizeof(tag_data*) * head->entry_count);
 		data[x] = NULL;
-		tempnode = mxmlFindElement(subnode, tree, "type", NULL, NULL, MXML_DESCEND);
-		if(tempnode == NULL) {
-			printf("Couldn't find attribute \"type\"!\n");
-			exit(1);
-		}
 		memset(temp, 0, 256);
 		memset(temp2, 0, 256);
-		get_value(tempnode, temp, 24);
+ 		if(mxmlElementGetAttr(subnode, "type") != NULL)
+			strcpy(temp, mxmlElementGetAttr(subnode, "type"));
+		else{
+			printf("No type attribute found!\nSkipping this entry!\n");
+			head->entry_count--;
+			continue;
+		}
 		for(i = 0; i < strlen(temp); i++)
 			temp2[i] = toupper(temp[i]);
 		for(i = 0; (i < 16) && (strcmp(temp3[i - 1], temp2) != 0); i++);
@@ -460,9 +501,9 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 			}
 			get_value(tempnode, temp, 256);
 			*(f32*)(&(data[x][i].part2)) = atof(temp);
-			tempnode = mxmlFindElement(subsubnode, subsubnode, "interpolation", NULL, NULL, MXML_DESCEND);
+			tempnode = mxmlFindElement(subsubnode, subsubnode, "blend", NULL, NULL, MXML_DESCEND);
 			if(tempnode == NULL) {
-				printf("Couldn't find attribute \"interpolation\"!\n");
+				printf("Couldn't find attribute \"blend\"!\n");
 				exit(1);
 			}
 			get_value(tempnode, temp, 256);
@@ -504,7 +545,6 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 	free(data);
 	fclose(fp);
 	remove("temp.blan");
-	printf("All done.\n");
 	return filesz;
 }
 
@@ -512,21 +552,18 @@ void create_tag_from_xml(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32
 {
 	tag_header head;
 	brlan_entry entr;
-	mxml_node_t *tempnode = mxmlFindElement(node, tree, "name", NULL, NULL, MXML_DESCEND);
-	if(tempnode == NULL) {
-		printf("Couldn't find attribute \"name\"!\n");
-		exit(1);
-	}
-	memset(entr.name, 0, 20);
 	char temp[256];
-	get_value(tempnode, temp, 20);
-	strncpy(entr.name, temp, 20);
-	tempnode = mxmlFindElement(node, tree, "magic", NULL, NULL, MXML_DESCEND);
-	if(tempnode == NULL) {
-		printf("Couldn't find attribute \"magic\"!\n");
+	memset(entr.name, 0, 20);
+	if(mxmlElementGetAttr(node, "name") != NULL)
+		strcpy(entr.name, mxmlElementGetAttr(node, "name"));
+	else{
+	}
+	if(mxmlElementGetAttr(node, "type") != NULL)
+		strcpy(temp, mxmlElementGetAttr(node, "type"));
+	else{
+		printf("No type attribute found!\nQuitting!\n");
 		exit(1);
 	}
-	get_value(tempnode, temp, 5);
 	head.magic[0] = temp[0];
 	head.magic[1] = temp[1];
 	head.magic[2] = temp[2];
@@ -534,16 +571,15 @@ void create_tag_from_xml(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32
 	head.pad1 = 0;
 	head.pad2 = 0;
 	head.pad3 = 0;
-	tempnode = mxmlFindElement(node, tree, "type", NULL, NULL, MXML_DESCEND);
-	if(tempnode == NULL) {
-		printf("Couldn't find attribute \"type\"!\n");
+	if(mxmlElementGetAttr(node, "format") != NULL)
+		strcpy(temp, mxmlElementGetAttr(node, "format"));
+	else{
+		printf("No format attribute found!\nQuitting!\n");
 		exit(1);
 	}
 	int x;
-	get_value(tempnode, temp, 256);
 	for(x = 0; x < strlen(temp); x++)
 		temp[x] = toupper(temp[x]);
-	printf("%s\n", temp);
 	if(strcmp(temp, "NORMAL") == 0)
 		entr.flags = 0x01000000;
 	else if(strcmp(temp, "STRANGE") == 0)
@@ -645,12 +681,12 @@ void write_brlan(char *infile, char* outfile)
 	paihead.magic[3] = '1';
 	paihead.size = 0;
 	char temp[256];
-	mxml_node_t *tempnode = mxmlFindElement(tree, tree, "framesize", NULL, NULL, MXML_DESCEND);
-	if(tempnode == NULL) {
-		printf("Couldn't find attribute \"framesize\"!\n");
-		exit(1);
-	}
-	get_value(tempnode, temp, 256);
+	if(mxmlElementGetAttr(tree, "framesize") != NULL)
+		strcpy(temp, mxmlElementGetAttr(tree, "framesize"));
+	else{
+		printf("No framesize attribute found!\nDefaulting to 20.");
+		strcpy(temp, "20");
+	}	
 	paihead.framesize = atoi(temp);
 	paihead.flags = 1;
 	paihead.unk1 = 0;
@@ -684,7 +720,7 @@ void write_brlan(char *infile, char* outfile)
 
 void make_brlan(char* infile, char* outfile)
 {
-	printf("Starting xmlan file @ %s parsing.\n", infile);
+	printf("Parsing XMLAN @ %s.\n", infile);
 	write_brlan(infile, outfile);
 }
 

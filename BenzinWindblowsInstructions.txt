@@ -1,0 +1,30 @@
+GUIDE TO COMPILING BENZIN FOR WINDOWS
+==================================================
+
+In order to compile Benzin you require:
+1) Cygwin with the GCC package
+2) MiniXML 2.5
+3) Benzin source code
+4) Half a brain.
+
+First off, let's make sure we have all the above.
+ 1) Go download Cygwin from http://www.cygwin.com/ (Direct Download Link: http://www.cygwin.com/setup.exe )
+ 2) Now run setup.exe and when it gets to the Select Packages screen, click the [+] next to Devel. Scroll down to gcc, and click on the word `Skip'. It should change to some version number. Click next. Do the same for make.
+ 3) Cygwin will most likely take a while to install.
+ 4) Ok, Cygwin is now installed, let's go get MiniXML 2.5
+ 5) Go to http://www.minixml.org/software.php and choose mxml-2.5.tar.gz. Once you have that, extract it to C:\cygwin\ (it should create the mxml-2.5 directory)
+ 6) Now, go open Cygwin (it should have a shortcut on the desktop). If you are running Vista, you must open it as an administrator.
+ 7) Type `cd /mxml-2.5/'
+ 8) Now type `./configure'. This should do several checks, and get everything ready.
+ 9) Type `make'. A bunch of stuff should appear on screen. Just ignore it.
+10) Now type `make install'. More stuff should pop up on screen. Ignore that too.
+11) Now before we can do any more, we have to go get Benzin. Get it however you wish (through the git, download a zip from the github page, etc.). Put it all in the benzin folder inside C:\cygwin\. (Should end up as C:\cygwin\benzin\)
+12) Copy all the .o files from the mxml-2.5 directory into the benzin directory.
+13) Now open up Makefile in WordPad (NOT NotePad, NotePad cannot handle UNIX style newlines)
+14) Add the following line before the `LIBS = ' line: `MXMLOBJS = mxml-*.o'.
+15) Now add the following to the END of the `LIBS = ' line (make sure to put a space): `$(MXMLOBJS)'
+16) Now go back to the Cygwin window. Type in `cd /benzin/'.
+17) Type `make'
+18) A file called benzin.exe should have been created. That is Benzin all ready for use. You must either use it in the Cygwin window, or you must copy the cygwin1.dll file from C:\cygwin to wherever you put benzin.exe, and then run it in a command prompt.
+19) ????
+20) PROFIT!!!!

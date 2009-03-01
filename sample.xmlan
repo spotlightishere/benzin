@@ -1,57 +1,47 @@
 <?xml version="1.0"?>
-<xmlan>
-	<framesize>70</framesize>
-	<tag>
-		<name>pic</name>
-		<magic>RLPA</magic>
-		<type>Normal</type>
-		<entry>
-			<type>X Translation</type>
+<xmlan framesize="70">
+	<tag name="pic" type="RLPA" format="Normal">
+		<entry type="X Translation">
 			<triplet>
 				<frame>20.000000</frame>
 				<value>0.000000</value>
-				<interpolation>3.000000</interpolation>
+				<blend>3.000000</blend>
 			</triplet>
 			<triplet>
 				<frame>40.000000</frame>
 				<value>15.000000</value>
-				<interpolation>3.000000</interpolation>
+				<blend>3.000000</blend>
 			</triplet>
 		</entry>
-		<entry>
-			<type>Y Translation</type>
+		<entry type="Y Translation">
 			<triplet>
 				<frame>10.000000</frame>
 				<value>0.000000</value>
-				<interpolation>3.000000</interpolation>
+				<blend>3.000000</blend>
 			</triplet>
 			<triplet>
 				<frame>30.000000</frame>
 				<value>15.000000</value>
-				<interpolation>3.000000</interpolation>
+				<blend>3.000000</blend>
 			</triplet>
 		</entry>
 	</tag>
-	<tag>
-		<name>pic</name>
-		<magic>RLVC</magic>
-		<type>Normal</type>
-		<entry>
-			<type>16</type>
+	<tag type="RLVC" format="Normal">
+		<entry type="16">
 			<triplet>
 				<frame>20.000000</frame>
 				<value>50.000000</value>
-				<interpolation>1.000000</interpolation>
+				<blend>1.000000</blend>
 			</triplet>
 			<triplet>
 				<frame>40.000000</frame>
 				<value>200.000000</value>
-				<interpolation>1.000000</interpolation>
+				<blend>1.000000</blend>
 			</triplet>
 			<triplet>
 				<frame>60.000000</frame>
 				<value>100.000000</value>
-				<interpolation>1.000000</interpolation>
+				<blend>1.000000</blend>
 			</triplet>
 		</entry>
 	</tag>
