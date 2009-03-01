@@ -41,6 +41,26 @@ formats = {
             u8 padding = 0          // 5f
             etc!
         ''',
+    'window': '''
+            float unk1  // 4c
+            float unk2	// 50
+            float unk3	// 54
+            float unk4	// 58
+            u32 unk5	// 5c - ???
+            u32 offs	// 60 - from start of pane
+            etc!
+        ''',
+    'window2': ''' // (r29)
+            u32 unk1                 // 0
+            u32 unk2                 // 4
+            u32 unk3                 // 8
+            u32 unk4                 // c
+            u16 mat_off              // 10
+            u8 texcoord_array_size   // 12 -- max 8
+            u8 pad                   // 13
+            etc! // followed by the texcoord array
+        ''',
+        	
     'group': '''
             char name[16]
             u16 numsubs
