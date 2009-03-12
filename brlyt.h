@@ -1,8 +1,9 @@
 /*
  *  brlyt.h
- *  
+ *
  *
  *  Created by Alex Marshall on 09/01/27.
+ *  Updated by Stephen Simpson on 09/03/11.
  *  Copyright 2009 __MyCompanyName__. All rights reserved.
  *
  */
@@ -11,6 +12,15 @@
 #define BRLYT_H_
 
 #include "types.h"
+
+//#define BIGENDSHORT(y) ((y >> 24) & 0xFF00) + ((y >>8) & 0x00FF)
+//#define BIGENDINT(y) ( ( y << 24 ) & 0xFF000000) + ( ( y << 8 ) & 0x00FF0000 ) + ( ( y >> 8 ) & 0x0000FF00 ) + ( ( y >> 24 ) & 0x000000FF )
+
+//struct linked_list_materials
+//{
+//	char name[12];
+//	struct linked_list_materials *next;
+//};
 
 typedef struct
 {
@@ -36,39 +46,120 @@ typedef struct
 
 typedef struct
 {
-	u16		flags;
-	u16		alpha;
-	char		name[0x18];
-	f32		x;
-	f32		y;
-	f32		unk[3];
-	f32		angle;
-	f32		xmag;
-	f32		ymag;
-	f32		width;
-	f32		height;
-} brlyt_pic1_chunk;
+	unsigned char flag1;
+	unsigned char flag2;
+	unsigned char alpha;
+	unsigned char alpha2;
+	char name[24];
+	float x;
+	float y;
+	float z;
+	float flip_x;
+	float flip_y;
+	float angle;
+	float xmag;
+	float ymag;
+	float width;
+	float height;
+} brlyt_pane_chunk;
 
 typedef struct
 {
-	u32		unk[3];
-} brlyt_lyt1_chunk;
+	u16 len1;
+	u16 len2;
+	u16 mat_off;
+	u16 font_idx;
+	u8 unk4;
+	u8 pad[3];	// [0, 0, 0]
+	u32 name_offs;
+	u32 color1;
+	u32 color2;
+	float font_size_x;
+	float font_size_y;
+	float char_space;
+	float line_space;
+} brlyt_text_chunk;
 
 typedef struct
 {
-	char		name[16];
-	u16		numsubs;
-	u16		unk;
-} brlyt_grp1_chunkbase;
+	u32 vtx_colors[4];	// [4294967295L, 4294967295L, 4294967295L, 4294967295L]
+	u16 mat_off;
+	u8 num_texcoords;
+	u8 padding;		// 0
+} brlyt_pic_chunk;
+
+typedef struct
+{
+	int a;
+	float width;
+	float height;
+} brlyt_lytheader_chunk;
+
+typedef struct
+{
+	char name[16];
+	u16 numsubs;
+	u16 unk;
+} brlyt_group_chunk;
 
 typedef struct
 {
 	u16 num;
 	u16 offs;
-} brlyt_img_chunk;
-// grs1, gre1, pas1, and pae1 all don't have anything special. they seem to just be prefixes to some sections.
+} brlyt_numoffs_chunk;
+
+typedef struct
+{
+	char name[20];
+	s16 tev_color[4];
+	s16 unk_color[4];
+	s16 unk_color_2[4];
+	u32 tev_kcolor[4];
+	u32 flags;
+} brlyt_material_chunk;
+
+typedef struct
+{
+	int offset;
+	int unk;
+} brlyt_offsunk_chunk;
+
+typedef struct
+{
+	u16 tex_offs;
+	u8 wrap_s;
+	u8 wrap_t;
+} brlyt_texref_chunk;
+
+typedef struct
+{
+	float unk[5];
+} brlyt_ua2_chunk;
+
+typedef struct
+{
+	u8 unk[4];
+} brlyt_4b_chunk;
+
+typedef struct
+{
+	u32 a;
+	u32 b;
+	float c;
+	u32 d;
+	u32 e;
+} brlyt_ua7_chunk;
+
+typedef struct
+{
+	u8 unk[16];
+} brlyt_10b_chunk;
+
+void swapBytes(unsigned char* char1, unsigned char* char2);
+int bitExtraction(unsigned int num, unsigned int start, unsigned int end);
 
 void parse_brlyt(char *filename);
 void make_brlyt(char* infile, char* outfile);
 
 #endif //BRLYT_H_
+

@@ -3,6 +3,7 @@
  *  
  *
  *  Created by Alex Marshall on 09/01/27.
+ *  Updated by Stephen Simpson on 09/03/11.
  *  Copyright 2009 __MyCompanyName__. All rights reserved.
  *
  */
@@ -29,8 +30,15 @@ char grp1_magic[] = "grp1";
 char txl1_magic[] = "txl1";
 char mat1_magic[] = "mat1";
 char fnl1_magic[] = "fnl1";
+char txt1_magic[] = "txt1";
+char gre1_magic[] = "gre1";
+char grs1_magic[] = "grs1";
+char pae1_magic[] = "pae1";
+char pas1_magic[] = "pas1";
 
 static size_t BRLYT_fileoffset = 0;
+
+//linked_list_materials materials;
 
 static int FourCCsMatch(fourcc cc1, fourcc cc2)
 {
@@ -66,6 +74,91 @@ static void BRLYT_ReadDataFromMemory(void* destination, void* input, size_t size
 	BRLYT_ReadDataFromMemoryX(destination, input, size);
 	BRLYT_fileoffset += size;
 }
+
+float float_swap_bytes(float float1)
+{
+	unsigned char *float1c; float1c = (unsigned char*)&float1;
+
+        unsigned char charTemp = 0x00;
+	charTemp = float1c[0]; float1c[0] = float1c[3]; float1c[3] = charTemp;
+	charTemp = 0x00;
+	charTemp = float1c[1]; float1c[1] = float1c[2]; float1c[2] = charTemp;
+
+	float *newFloat; newFloat = (float*)float1c;
+	return *newFloat;
+}
+
+unsigned short short_swap_bytes(unsigned short short1)
+{
+        unsigned char *short1c; short1c = (unsigned char*)&short1;
+
+        unsigned char charTemp = 0x00;
+        charTemp = short1c[0]; short1c[0] = short1c[1]; short1c[1] = charTemp;
+
+        unsigned short *newShort; newShort = (unsigned short*)short1c;
+        return *newShort;
+}
+
+int bit_extract(unsigned int num, unsigned int start, unsigned int end)
+{
+	if (end == 100) end = start;
+	//simple bitmask, figure out when awake
+	//unsigned int mask = (2**(31 - start + 1) - 1) - (2**(31 - end) - 1)
+	unsigned int mask;
+	int first = 0;
+	int firstMask = 0;
+	if (start<32) firstMask = 1;
+
+	for (first;first<31-start+1;first++)
+	{
+		firstMask *= 2;
+	}
+	firstMask -= 1;
+	first = 0;
+	int secondMask = 0;
+	if (end<31) secondMask = 1;
+
+	for (first;first< 31-end;first++)
+	{
+		secondMask *=2;
+	}
+	mask = firstMask = secondMask;
+	int ret = (num & mask) >> (31 - end);
+	return ret;
+}
+
+/*
+void get_opt(char* chunk, int startpos, bool enabled, int size, char* item_type)
+{
+//	if (!enabled) {
+//		return None, startpos
+	if (item_type != "None") {
+		//parse_data is your memcopy from chunk to struct_item_type
+		ret = parse_data(chunk[startpos:startpos+size], item_type)
+	}else if (size == 4) {
+		ret = struct.unpack('>I', chunk[startpos:startpos+4])[0]
+	}else if (size % 4 == 0) {
+		ret = struct.unpack('>' + 'I'*(size/4), chunk[startpos:startpos+size])
+	}else
+		raise Exception('unhandled')
+	return ret, startpos + size
+}
+
+void get_array(char *chunk, int startpos, int array_size, int item_size, char *item_type):
+{
+	ar = []
+	int pos = startpos;
+
+	int n = 0;
+	for (n;n<array_size;n++)
+	{
+		//ar.append(get_opt(chunk, pos, True, item_size, item_type)[0])
+		get_opt(chunk, pos, True, item_size, item_type);
+		pos += item_size;
+	}
+	return ar, pos
+}
+*/
 
 int BRLYT_ReadEntries(u8* brlyt_file, size_t file_size, brlyt_header header, brlyt_entry* entries)
 {
@@ -107,83 +200,409 @@ void BRLYT_CheckHeaderSanity(brlyt_header header, size_t filesize)
 	}
 }
 
-void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file)
-{
-}
-
 void PrintBRLYTEntry_lyt1(brlyt_entry entry, u8* brlyt_file)
 {
-	brlyt_lyt1_chunk data;
+	brlyt_lytheader_chunk data;
 	BRLYT_fileoffset = entry.data_location;
-	BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_lyt1_chunk));
+	BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_lytheader_chunk));
 	printf("		Type: %c%c%c%c\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
-	printf("		unk1: %08x\n", be32(data.unk[0]));
-	printf("		unk2: %08x\n", be32(data.unk[1]));
-	printf("		unk3: %08x\n", be32(data.unk[2]));
+	printf("		a: %08x\n", be32(data.a));
+	printf("		width: %f\n", float_swap_bytes(data.width));
+	printf("		height: %f\n", float_swap_bytes(data.height));
 }
 
 void PrintBRLYTEntry_grp1(brlyt_entry entry, u8* brlyt_file)
 {
-	brlyt_grp1_chunkbase data;
+	brlyt_group_chunk data;
 	BRLYT_fileoffset = entry.data_location;
-	char		name[16];
-	u16		numsubs;
-	u16		unk;
-	BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_grp1_chunkbase));
+	BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_group_chunk));
+	printf("                Type: %c%c%c%c\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
 	printf("		Name: %s\n", data.name);
-	printf("		Type: %c%c%c%c\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
 	printf("		Number of subs: %08x\n", be16(data.numsubs));
 	printf("		unk: %08x\n", be16(data.unk));
+
+	int offset;
+	offset = 20;
+	int n = 0;
+	for (n;n<data.numsubs;n++)
+	{
+		char sub[16];
+		BRLYT_ReadDataFromMemory(sub, brlyt_file, sizeof(sub));
+		//PRINT subgroup CRAP
+		printf("                sub: %s\n", sub);
+		offset += 16;
+	}
 }
 
-void PrintBRLYTEntry_img(brlyt_entry entry, u8* brlyt_file)
+void PrintBRLYTEntry_txl1(brlyt_entry entry, u8* brlyt_file)
 {
-	brlyt_img_chunk data;
+	brlyt_numoffs_chunk data;
 	BRLYT_fileoffset = entry.data_location;
-	BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_img_chunk));
-	printf("		Type: %c%c%c%c\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
-	printf("		Number: %d\n", be16(data.num));
-	printf("		Offset: %04x\n", be16(data.offs));
+	BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_numoffs_chunk));
+	printf("                Type: %c%c%c%c\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+	printf("                num: %08x\n", be16(data.num));
+	printf("                offs: %08x\n", be16(data.offs));
+	int pos = 4;
+	pos += data.offs;
+	int bpos = pos;
+	int n = 0;
+	for (n;n<be16(data.num);n++)
+	{
+                brlyt_offsunk_chunk data2;
+                BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_offsunk_chunk));
+                //int data2.offset              //int data2.unk
+                printf("                offset: %08x\n", be32(data2.offset));
+                printf("                unk: %08x\n", be32(data2.unk));
+                int tempLocation = BRLYT_fileoffset;
+                BRLYT_fileoffset = entry.data_location + bpos + be32(data2.offset);
+                char name[12];
+                BRLYT_ReadDataFromMemory(name, brlyt_file, sizeof(name));
+                //char name[12] the name of the tpl
+                printf("                name: %s\n", name);
+                BRLYT_fileoffset = tempLocation;
+	}
+}
+
+void PrintBRLYTEntry_fnl1(brlyt_entry entry, u8* brlyt_file)
+{
+        brlyt_numoffs_chunk data;
+        BRLYT_fileoffset = entry.data_location;
+        BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_numoffs_chunk));
+        //PRINT CRAP
+	printf("                Type: %c%c%c%c\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+        printf("                num: %08x\n", be16(data.num));
+        printf("                offs: %08x\n", be16(data.offs));
+        int pos = 4;
+        pos += data.offs;
+        int bpos = pos;
+        int n = 0;
+        for (n;n<be16(data.num);n++)
+        {
+		brlyt_offsunk_chunk data2;
+                BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_offsunk_chunk));
+                //int data2.offset              //int data2.unk
+                printf("                offset: %08x\n", be32(data2.offset));
+                printf("                unk: %08x\n", be32(data2.unk));
+		int tempLocation = BRLYT_fileoffset;
+		BRLYT_fileoffset = entry.data_location + bpos + be32(data2.offset);
+                char name[12];
+                BRLYT_ReadDataFromMemory(name, brlyt_file, sizeof(name));
+                //char name[12] the name of the tpl
+                printf("                name: %s\n", name);
+		BRLYT_fileoffset = tempLocation;
+        }
+}
+
+void PrintBRLYTEntry_pan1(brlyt_entry entry, u8* brlyt_file)
+{
+	brlyt_pane_chunk data;
+	BRLYT_fileoffset = entry.data_location;
+	BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_pane_chunk));
+        printf("                Type: %c%c%c%c\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+        printf("                flag1: %08x\n", data.flag1);
+        printf("                flag2: %08x\n", data.flag2);
+        printf("                alpha: %08x\n", data.alpha);
+        printf("                alpha2: %08x\n", data.alpha2);
+        printf("                name: %s\n", data.name);
+        printf("                x: %f\n", be32(data.x));
+        printf("                y: %f\n", be32(data.y));
+        printf("                z: %f\n", be32(data.z));
+        printf("                flip_x: %f\n", float_swap_bytes(data.flip_x));
+        printf("                flip_y: %f\n", float_swap_bytes(data.flip_y));
+        printf("                angle: %f\n", float_swap_bytes(data.angle));
+        printf("                xmag: %f\n", float_swap_bytes(data.xmag));
+        printf("                ymag: %f\n", float_swap_bytes(data.ymag));
+        printf("                width: %f\n", float_swap_bytes(data.width));
+        printf("                height: %f\n", float_swap_bytes(data.height));
+}
+
+void PrintBRLYTEntry_wnd1(brlyt_entry entry, u8* brlyt_file)
+{
+        brlyt_pane_chunk data;
+        BRLYT_fileoffset = entry.data_location;
+        BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_pane_chunk));
+        printf("                Type: %c%c%c%c\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+        printf("                flag1: %08x\n", data.flag1);
+        printf("                flag2: %08x\n", data.flag2);
+        printf("                alpha: %08x\n", data.alpha);
+        printf("                alpha2: %08x\n", data.alpha2);
+        printf("                name: %s\n", data.name);
+        printf("                x: %f\n", be32(data.x));
+        printf("                y: %f\n", be32(data.y));
+        printf("                z: %f\n", be32(data.z));
+        printf("                flip_x: %f\n", float_swap_bytes(data.flip_x));
+        printf("                flip_y: %f\n", float_swap_bytes(data.flip_y));
+        printf("                angle: %f\n", float_swap_bytes(data.angle));
+        printf("                xmag: %f\n", float_swap_bytes(data.xmag));
+        printf("                ymag: %f\n", float_swap_bytes(data.ymag));
+        printf("                width: %f\n", float_swap_bytes(data.width));
+        printf("                height: %f\n", float_swap_bytes(data.height));
+}
+
+void PrintBRLYTEntry_bnd1(brlyt_entry entry, u8* brlyt_file)
+{
+        brlyt_pane_chunk data;
+        BRLYT_fileoffset = entry.data_location;
+        BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_pane_chunk));
+        printf("                Type: %c%c%c%c\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+        printf("                flag1: %08x\n", data.flag1);
+        printf("                flag2: %08x\n", data.flag2);
+        printf("                alpha: %08x\n", data.alpha);
+        printf("                alpha2: %08x\n", data.alpha2);
+        printf("                name: %s\n", data.name);
+        printf("                x: %f\n", be32(data.x));
+        printf("                y: %f\n", be32(data.y));
+        printf("                z: %f\n", be32(data.z));
+        printf("                flip_x: %f\n", float_swap_bytes(data.flip_x));
+        printf("                flip_y: %f\n", float_swap_bytes(data.flip_y));
+        printf("                angle: %f\n", float_swap_bytes(data.angle));
+        printf("                xmag: %f\n", float_swap_bytes(data.xmag));
+        printf("                ymag: %f\n", float_swap_bytes(data.ymag));
+        printf("                width: %f\n", float_swap_bytes(data.width));
+        printf("                height: %f\n", float_swap_bytes(data.height));
+}
+
+void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file)
+{
+        brlyt_pane_chunk data;
+        BRLYT_fileoffset = entry.data_location;
+        BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_pane_chunk));
+        printf("                Type: %c%c%c%c\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+        printf("                flag1: %08x\n", data.flag1);
+	printf("                flag2: %08x\n", data.flag2);
+	printf("                alpha: %08x\n", data.alpha);
+	printf("                alpha2: %08x\n", data.alpha2);
+	printf("                name: %s\n", data.name);
+	printf("                x: %f\n", be32(data.x));
+	printf("                y: %f\n", be32(data.y));
+	printf("                z: %f\n", be32(data.z));
+	printf("                flip_x: %f\n", float_swap_bytes(data.flip_x));
+	printf("                flip_y: %f\n", float_swap_bytes(data.flip_y));
+	printf("                angle: %f\n", float_swap_bytes(data.angle));
+	printf("                xmag: %f\n", float_swap_bytes(data.xmag));
+	printf("                ymag: %f\n", float_swap_bytes(data.ymag));
+	printf("                width: %f\n", float_swap_bytes(data.width));
+	printf("                height: %f\n", float_swap_bytes(data.height));
+	brlyt_pic_chunk data2;
+	BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_pic_chunk));
+	printf("                vtx_colors: %u,%u,%u,%u\n", be32(data2.vtx_colors[0]), be32(data2.vtx_colors[1]), be32(data2.vtx_colors[2]), be32(data2.vtx_colors[3]));
+	printf("                mat_off: %08x\n", be16(data2.mat_off));
+	printf("                num_texcoords: %08x\n", data2.num_texcoords);
+	printf("                padding: %08x\n", data2.padding);
+	int n = 0;
+	for (n;n<data2.num_texcoords;n++)
+	{
+		float texcoords[8];		// I think that's what that means 
+		BRLYT_ReadDataFromMemory(texcoords, brlyt_file, sizeof(texcoords));
+		//PRINT texcoords CRAP
+        	printf("                tex coords: %f,%f,%f,%f,%f,%f,%f,%f\n", float_swap_bytes(texcoords[0]), float_swap_bytes(texcoords[1]), float_swap_bytes(texcoords[2]), float_swap_bytes(texcoords[3]), float_swap_bytes(texcoords[4]), float_swap_bytes(texcoords[5]), float_swap_bytes(texcoords[6]), float_swap_bytes(texcoords[7]));
+	}
+}
+
+void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file)
+{
+        brlyt_pane_chunk data;
+        BRLYT_fileoffset = entry.data_location;
+        BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_pane_chunk));
+        printf("                Type: %c%c%c%c\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+        printf("                flag1: %08x\n", data.flag1);
+        printf("                flag2: %08x\n", data.flag2);
+        printf("                alpha: %08x\n", data.alpha);
+        printf("                alpha2: %08x\n", data.alpha2);
+        printf("                name: %s\n", data.name);
+        printf("                x: %f\n", be32(data.x));
+        printf("                y: %f\n", be32(data.y));
+        printf("                z: %f\n", be32(data.z));
+        printf("                flip_x: %f\n", float_swap_bytes(data.flip_x));
+        printf("                flip_y: %f\n", float_swap_bytes(data.flip_y));
+        printf("                angle: %f\n", float_swap_bytes(data.angle));
+        printf("                xmag: %f\n", float_swap_bytes(data.xmag));
+        printf("                ymag: %f\n", float_swap_bytes(data.ymag));
+        printf("                width: %f\n", float_swap_bytes(data.width));
+        printf("                height: %f\n", float_swap_bytes(data.height));
+	brlyt_text_chunk data2;
+	BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_text_chunk));
+	//PRINT MORE CRAP
+	printf("                len1: %08x\n", be16(data2.len1));
+	printf("                len2: %08x\n", be16(data2.len2));
+	printf("                mat_off: %08x\n", be16(data2.mat_off));
+	printf("                font_idx: %08x\n", be16(data2.font_idx));
+	printf("                unk4: %08x\n", data2.unk4);
+	printf("                pad[3]: %08x\n", data2.pad[0], data2.pad[1], data2.pad[2]);
+	printf("                name_offs: %08x\n", be32(data2.name_offs));
+	printf("                color1: %08x\n", be32(data2.color1));
+	printf("                color2: %08x\n", be32(data2.color2));
+	printf("                len1: %08x\n", be16(data2.len1));
+        printf("                font_size_x: %f\n", float_swap_bytes(data2.font_size_x));
+        printf("                font_size_y: %f\n", float_swap_bytes(data2.font_size_y));
+        printf("                char_space: %f\n", float_swap_bytes(data2.char_space));
+        printf("                line_space: %f\n", float_swap_bytes(data2.line_space));
+}
+
+void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
+{
+	brlyt_numoffs_chunk data;
+	BRLYT_fileoffset = entry.data_location;
+	BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_numoffs_chunk));
+	//PRINT CRAP
+	printf("                Type: %c%c%c%c\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+	printf("                num: %08x\n", be16(data.num));
+	printf("                offs: %08x\n", be16(data.offs));
+	int n = 0;
+	for (n;n<be16(data.num);n++)
+	{
+		int offset;
+		BRLYT_ReadDataFromMemory(&offset, brlyt_file, sizeof(offset));
+		//PRINT offset CRAP
+		printf("                offset: %08x\n", be32(offset));
+		brlyt_material_chunk data3;
+		BRLYT_ReadDataFromMemory(&data3, brlyt_file, sizeof(brlyt_material_chunk));
+		//PRINT material CRAP
+		printf("                name: %s\n", data3.name);
+		printf("                tev_color: %#x,%#x,%#x,%#x\n", be16(data3.tev_color[0]), be16(data3.tev_color[1]), be16(data3.tev_color[2]), be16(data3.tev_color[3]));
+		printf("                unk_color: %#x,%#x,%#x,%#x\n", be16(data3.unk_color[0]), be16(data3.unk_color[1]), be16(data3.unk_color[2]), be16(data3.unk_color[3]));
+		printf("                unk_color_2: %#x,%#x,%#x,%#x\n", be16(data3.unk_color_2[0]), be16(data3.unk_color_2[1]), be16(data3.unk_color_2[2]), be16(data3.unk_color_2[3]));
+		printf("                tev_kcolor: %#x,%#x,%#x,%#x\n", be32(data3.tev_kcolor[0]), be32(data3.tev_kcolor[1]), be32(data3.tev_kcolor[2]), be32(data3.tev_kcolor[3]));
+		printf("                flags: %u\n", be32(data3.flags));
+		/*
+		//more junk to do with bit masks and flags
+		mat_texref = get_array(chunk, mpos, bit_extract(data3.flags, 28,31), 4, 'texref');
+
+		for a in mat['texref']
+			a['tex'] = textures[a['tex_offs']]['name']
+		//# 0x14 * flags[24-27], followed by
+ 		mat['ua2'], mpos = get_array(chunk, mpos, bit_extract(flags, 24, 27        ), 0x14, 'ua2')
+		//# 4*flags[20-23], followed by
+		mat['ua3'], mpos = get_array(chunk, mpos, bit_extract(flags, 20, 23        ), 4, '4b')
+		//# Changing ua3 things
+		//# 1st --> disappears.
+		//# 2nd --> no visible effect.
+		//# 3rd --> disappears.
+		//# 4th --> no visible effect.
+
+		//# 4 * flags[6]
+		mat['ua4'], mpos = get_opt(chunk, mpos, bit_extract(flags, 6), 4, '        4b')
+		//# 4 * flags[4]
+		mat['ua5'], mpos = get_opt(chunk, mpos, bit_extract(flags, 4), 4, '        4b')
+		//# 4 * flags[19]
+		mat['ua6'], mpos = get_opt(chunk, mpos, bit_extract(flags, 19), 4,        '4b')
+		//# 0x14 * flags[17-18]
+		mat['ua7'], mpos = get_array(chunk, mpos, bit_extract(flags, 17, 18        ), 0x14, 'ua7')
+		//# 4 * flags[14-16]
+		mat['ua8'], mpos = get_array(chunk, mpos, bit_extract(flags, 14, 16        ), 4, '4b')
+		//# 0x10 * flags[9-13]
+		mat['ua9'], mpos = get_array(chunk, mpos, bit_extract(flags, 9, 13)        , 0x10, '10b')
+		//# 4 * flags[8], these are bytes btw
+		mat['uaa'], mpos = get_opt(chunk, mpos, bit_extract(flags, 8), 4, '        4b')
+		//# 4 * flags[7]
+		mat['uab'], mpos = get_opt(chunk, mpos, bit_extract(flags, 7), 4, '        4b')
+		if n < vars['num'] - 1
+		{
+			next_offset, = struct.unpack('>I', chunk[pos+4:pos+8])
+			if next_offset - 8 != mpos:
+				mat['~_insane'] = next_offset - 8 - mpos //# Extra shit we di        dn't parse :(
+		}
+ 		mat['unk_bit_5'] = bit_extract(flags, 5)
+		mat['unk_bits_0_3'] = bit_extract(flags, 0, 3) //# Overwritten by stu        ff
+		vars['materials'].append(mat)
+		pos += 4
+		*/
+	}
+}
+
+void PrintBRLYTEntry_gre1(brlyt_entry entry, u8* brlyt_file)
+{
+	//brlyt_numoffs_chunk data;
+        //BRLYT_fileoffset = entry.data_location;
+        //BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_numoffs_chunk));
+        //PRINT CRAP
+        printf("                Type: %c%c%c%c\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+        //printf("                num: %08x\n", be16(data.num));
+	//group end info
+}
+
+void PrintBRLYTEntry_grs1(brlyt_entry entry, u8* brlyt_file)
+{
+	//brlyt_numoffs_chunk data;
+        //BRLYT_fileoffset = entry.data_location;
+        //BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_numoffs_chunk));
+        //PRINT CRAP
+        printf("                Type: %c%c%c%c\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+        //printf("                num: %08x\n", be16(data.num));
+        //group start info
+}
+
+void PrintBRLYTEntry_pae1(brlyt_entry entry, u8* brlyt_file)
+{
+	//brlyt_numoffs_chunk data;
+        //BRLYT_fileoffset = entry.data_location;
+        //BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_numoffs_chunk));
+        //PRINT CRAP
+        printf("                Type: %c%c%c%c\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+        //printf("                num: %08x\n", be16(data.num));
+        //panel end info
+}
+
+void PrintBRLYTEntry_pas1(brlyt_entry entry, u8* brlyt_file)
+{
+	//brlyt_numoffs_chunk data;
+        //BRLYT_fileoffset = entry.data_location;
+        //BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_numoffs_chunk));
+        //PRINT CRAP
+        printf("                Type: %c%c%c%c\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+        //printf("                num: %08x\n", be16(data.num));
+        //panel start info
 }
 
 void PrintBRLYTEntries(brlyt_entry *entries, int entrycnt, u8* brlyt_file)
 {
+	dbgprintf("Printing BRLYT Entries");
 	int i;
 	
 	for(i = 0; i < entrycnt; i++) {
 		printf("\n	Index %d (@%08x):\n", i, entries[i].data_location - 8);
-		if((FourCCsMatch(entries[i].magic, pic1_magic) == 1) || (FourCCsMatch(entries[i].magic, pan1_magic) == 1) ||
-		   (FourCCsMatch(entries[i].magic, bnd1_magic) == 1) || (FourCCsMatch(entries[i].magic, wnd1_magic) == 1)) {
+		if((FourCCsMatch(entries[i].magic, pan1_magic) == 1)) {
+			dbgprintf("pan1\n");
+			PrintBRLYTEntry_pan1(entries[i], brlyt_file);
+		}else if((FourCCsMatch(entries[i].magic, txt1_magic) == 1)) {
+			dbgprintf("txt1\n");
+			PrintBRLYTEntry_txt1(entries[i], brlyt_file);
+		}else if((FourCCsMatch(entries[i].magic, pic1_magic) == 1)) {
 			dbgprintf("pic1\n");
-//			PrintBRLYTEntry_pic1(entries[i], brlyt_file);
-			brlyt_pic1_chunk data;
-			BRLYT_fileoffset = entries[i].data_location;
-			BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_pic1_chunk));
-			printf("%08x\n", BRLYT_fileoffset);
-			printf("		Name: %s (%08x)\n", data.name);
-			printf("		Type: %c%c%c%c\n", entries[i].magic[0], entries[i].magic[1], entries[i].magic[2], entries[i].magic[3]);
-			printf("		Flags: %04x (%08x)\n", be16(data.flags));
-			printf("		Alpha: %04x (%08x)\n", be16(data.alpha));
-			printf("		X: %f (%08x) (%08x)\n", be32(data.x), &data.x, &data);
-			printf("		Y: %f (%08x)\n", be32(data.y));
-			printf("		X Magnification: %f (%08x)\n", be32(data.xmag));
-			printf("		Y Magnification: %f (%08x)\n", be32(data.ymag));
-			printf("		Width: %f (%08x)\n", be32(data.width));
-			printf("		Height: %f (%08x)\n", be32(data.height));
-			printf("		Angle: %f (%08x)\n", be32(data.angle));
-			printf("		unk1: %f (%08x)\n", be32(data.unk[0]));
-			printf("		unk2: %f (%08x)\n", be32(data.unk[1]));
-			printf("		unk3: %f (%08x)\n", be32(data.unk[2]));
+			PrintBRLYTEntry_pic1(entries[i], brlyt_file);
+		}else if((FourCCsMatch(entries[i].magic, wnd1_magic) == 1)) {
+			dbgprintf("wnd1\n");
+			PrintBRLYTEntry_wnd1(entries[i], brlyt_file);
+		}else if((FourCCsMatch(entries[i].magic, bnd1_magic) == 1)) {
+			dbgprintf("bnd1\n");
+			PrintBRLYTEntry_bnd1(entries[i], brlyt_file);
 		}else if((FourCCsMatch(entries[i].magic, lyt1_magic) == 1)) {
 			dbgprintf("lyt1\n");
 			PrintBRLYTEntry_lyt1(entries[i], brlyt_file);
 		}else if((FourCCsMatch(entries[i].magic, grp1_magic) == 1)) {
 			dbgprintf("grp1\n");
 			PrintBRLYTEntry_grp1(entries[i], brlyt_file);
-		}else if((FourCCsMatch(entries[i].magic, txl1_magic) == 1) || (FourCCsMatch(entries[i].magic, mat1_magic) == 1) ||
-			 (FourCCsMatch(entries[i].magic, fnl1_magic) == 1)) {
+		}else if((FourCCsMatch(entries[i].magic, txl1_magic) == 1)) {
+			dbgprintf("txl1\n");
+			PrintBRLYTEntry_txl1(entries[i], brlyt_file);
+		}else if((FourCCsMatch(entries[i].magic, fnl1_magic) == 1)) {
 			dbgprintf("img\n");
-			PrintBRLYTEntry_img(entries[i], brlyt_file);
+			PrintBRLYTEntry_fnl1(entries[i], brlyt_file);
+		}else if((FourCCsMatch(entries[i].magic, mat1_magic) == 1)) {
+			dbgprintf("mat1\n");
+			PrintBRLYTEntry_mat1(entries[i], brlyt_file);
+		}else if((FourCCsMatch(entries[i].magic, gre1_magic) == 1)) {
+			dbgprintf("gre1\n");
+			PrintBRLYTEntry_gre1(entries[i], brlyt_file);
+                }else if((FourCCsMatch(entries[i].magic, grs1_magic) == 1)) {
+                        dbgprintf("grs1\n");
+                        PrintBRLYTEntry_grs1(entries[i], brlyt_file);
+                }else if((FourCCsMatch(entries[i].magic, pae1_magic) == 1)) {
+                        dbgprintf("pae1\n");
+                        PrintBRLYTEntry_pae1(entries[i], brlyt_file);
+                }else if((FourCCsMatch(entries[i].magic, pas1_magic) == 1)) {
+                        dbgprintf("pas1\n");
+                        PrintBRLYTEntry_pas1(entries[i], brlyt_file);
 		}else
 			printf("		Unknown tag (%c%c%c%c)!\n",entries[i].magic[0],entries[i].magic[1],entries[i].magic[2],entries[i].magic[3]);
 	}
@@ -251,45 +670,6 @@ void parse_brlyt(char *filename)
 void make_brlyt(char* infile, char* outfile)
 {
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
