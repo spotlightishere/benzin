@@ -99,24 +99,21 @@ unsigned short short_swap_bytes(unsigned short short1)
         return *newShort;
 }
 
-int bit_extract(unsigned int num, unsigned int start, unsigned int end)
+unsigned int bit_extract(unsigned int num, unsigned int start, unsigned int end)
 {
 	if (end == 100) end = start;
 	//simple bitmask, figure out when awake
 	//unsigned int mask = (2**(31 - start + 1) - 1) - (2**(31 - end) - 1)
 	unsigned int mask;
 	int first = 0;
-	int firstMask = 0;
-	if (start<32) firstMask = 1;
-
+	int firstMask = 1;
 	for (first;first<31-start+1;first++)
 	{
 		firstMask *= 2;
 	}
 	firstMask -= 1;
 	first = 0;
-	int secondMask = 0;
-	if (end<31) secondMask = 1;
+	int secondMask = 1;
 
 	for (first;first< 31-end;first++)
 	{
@@ -124,23 +121,16 @@ int bit_extract(unsigned int num, unsigned int start, unsigned int end)
 	}
 	mask = firstMask = secondMask;
 	int ret = (num & mask) >> (31 - end);
+	//printf("%08x, %08x, %08x, %08x\n", firstMask, secondMask, mask, ret);
 	return ret;
 }
 
 /*
 void get_opt(char* chunk, int startpos, bool enabled, int size, char* item_type)
 {
-//	if (!enabled) {
-//		return None, startpos
-	if (item_type != "None") {
-		//parse_data is your memcopy from chunk to struct_item_type
-		ret = parse_data(chunk[startpos:startpos+size], item_type)
-	}else if (size == 4) {
-		ret = struct.unpack('>I', chunk[startpos:startpos+4])[0]
-	}else if (size % 4 == 0) {
-		ret = struct.unpack('>' + 'I'*(size/4), chunk[startpos:startpos+size])
-	}else
-		raise Exception('unhandled')
+	//parse_data is your memcopy from chunk to struct_item_type
+	ret = parse_data(chunk[startpos:startpos+size], item_type)
+	BRLYTReadDataFromMemory(&ibrlyt_item_type, BRLYT_file, sizeof(brlyt_item_type));
 	return ret, startpos + size
 }
 
@@ -153,7 +143,8 @@ void get_array(char *chunk, int startpos, int array_size, int item_size, char *i
 	for (n;n<array_size;n++)
 	{
 		//ar.append(get_opt(chunk, pos, True, item_size, item_type)[0])
-		get_opt(chunk, pos, True, item_size, item_type);
+		//get_opt(chunk, pos, True, item_size, item_type);
+		BRLYT_ReadDataFromMemory(&brlyt_item_type, BRLYT_file, sizeof(brlyt_item_type));
 		pos += item_size;
 	}
 	return ar, pos
@@ -453,27 +444,57 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 	{
 		int offset;
 		BRLYT_ReadDataFromMemory(&offset, brlyt_file, sizeof(offset));
-		//PRINT offset CRAP
 		printf("                offset: %08x\n", be32(offset));
 		brlyt_material_chunk data3;
 		BRLYT_ReadDataFromMemory(&data3, brlyt_file, sizeof(brlyt_material_chunk));
-		//PRINT material CRAP
 		printf("                name: %s\n", data3.name);
 		printf("                tev_color: %#x,%#x,%#x,%#x\n", be16(data3.tev_color[0]), be16(data3.tev_color[1]), be16(data3.tev_color[2]), be16(data3.tev_color[3]));
 		printf("                unk_color: %#x,%#x,%#x,%#x\n", be16(data3.unk_color[0]), be16(data3.unk_color[1]), be16(data3.unk_color[2]), be16(data3.unk_color[3]));
 		printf("                unk_color_2: %#x,%#x,%#x,%#x\n", be16(data3.unk_color_2[0]), be16(data3.unk_color_2[1]), be16(data3.unk_color_2[2]), be16(data3.unk_color_2[3]));
 		printf("                tev_kcolor: %#x,%#x,%#x,%#x\n", be32(data3.tev_kcolor[0]), be32(data3.tev_kcolor[1]), be32(data3.tev_kcolor[2]), be32(data3.tev_kcolor[3]));
-		printf("                flags: %u\n", be32(data3.flags));
-		/*
+		printf("                flags: %08x\n", be32(data3.flags));
+		
 		//more junk to do with bit masks and flags
-		mat_texref = get_array(chunk, mpos, bit_extract(data3.flags, 28,31), 4, 'texref');
+		//mat_texref = get_array(chunk, mpos, bit_extract(data3.flags, 28,31), 4, 'texref');
+		unsigned int flaggs = be32(data3.flags);
+		printf("                bitmask: %08x\n", bit_extract(flaggs, 28, 31));
+		int n = 0;
+		for (n;n<bit_extract(flaggs, 28,31);n++)
+		{
+			brlyt_texref_chunk data4;
+                	//get_opt(chunk, pos, True, item_size, item_type);
+			BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_texref_chunk));
+			printf("                 texoffs: %08x\n", be16(data4.tex_offs));
+			printf("                 wrap_s: %08x\n", data4.wrap_s);
+			printf("                 wrap_t: %08x\n", data4.wrap_t);
+			//pos += item_size;
+		}
 
-		for a in mat['texref']
-			a['tex'] = textures[a['tex_offs']]['name']
-		//# 0x14 * flags[24-27], followed by
- 		mat['ua2'], mpos = get_array(chunk, mpos, bit_extract(flags, 24, 27        ), 0x14, 'ua2')
+		int a = 0;
+		for (a;a<n;a++)
+					//ugly hack for this one, need a textures list
+			printf("                 name: smiley.tpl\n");
+//			a['tex'] = textures[a['tex_offs']]['name']
+//		# 0x14 * flags[24-27], followed by
+                n = 0;
+                for (n;n<bit_extract(flaggs, 24,27);n++)
+                {
+                        brlyt_ua2_chunk data4;
+                        //get_opt(chunk, pos, True, item_size, item_type);
+                        BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_ua2_chunk));
+                        printf("                 ua2: %08x, %08x, %08x, %08x, %08x\n", float_swap_bytes(data4.unk[0]), float_swap_bytes(data4.unk[1]), float_swap_bytes(data4.unk[2]), float_swap_bytes(data4.unk[3]), float_swap_bytes(data4.unk[4]));
+                        //pos += item_size;
+                }
 		//# 4*flags[20-23], followed by
-		mat['ua3'], mpos = get_array(chunk, mpos, bit_extract(flags, 20, 23        ), 4, '4b')
+                n = 0;
+                for (n;n<bit_extract(flaggs, 20,23);n++)
+                {
+                        brlyt_4b_chunk data4;
+                        //get_opt(chunk, pos, True, item_size, item_type);
+                        BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
+                        printf("                 ua3: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
+                        //pos += item_size;
+                }
 		//# Changing ua3 things
 		//# 1st --> disappears.
 		//# 2nd --> no visible effect.
@@ -481,32 +502,99 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 		//# 4th --> no visible effect.
 
 		//# 4 * flags[6]
-		mat['ua4'], mpos = get_opt(chunk, mpos, bit_extract(flags, 6), 4, '        4b')
+                n = 0;
+                for (n;n<bit_extract(flaggs, 6,100);n++)
+                {
+                        brlyt_4b_chunk data4;
+                        //get_opt(chunk, pos, True, item_size, item_type);
+                        BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
+                        printf("                 ua4: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
+                        //pos += item_size;
+                }
 		//# 4 * flags[4]
-		mat['ua5'], mpos = get_opt(chunk, mpos, bit_extract(flags, 4), 4, '        4b')
+                n = 0;
+                for (n;n<bit_extract(flaggs, 4,100);n++)
+                {
+                        brlyt_4b_chunk data4;
+                        //get_opt(chunk, pos, True, item_size, item_type);
+                        BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
+                        printf("                 ua5: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
+                        //pos += item_size;
+                }
 		//# 4 * flags[19]
-		mat['ua6'], mpos = get_opt(chunk, mpos, bit_extract(flags, 19), 4,        '4b')
-		//# 0x14 * flags[17-18]
-		mat['ua7'], mpos = get_array(chunk, mpos, bit_extract(flags, 17, 18        ), 0x14, 'ua7')
+                n = 0;
+                for (n;n<bit_extract(flaggs, 19,100);n++)
+                {
+                        brlyt_4b_chunk data4;
+                        //get_opt(chunk, pos, True, item_size, item_type);
+                        BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
+                        printf("                 ua6: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
+                        //pos += item_size;
+                }
+                n = 0;
+                for (n;n<bit_extract(flaggs, 17,18);n++)
+                {
+                        brlyt_ua7_chunk data4;
+                        //get_opt(chunk, pos, True, item_size, item_type);
+                        BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_ua7_chunk));
+                        printf("                 ua7 a: %08x\n", be32(data4.a));
+			printf("                 ua7 b: %08x\n", be32(data4.b));
+			printf("                 ua7 c: %f\n", float_swap_bytes(data4.c));
+			printf("                 ua7 d: %08x\n", be32(data4.d));
+			printf("                 ua7 e: %08x\n", be32(data4.e));
+                        //pos += item_size;
+                }
 		//# 4 * flags[14-16]
-		mat['ua8'], mpos = get_array(chunk, mpos, bit_extract(flags, 14, 16        ), 4, '4b')
+                n = 0;
+                for (n;n<bit_extract(flaggs, 14,16);n++)
+                {
+                        brlyt_4b_chunk data4;
+                        //get_opt(chunk, pos, True, item_size, item_type);
+                        BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
+                        printf("                 ua8: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
+                        //pos += item_size;
+                }
 		//# 0x10 * flags[9-13]
-		mat['ua9'], mpos = get_array(chunk, mpos, bit_extract(flags, 9, 13)        , 0x10, '10b')
+                n = 0;
+                for (n;n<bit_extract(flaggs, 9,13);n++)
+                {
+                        brlyt_10b_chunk data4;
+                        //get_opt(chunk, pos, True, item_size, item_type);
+                        BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_10b_chunk));
+                        printf("                 ua8: %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3], data4.unk[4], data4.unk[5], data4.unk[6], data4.unk[7], data4.unk[8], data4.unk[9], data4.unk[10], data4.unk[11], data4.unk[12], data4.unk[13], data4.unk[14], data4.unk[15]);
+                        //pos += item_size;
+                }
 		//# 4 * flags[8], these are bytes btw
-		mat['uaa'], mpos = get_opt(chunk, mpos, bit_extract(flags, 8), 4, '        4b')
+                n = 0;
+                for (n;n<bit_extract(flaggs, 20,23);n++)
+                {
+                        brlyt_4b_chunk data4;
+                        //get_opt(chunk, pos, True, item_size, item_type);
+                        BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
+                        printf("                 uaa: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
+                        //pos += item_size;
+                }
 		//# 4 * flags[7]
-		mat['uab'], mpos = get_opt(chunk, mpos, bit_extract(flags, 7), 4, '        4b')
-		if n < vars['num'] - 1
-		{
-			next_offset, = struct.unpack('>I', chunk[pos+4:pos+8])
-			if next_offset - 8 != mpos:
-				mat['~_insane'] = next_offset - 8 - mpos //# Extra shit we di        dn't parse :(
-		}
- 		mat['unk_bit_5'] = bit_extract(flags, 5)
-		mat['unk_bits_0_3'] = bit_extract(flags, 0, 3) //# Overwritten by stu        ff
-		vars['materials'].append(mat)
-		pos += 4
-		*/
+                n = 0;
+                for (n;n<bit_extract(flaggs, 20,23);n++)
+                {
+                        brlyt_4b_chunk data4;
+                        //get_opt(chunk, pos, True, item_size, item_type);
+                        BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
+                        printf("                 uab: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
+                        //pos += item_size;
+                }
+//		if n < vars['num'] - 1
+//		{
+//			next_offset, = struct.unpack('>I', chunk[pos+4:pos+8])
+//			if next_offset - 8 != mpos:
+//				mat['~_insane'] = next_offset - 8 - mpos //# Extra shit we di        dn't parse :(
+//		}
+// 		mat['unk_bit_5'] = bit_extract(flags, 5)
+//		mat['unk_bits_0_3'] = bit_extract(flags, 0, 3) //# Overwritten by stu        ff
+//		vars['materials'].append(mat)
+//		pos += 4
+		
 	}
 }
 
