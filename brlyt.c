@@ -470,10 +470,10 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 			//pos += item_size;
 		}
 
-		int a = 0;
-		for (a;a<n;a++)
+//		int a = 0;
+//		for (a;a<n;a++)
 					//ugly hack for this one, need a textures list
-			printf("                 name: smiley.tpl\n");
+//			printf("                 name: smiley.tpl\n");
 //			a['tex'] = textures[a['tex_offs']]['name']
 //		# 0x14 * flags[24-27], followed by
                 n = 0;
