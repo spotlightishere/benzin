@@ -38,8 +38,6 @@ char pas1_magic[] = "pas1";
 
 static size_t BRLYT_fileoffset = 0;
 
-//linked_list_materials materials;
-
 static int FourCCsMatch(fourcc cc1, fourcc cc2)
 {
 	dbgprintf("FourCCs\n");
@@ -88,17 +86,6 @@ float float_swap_bytes(float float1)
 	return *newFloat;
 }
 
-unsigned short short_swap_bytes(unsigned short short1)
-{
-        unsigned char *short1c; short1c = (unsigned char*)&short1;
-
-        unsigned char charTemp = 0x00;
-        charTemp = short1c[0]; short1c[0] = short1c[1]; short1c[1] = charTemp;
-
-        unsigned short *newShort; newShort = (unsigned short*)short1c;
-        return *newShort;
-}
-
 unsigned int bit_extract(unsigned int num, unsigned int start, unsigned int end)
 {
 	if (end == 100) end = start;
@@ -124,32 +111,6 @@ unsigned int bit_extract(unsigned int num, unsigned int start, unsigned int end)
 	//printf("%08x, %08x, %08x, %08x\n", firstMask, secondMask, mask, ret);
 	return ret;
 }
-
-/*
-void get_opt(char* chunk, int startpos, bool enabled, int size, char* item_type)
-{
-	//parse_data is your memcopy from chunk to struct_item_type
-	ret = parse_data(chunk[startpos:startpos+size], item_type)
-	BRLYTReadDataFromMemory(&ibrlyt_item_type, BRLYT_file, sizeof(brlyt_item_type));
-	return ret, startpos + size
-}
-
-void get_array(char *chunk, int startpos, int array_size, int item_size, char *item_type):
-{
-	ar = []
-	int pos = startpos;
-
-	int n = 0;
-	for (n;n<array_size;n++)
-	{
-		//ar.append(get_opt(chunk, pos, True, item_size, item_type)[0])
-		//get_opt(chunk, pos, True, item_size, item_type);
-		BRLYT_ReadDataFromMemory(&brlyt_item_type, BRLYT_file, sizeof(brlyt_item_type));
-		pos += item_size;
-	}
-	return ar, pos
-}
-*/
 
 int BRLYT_ReadEntries(u8* brlyt_file, size_t file_size, brlyt_header header, brlyt_entry* entries)
 {

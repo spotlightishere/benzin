@@ -13,15 +13,6 @@
 
 #include "types.h"
 
-//#define BIGENDSHORT(y) ((y >> 24) & 0xFF00) + ((y >>8) & 0x00FF)
-//#define BIGENDINT(y) ( ( y << 24 ) & 0xFF000000) + ( ( y << 8 ) & 0x00FF0000 ) + ( ( y >> 8 ) & 0x0000FF00 ) + ( ( y >> 24 ) & 0x000000FF )
-
-//struct linked_list_materials
-//{
-//	char name[12];
-//	struct linked_list_materials *next;
-//};
-
 typedef struct
 {
 	fourcc		magic;			// RLYT
