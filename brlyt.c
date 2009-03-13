@@ -215,11 +215,12 @@ void PrintBRLYTEntry_txl1(brlyt_entry entry, u8* brlyt_file)
                 BRLYT_ReadDataFromMemory(nameRead, brlyt_file, sizeof(nameRead));
                 //char nameRead[toRead] the name of the tpls null terminated between
 		//printf("size of name: %08x", sizeof(nameRead));
-		char tpl[4] = ".tpl";
-		int ending = memcmp(nameRead, tpl, toRead);
-		char name[toRead-ending+5];
-		memcpy(name, nameRead, sizeof(name));
+		char tpl = 0;
+		char *ending = memchr(nameRead, tpl, toRead);
+		int end = ending - nameRead;
+		char name[end];
 		//printf("length of name: %08x", sizeof(name));
+		memcpy(name, nameRead, sizeof(name));
 		printf("                name: %s\n", name);
                 BRLYT_fileoffset = tempLocation;
 	}
