@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "general.h"
 #include "types.h"
 #include "brlyt.h"
 
@@ -207,10 +208,19 @@ void PrintBRLYTEntry_txl1(brlyt_entry entry, u8* brlyt_file)
                 printf("                unk: %08x\n", be32(data2.unk));
                 int tempLocation = BRLYT_fileoffset;
                 BRLYT_fileoffset = entry.data_location + bpos + be32(data2.offset);
-                char name[12];
-                BRLYT_ReadDataFromMemory(name, brlyt_file, sizeof(name));
-                //char name[12] the name of the tpl
-                printf("                name: %s\n", name);
+		int toRead = (be32(entry.length)*2) - BRLYT_fileoffset - 12;
+		//printf("size of entry: %08x", be32(entry.length));
+		//printf("name offset: %08x", BRLYT_fileoffset);
+		char nameRead[toRead];
+                BRLYT_ReadDataFromMemory(nameRead, brlyt_file, sizeof(nameRead));
+                //char nameRead[toRead] the name of the tpls null terminated between
+		//printf("size of name: %08x", sizeof(nameRead));
+		char tpl[4] = ".tpl";
+		int ending = memcmp(nameRead, tpl, toRead);
+		char name[toRead-ending+5];
+		memcpy(name, nameRead, sizeof(name));
+		//printf("length of name: %08x", sizeof(name));
+		printf("                name: %s\n", name);
                 BRLYT_fileoffset = tempLocation;
 	}
 }
@@ -659,6 +669,7 @@ void PrintBRLYTEntries(brlyt_entry *entries, int entrycnt, u8* brlyt_file)
 
 void parse_brlyt(char *filename)
 {
+	dbgprintf("Made it :)\n");
 	FILE* fp = fopen(filename, "rb");
 	if(fp == NULL) {
 		printf("Error! Couldn't open %s!\n", filename);
