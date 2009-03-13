@@ -208,18 +208,14 @@ void PrintBRLYTEntry_txl1(brlyt_entry entry, u8* brlyt_file)
                 printf("                unk: %08x\n", be32(data2.unk));
                 int tempLocation = BRLYT_fileoffset;
                 BRLYT_fileoffset = entry.data_location + bpos + be32(data2.offset);
-		int toRead = (be32(entry.length)*2) - BRLYT_fileoffset - 12;
-		//printf("size of entry: %08x", be32(entry.length));
-		//printf("name offset: %08x", BRLYT_fileoffset);
+		int toRead = (be32(entry.length) + entry.data_location - 8) - BRLYT_fileoffset;
 		char nameRead[toRead];
                 BRLYT_ReadDataFromMemory(nameRead, brlyt_file, sizeof(nameRead));
                 //char nameRead[toRead] the name of the tpls null terminated between
-		//printf("size of name: %08x", sizeof(nameRead));
 		char tpl = 0;
 		char *ending = memchr(nameRead, tpl, toRead);
 		int end = ending - nameRead;
-		char name[end];
-		//printf("length of name: %08x", sizeof(name));
+		char name[end+1];
 		memcpy(name, nameRead, sizeof(name));
 		printf("                name: %s\n", name);
                 BRLYT_fileoffset = tempLocation;
@@ -231,7 +227,6 @@ void PrintBRLYTEntry_fnl1(brlyt_entry entry, u8* brlyt_file)
         brlyt_numoffs_chunk data;
         BRLYT_fileoffset = entry.data_location;
         BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_numoffs_chunk));
-        //PRINT CRAP
 	printf("                Type: %c%c%c%c\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
         printf("                num: %08x\n", be16(data.num));
         printf("                offs: %08x\n", be16(data.offs));
@@ -239,20 +234,26 @@ void PrintBRLYTEntry_fnl1(brlyt_entry entry, u8* brlyt_file)
         pos += data.offs;
         int bpos = pos;
         int n = 0;
-        for (n;n<be16(data.num);n++)
+	for (n;n<be16(data.num);n++)
         {
-		brlyt_offsunk_chunk data2;
+                brlyt_offsunk_chunk data2;
                 BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_offsunk_chunk));
                 //int data2.offset              //int data2.unk
                 printf("                offset: %08x\n", be32(data2.offset));
                 printf("                unk: %08x\n", be32(data2.unk));
-		int tempLocation = BRLYT_fileoffset;
-		BRLYT_fileoffset = entry.data_location + bpos + be32(data2.offset);
-                char name[12];
-                BRLYT_ReadDataFromMemory(name, brlyt_file, sizeof(name));
-                //char name[12] the name of the tpl
+                int tempLocation = BRLYT_fileoffset;
+                BRLYT_fileoffset = entry.data_location + bpos + be32(data2.offset);
+                int toRead = (be32(entry.length) + entry.data_location - 8) - BRLYT_fileoffset;
+                char nameRead[toRead];
+                BRLYT_ReadDataFromMemory(nameRead, brlyt_file, sizeof(nameRead));
+                //char nameRead[toRead] the name of the tpls null terminated between
+                char tpl = 0;
+                char *ending = memchr(nameRead, tpl, toRead);
+                int end = ending - nameRead;
+                char name[end+1];
+                memcpy(name, nameRead, sizeof(name));
                 printf("                name: %s\n", name);
-		BRLYT_fileoffset = tempLocation;
+                BRLYT_fileoffset = tempLocation;
         }
 }
 
