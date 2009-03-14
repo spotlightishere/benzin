@@ -39,6 +39,10 @@ char pas1_magic[] = "pas1";
 
 static size_t BRLYT_fileoffset = 0;
 
+char *materials;
+int numberOfMaterials;
+int lengthOfMaterials;
+
 static int FourCCsMatch(fourcc cc1, fourcc cc2)
 {
 	dbgprintf("FourCCs\n");
@@ -111,6 +115,38 @@ unsigned int bit_extract(unsigned int num, unsigned int start, unsigned int end)
 	int ret = (num & mask) >> (31 - end);
 	//printf("%08x, %08x, %08x, %08x\n", firstMask, secondMask, mask, ret);
 	return ret;
+}
+
+char* getMaterial(int offset)
+{
+/*
+	dbgprintf("length of materials: %08x\n", lengthOfMaterials);
+	int stringOffs=0;
+	char *returnPointer;
+	char *ending;
+	int n;
+	for (n = 0; n < offset+1; n++)
+	{
+		char tpl = 0;
+		ending = memchr(materials+stringOffs, tpl, lengthOfMaterials-stringOffs);
+		int length = ending - (materials+stringOffs);
+		returnPointer = materials + stringOffs;
+		dbgprintf("%p\t%08x\t%p\n", ending, length, materials+stringOffs);
+		stringOffs = stringOffs + length + 1;
+	}
+	return returnPointer;
+*/
+	if (offset == 0) return materials;
+	char *foo = materials + strlen(materials) + 1;
+
+	if (offset > 1)
+	{
+		int n;
+		for (n=0; n<offset-1;n++)
+			foo = foo + strlen(foo) + 1;
+	}
+
+	return foo;
 }
 
 int BRLYT_ReadEntries(u8* brlyt_file, size_t file_size, brlyt_header header, brlyt_entry* entries)
@@ -218,6 +254,14 @@ void PrintBRLYTEntry_txl1(brlyt_entry entry, u8* brlyt_file)
 		memcpy(name, nameRead, sizeof(name));
 		printf("                name: %s\n", name);
                 BRLYT_fileoffset = tempLocation;
+		int oldsize = sizeof(name);
+		dbgprintf("size of materials before: %08x\n", sizeof(materials));
+		int newSize = lengthOfMaterials+sizeof(name);
+		materials = realloc(materials, newSize);
+		numberOfMaterials += 1;
+		memcpy(materials+lengthOfMaterials, name, sizeof(name));
+		dbgprintf("mats: %s\tnamsize: %08x\tmatsize: %08x\tnewsize: %08x\n", materials+lengthOfMaterials, sizeof(name), lengthOfMaterials, newSize);
+		lengthOfMaterials = newSize;
 	}
 }
 
@@ -406,9 +450,6 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file)
 
 void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 {
-	int w;
-	for (w = 0 ; w < be32(entry.length) ; w++ ) dbgprintf("byte %04x: %02x\t %c\n", w, brlyt_file[w+entry.data_location], brlyt_file[w+entry.data_location]);
-
 	brlyt_numoffs_chunk data;
 	BRLYT_fileoffset = entry.data_location;
 	BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_numoffs_chunk));
@@ -432,8 +473,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 		printf("                tev_kcolor: %#x,%#x,%#x,%#x\n", be32(data3.tev_kcolor[0]), be32(data3.tev_kcolor[1]), be32(data3.tev_kcolor[2]), be32(data3.tev_kcolor[3]));
 		printf("                flags: %08x\n", be32(data3.flags));
 		
-		//BRLYT_fileoffset = tempDataLocation;
-		//BRLYT_fileoffset 
 		//more junk to do with bit masks and flags
 		//mat_texref = get_array(chunk, mpos, bit_extract(data3.flags, 28,31), 4, 'texref');
 		unsigned int flaggs = be32(data3.flags);
@@ -442,19 +481,13 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 		for (n;n<bit_extract(flaggs, 28,31);n++)
 		{
 			brlyt_texref_chunk data4;
-                	//get_opt(chunk, pos, True, item_size, item_type);
 			BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_texref_chunk));
 			printf("                 texoffs: %08x\n", be16(data4.tex_offs));
 			printf("                 wrap_s: %08x\n", data4.wrap_s);
 			printf("                 wrap_t: %08x\n", data4.wrap_t);
-			//pos += item_size;
+			dbgprintf("                 name: %s\n", getMaterial(be32(data4.tex_offs)));
 		}
 
-//		int a = 0;
-//		for (a;a<n;a++)
-					//ugly hack for this one, need a textures list
-//			printf("                 name: smiley.tpl\n");
-//			a['tex'] = textures[a['tex_offs']]['name']
 //		# 0x14 * flags[24-27], followed by
                 n = 0;
                 for (n;n<bit_extract(flaggs, 24,27);n++)
@@ -675,7 +708,9 @@ void PrintBRLYTEntries(brlyt_entry *entries, int entrycnt, u8* brlyt_file)
 
 void parse_brlyt(char *filename)
 {
-	dbgprintf("Made it :)\n");
+	materials = (u8*)malloc(12);
+	numberOfMaterials = 0;
+	lengthOfMaterials = 0;
 	FILE* fp = fopen(filename, "rb");
 	if(fp == NULL) {
 		printf("Error! Couldn't open %s!\n", filename);
