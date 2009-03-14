@@ -215,7 +215,7 @@ void PrintBRLYTEntry_grp1(brlyt_entry entry, u8* brlyt_file)
 	int offset;
 	offset = 20;
 	int n = 0;
-	for (n;n<data.numsubs;n++)
+	for (n;n<be16(data.numsubs);n++)
 	{
 		char sub[16];
 		BRLYT_ReadDataFromMemory(sub, brlyt_file, sizeof(sub));
@@ -484,11 +484,11 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 		{
 			brlyt_texref_chunk data4;
 			BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_texref_chunk));
-			printf("                 texoffs: %08x\n", be16(data4.tex_offs));
-			printf("                 wrap_s: %08x\n", data4.wrap_s);
-			printf("                 wrap_t: %08x\n", data4.wrap_t);
+			printf("                texoffs: %08x\n", be16(data4.tex_offs));
+			printf("                wrap_s: %08x\n", data4.wrap_s);
+			printf("                wrap_t: %08x\n", data4.wrap_t);
 			int tplOffset = be16(data4.tex_offs);
-			printf("                 name: %s\n", getMaterial(tplOffset));
+			printf("                name: %s\n", getMaterial(tplOffset));
 		}
 
 //		# 0x14 * flags[24-27], followed by
@@ -498,7 +498,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         brlyt_ua2_chunk data4;
                         //get_opt(chunk, pos, True, item_size, item_type);
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_ua2_chunk));
-                        printf("                 ua2: %08x, %08x, %08x, %08x, %08x\n", float_swap_bytes(data4.unk[0]), float_swap_bytes(data4.unk[1]), float_swap_bytes(data4.unk[2]), float_swap_bytes(data4.unk[3]), float_swap_bytes(data4.unk[4]));
+                        printf("                ua2: %08x, %08x, %08x, %08x, %08x\n", float_swap_bytes(data4.unk[0]), float_swap_bytes(data4.unk[1]), float_swap_bytes(data4.unk[2]), float_swap_bytes(data4.unk[3]), float_swap_bytes(data4.unk[4]));
                         //pos += item_size;
                 }
 		//# 4*flags[20-23], followed by
@@ -508,7 +508,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         brlyt_4b_chunk data4;
                         //get_opt(chunk, pos, True, item_size, item_type);
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
-                        printf("                 ua3: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
+                        printf("                ua3: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
                         //pos += item_size;
                 }
 		//# Changing ua3 things
@@ -524,7 +524,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         brlyt_4b_chunk data4;
                         //get_opt(chunk, pos, True, item_size, item_type);
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
-                        printf("                 ua4: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
+                        printf("                ua4: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
                         //pos += item_size;
                 }
 		//# 4 * flags[4]
@@ -534,7 +534,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         brlyt_4b_chunk data4;
                         //get_opt(chunk, pos, True, item_size, item_type);
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
-                        printf("                 ua5: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
+                        printf("                ua5: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
                         //pos += item_size;
                 }
 		//# 4 * flags[19]
@@ -544,7 +544,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         brlyt_4b_chunk data4;
                         //get_opt(chunk, pos, True, item_size, item_type);
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
-                        printf("                 ua6: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
+                        printf("                ua6: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
                         //pos += item_size;
                 }
                 n = 0;
@@ -553,11 +553,11 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         brlyt_ua7_chunk data4;
                         //get_opt(chunk, pos, True, item_size, item_type);
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_ua7_chunk));
-                        printf("                 ua7 a: %08x\n", be32(data4.a));
-			printf("                 ua7 b: %08x\n", be32(data4.b));
-			printf("                 ua7 c: %f\n", float_swap_bytes(data4.c));
-			printf("                 ua7 d: %08x\n", be32(data4.d));
-			printf("                 ua7 e: %08x\n", be32(data4.e));
+                        printf("                ua7 a: %08x\n", be32(data4.a));
+			printf("                ua7 b: %08x\n", be32(data4.b));
+			printf("                ua7 c: %f\n", float_swap_bytes(data4.c));
+			printf("                ua7 d: %08x\n", be32(data4.d));
+			printf("                ua7 e: %08x\n", be32(data4.e));
                         //pos += item_size;
                 }
 		//# 4 * flags[14-16]
@@ -567,7 +567,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         brlyt_4b_chunk data4;
                         //get_opt(chunk, pos, True, item_size, item_type);
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
-                        printf("                 ua8: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
+                        printf("                ua8: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
                         //pos += item_size;
                 }
 		//# 0x10 * flags[9-13]
@@ -577,7 +577,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         brlyt_10b_chunk data4;
                         //get_opt(chunk, pos, True, item_size, item_type);
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_10b_chunk));
-                        printf("                 ua8: %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3], data4.unk[4], data4.unk[5], data4.unk[6], data4.unk[7], data4.unk[8], data4.unk[9], data4.unk[10], data4.unk[11], data4.unk[12], data4.unk[13], data4.unk[14], data4.unk[15]);
+                        printf("                ua8: %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3], data4.unk[4], data4.unk[5], data4.unk[6], data4.unk[7], data4.unk[8], data4.unk[9], data4.unk[10], data4.unk[11], data4.unk[12], data4.unk[13], data4.unk[14], data4.unk[15]);
                         //pos += item_size;
                 }
 		//# 4 * flags[8], these are bytes btw
@@ -587,7 +587,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         brlyt_4b_chunk data4;
                         //get_opt(chunk, pos, True, item_size, item_type);
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
-                        printf("                 uaa: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
+                        printf("                uaa: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
                         //pos += item_size;
                 }
 		//# 4 * flags[7]
@@ -597,7 +597,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         brlyt_4b_chunk data4;
                         //get_opt(chunk, pos, True, item_size, item_type);
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
-                        printf("                 uab: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
+                        printf("                uab: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
                         //pos += item_size;
                 }
 //		if n < vars['num'] - 1
