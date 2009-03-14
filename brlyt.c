@@ -485,7 +485,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 			printf("                 texoffs: %08x\n", be16(data4.tex_offs));
 			printf("                 wrap_s: %08x\n", data4.wrap_s);
 			printf("                 wrap_t: %08x\n", data4.wrap_t);
-			dbgprintf("                 name: %s\n", getMaterial(be32(data4.tex_offs)));
+			printf("                 name: %s\n", getMaterial(be32(data4.tex_offs)));
 		}
 
 //		# 0x14 * flags[24-27], followed by
