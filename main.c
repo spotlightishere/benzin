@@ -50,9 +50,7 @@ int main(int argc, char* argv[])
 	strcat(helpstrmake, " <out.brlyt>");
 #endif //USE_BRLYT
 
-	printf("Benzin %d.%d.%d%s.\n" \
-	       "Written by SquidMan (Alex Marshall), Archangel (Takeda Toshinaka), and comex.\n" \
-	       "(c) 2009 HACKERCHANNEL\n", BENZIN_VERSION_MAJOR, BENZIN_VERSION_MINOR, BENZIN_VERSION_BUILD, BENZIN_VERSION_OTHER);
+	printf(INFORMATION_TEXT);
 	if(argc < reqargs) {
 		printf("Invalid arguments. Use like:\n\t%s\n\t\tor:\n\t%s\n", helpstrread, helpstrmake);
 		exit(1);

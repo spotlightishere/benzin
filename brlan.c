@@ -360,7 +360,7 @@ void parse_brlan(char* filename)
 #ifdef OLD_BRLAN_OUTSTYLE
 		printf("\n	Entry %u:\n", i);
 		printf("		Name: %s\n", tag_entries[i].name);
-		printf("		Type: %s\n", be32(tag_entries[i].flags) == 0x01000000 ? "Normal" : "Strange");
+		printf("		Type: %s\n", be32(tag_entries[i].flags) == 0x01000000 ? "Normal" : "Alpha");
 // Not important to user, why bother.
 //		printf("		Animation Header Length: %lu\n", be32(tag_entries[i].anim_header_len));		
 		printf("		FourCC: %c%c%c%c\n", CCs[i][0], CCs[i][1], CCs[i][2], CCs[i][3]);
@@ -582,7 +582,7 @@ void create_tag_from_xml(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32
 		temp[x] = toupper(temp[x]);
 	if(strcmp(temp, "NORMAL") == 0)
 		entr.flags = 0x01000000;
-	else if(strcmp(temp, "STRANGE") == 0)
+	else if(strcmp(temp, "ALPHA") == 0)
 		entr.flags = 0x02000000;
 	create_entries_from_xml(tree, node, &entr, &head, tagblob, blobsize);
 }

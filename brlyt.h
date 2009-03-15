@@ -146,9 +146,6 @@ typedef struct
 	u8 unk[16];
 } brlyt_10b_chunk;
 
-void swapBytes(unsigned char* char1, unsigned char* char2);
-int bitExtraction(unsigned int num, unsigned int start, unsigned int end);
-
 void parse_brlyt(char *filename);
 void make_brlyt(char* infile, char* outfile);
 
