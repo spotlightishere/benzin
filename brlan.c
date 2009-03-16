@@ -343,7 +343,7 @@ void parse_brlan(char* filename)
 		int z = tableoff + be32(curr_timg_off);
 		dbgprintf("z %08x\n", z);
 		int o;
-		for(o = 0; brlan_file[z] != 0; timgname[o++] = brlan_file[z], z++ );
+		for(o = 0; brlan_file[z] != 0; timgname[o++] = brlan_file[z], z++);
 #ifndef OLD_BRLAN_OUTSTYLE
 		printf("\t<timg name=\"%s\" />\n", timgname);
 #else
@@ -735,6 +735,28 @@ void write_brlan(char *infile, char* outfile)
 	u8* tagchunksbig = (u8*)calloc(MAXIMUM_TAGS_SIZE, 1);
 	MEMORY* tagsmem = mopen(tagchunksbig, MAXIMUM_TAGS_SIZE, 3);
 	u32 totaltagsize = 0;
+	
+	u8* timgblob;
+	u32 timgsize;
+	u16 timgcount = 0;
+	u32 timgoffset;
+	u8* timgchunksbig = (u8*)calloc(MAXIMUM_TIMGS_SIZE, 1);
+	MEMORY* timgmem = mopen(timgchunksbig, MAXIMUM_TIMGS_SIZE, 3);
+	u32 totaltimgize = 0;
+	for(node = mxmlFindElement(tree, tree, "timg", NULL, NULL, MXML_DESCEND); node != NULL; node = mxmlFindElement(node, tree, "timg", NULL, NULL, MXML_DESCEND)) {
+		timgcount++;
+		timgoffset = ftell(fp) + mtell(timgmem) - (4 * (timgcount + 1));
+		timgoffset = be32(timgoffset);
+		fwrite(&timgoffset, sizeof(u32), 1, fp);
+		if(mxmlElementGetAttr(node, "name") != NULL)
+			strcpy(temp, mxmlElementGetAttr(node, "name"));
+		else{
+			printf("No name attribute found!\n");
+			exit(1);
+		}
+		mwrite(temp, strlen(temp) + 1, 1, timgmem);
+		totaltimgize += strlen(temp) + 1;
+	}
 	for(node = mxmlFindElement(tree, tree, "tag", NULL, NULL, MXML_DESCEND); node != NULL; node = mxmlFindElement(node, tree, "tag", NULL, NULL, MXML_DESCEND)) {
 		blobcount++;
 		bloboffset = ftell(fp) + mtell(tagsmem) - (4 * (blobcount + 1));
@@ -745,7 +767,11 @@ void write_brlan(char *infile, char* outfile)
 		totaltagsize += blobsize;
 	}
 	tagchunksbig = (u8*)mclose(tagsmem);
+	timgchunksbig = (u8*)mclose(timgmem);
+	fwrite(timgchunksbig, totaltimgize, 1, fp);
 	fwrite(tagchunksbig, totaltagsize, 1, fp);
+	paihead.num_timgs = timgcount;
+	paihead.entry_offset = sizeof(brlan_pai1_header_type1) + totaltimgize;
 	paihead.num_entries = blobcount;
 	fseek(fp, 0, SEEK_END);
 	paihead.size = ftell(fp) - rlanhead.pai1_offset;
