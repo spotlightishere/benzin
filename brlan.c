@@ -19,7 +19,7 @@
 #include "brlan.h"
 #include "xml.h"
 
-#ifdef DEBUGBRLAN
+#if DEBUGBRLAN == 1
 #define dbgprintf	printf
 #else
 #define dbgprintf	//
@@ -258,6 +258,7 @@ void parse_brlan(char* filename)
 	dbgprintf("allocated tag locations.\n");
 	fourcc CCs[256];
 	memset(CCs, 0, 256*4);
+	BRLAN_fileoffset = be32(pai1_header.entry_offset) + be16(header.pai1_offset);
 	dbgprintf("allocated fourccs.\n");
 	BRLAN_ReadDataFromMemory(taglocations, brlan_file, tagcount * sizeof(u32));
 	dbgprintf("read tag locations.\n");
@@ -322,14 +323,43 @@ void parse_brlan(char* filename)
 	printf("<?xml version=\"1.0\"?>\n" \
 	       "<xmlan framesize=\"%lu\">\n", be16(pai1_header.framesize));
 #endif // OLD_BRLAN_OUTSTYLE
+	int timgs = be16(pai1_header.num_timgs);
+	intag_cnt = 0;
+	int oldoffset = BRLAN_fileoffset;
+	BRLAN_fileoffset = be16(header.pai1_offset) + sizeof(brlan_pai1_header_type1);
+	dbgprintf("fileoffset %08x\n", BRLAN_fileoffset);
+	int tableoff = BRLAN_fileoffset;
+	int currtableoff = BRLAN_fileoffset;
+#ifdef OLD_BRLAN_OUTSTYLE
+	printf("\nTIMG entries:");
+	fflush(stdout);
+#endif //OLD_BRLAN_OUTSTYLE
+	for(i = 0; i < timgs; i++) {
+		u32 curr_timg_off = 0;
+		BRLAN_ReadDataFromMemory(&curr_timg_off, brlan_file, 4);
+		dbgprintf("currtimgoff %08x\n", be32(curr_timg_off));
+		char timgname[256];
+		memset(timgname, 0, 256);
+		int z = tableoff + be32(curr_timg_off);
+		dbgprintf("z %08x\n", z);
+		int o;
+		for(o = 0; brlan_file[z] != 0; z++, timgname[o++] = brlan_file[z]);
+#ifndef OLD_BRLAN_OUTSTYLE
+		printf("\t<timg name=\"%s\" />\n", timgname);
+#else
+		printf("	Image name: %s\n", timgname);
+#endif //OLD_BRLAN_OUTSTYLE
+		currtableoff += 4;
+	}
+	BRLAN_fileoffset = oldoffset;
 #ifdef OLD_BRLAN_OUTSTYLE
 	printf("Parsed BRLAN! Information:\n");
 	printf("Main header:\n");
 	printf("	Magic: %c%c%c%c\n", header.magic[0], header.magic[1], header.magic[2], header.magic[3]);
 	printf("	Filesize: %lu\n", be32(header.file_size));
 	printf("		%s real file size!\n", be32(header.file_size) == file_size ? "Matches" : "Does not match");
-
-// Not important to user, why bother.
+		       
+	// Not important to user, why bother.
 /*	printf("	pai1 Offset: %04x\n", be16(header.pai1_offset));
 	printf("	pai1 Count: %04x\n", be16(header.pai1_count)); */
 	printf("\npai1 header:\n");
@@ -342,25 +372,32 @@ void parse_brlan(char* filename)
 	printf("	Number of Textures: %u\n", be16(pai1_header.num_timgs));
 	printf("	Number of Entries: %u\n", be16(pai1_header.num_entries));
 	printf("	unk2: %08lx\n", be32(pai1_header.unk2));
-		
-// Not important to user, why bother.
+		       
+	// Not important to user, why bother.
 //	printf("	Offset to Entries: 0x%08lx\n", be32(pai1_header.entry_offset));
-
+		       
 	printf("\nBRLAN entries:");
 #endif // OLD_BRLAN_OUTSTYLE
-	intag_cnt = 0;
-	for(i = 0; i < tagcount; i++) {
+		       for(i = 0; i < tagcount; i++) {
 #ifndef OLD_BRLAN_OUTSTYLE
 		printf("\t<tag ");
 		if(strlen(tag_entries[i].name) > 0)
 			printf("name=\"%s\" ", tag_entries[i].name);
-		printf("type=\"%c%c%c%c\" format=\"%s\">\n", CCs[i][0], CCs[i][1], CCs[i][2], CCs[i][3], be32(tag_entries[i].flags) == 0x01000000 ? "Normal" : "Strange");
+		printf("type=\"%c%c%c%c\" ", CCs[i][0], CCs[i][1], CCs[i][2], CCs[i][3]);
+		if(be32(tag_entries[i].flags) == 0x01000000)
+		       printf("format=\"%s\">\n", "Normal");
+		else
+		       printf("format=\"%08x\">\n", be32(tag_entries[i].flags));
 #endif // OLD_BRLAN_OUTSTYLE
 
 #ifdef OLD_BRLAN_OUTSTYLE
 		printf("\n	Entry %u:\n", i);
 		printf("		Name: %s\n", tag_entries[i].name);
-		printf("		Type: %s\n", be32(tag_entries[i].flags) == 0x01000000 ? "Normal" : "Alpha");
+		if(be32(tag_entries[i].flags) == 0x01000000)
+		       printf("		Type: %s\n", "Normal");
+		else
+		       printf("		Type: %08x\n", be32(tag_entries[i].flags));
+
 // Not important to user, why bother.
 //		printf("		Animation Header Length: %lu\n", be32(tag_entries[i].anim_header_len));		
 		printf("		FourCC: %c%c%c%c\n", CCs[i][0], CCs[i][1], CCs[i][2], CCs[i][3]);
@@ -582,8 +619,8 @@ void create_tag_from_xml(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32
 		temp[x] = toupper(temp[x]);
 	if(strcmp(temp, "NORMAL") == 0)
 		entr.flags = 0x01000000;
-	else if(strcmp(temp, "ALPHA") == 0)
-		entr.flags = 0x02000000;
+	else
+		entr.flags = atoi(temp);
 	create_entries_from_xml(tree, node, &entr, &head, tagblob, blobsize);
 }
 

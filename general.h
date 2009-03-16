@@ -9,7 +9,7 @@
 
 #define BENZIN_VERSION_MAJOR		0
 #define BENZIN_VERSION_MINOR		1
-#define BENZIN_VERSION_BUILD		338
+#define BENZIN_VERSION_BUILD		352
 #define BENZIN_VERSION_OTHER		"WIP"
 
 #define INFORMATION_TEXT		\
@@ -17,15 +17,15 @@
 "Written by SquidMan (Alex Marshall), comex, and megazig.\n" \
 "(c) 2009 HACKERCHANNEL\n", BENZIN_VERSION_MAJOR, BENZIN_VERSION_MINOR, BENZIN_VERSION_BUILD, BENZIN_VERSION_OTHER
 
-//#define USE_BRLAN
-#define USE_BRLYT
+#define USE_BRLAN
+//#define USE_BRLYT
 
 //#define OLD_BRLAN_OUTSTYLE
 //#define OLD_BRLYT_OUTSTYLE
 
-//#define DEBUGBRLAN
-//#define DEBUGMAIN
-//#define DEBUGBRLYT
+//#define DEBUGBRLAN			1
+//#define DEBUGMAIN			1
+//#define DEBUGBRLYT			1
 
 #define fatal(x)	printf(x); exit(1)
 
