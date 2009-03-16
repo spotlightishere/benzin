@@ -343,7 +343,7 @@ void parse_brlan(char* filename)
 		int z = tableoff + be32(curr_timg_off);
 		dbgprintf("z %08x\n", z);
 		int o;
-		for(o = 0; brlan_file[z] != 0; z++, timgname[o++] = brlan_file[z]);
+		for(o = 0; brlan_file[z] != 0; z++, timgname[o++] = brlan_file[z-1]);
 #ifndef OLD_BRLAN_OUTSTYLE
 		printf("\t<timg name=\"%s\" />\n", timgname);
 #else
