@@ -1176,20 +1176,20 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 
 	printf("temp holds: %c%c%c%c\t", temp[0], temp[1], temp[2], temp[3]);
 
-	char lyt1[4] = {'l', 'y', 't', '1'};
-	char txl1[4] = {'t', 'x', 'l', '1'};
-	char fnl1[4] = {'f', 'n', 'l', '1'};
+	char lyt1[4] = {'l', 'y', 't', '1'};		//
+	char txl1[4] = {'t', 'x', 'l', '1'};		//
+	char fnl1[4] = {'f', 'n', 'l', '1'};		//
 	char mat1[4] = {'m', 'a', 't', '1'};
-	char pan1[4] = {'p', 'a', 'n', '1'};
-	char wnd1[4] = {'w', 'n', 'd', '1'};
-	char bnd1[4] = {'b', 'n', 'd', '1'};
-	char pic1[4] = {'p', 'i', 'c', '1'};
-	char txt1[4] = {'t', 'x', 't', '1'};
-	char grp1[4] = {'g', 'r', 'p', '1'};
-	char grs1[4] = {'g', 'r', 's', '1'};
-	char gre1[4] = {'g', 'r', 'e', '1'};
-	char pas1[4] = {'p', 'a', 's', '1'};
-	char pae1[4] = {'p', 'a', 'e', '1'};
+	char pan1[4] = {'p', 'a', 'n', '1'};		//
+	char wnd1[4] = {'w', 'n', 'd', '1'};		//
+	char bnd1[4] = {'b', 'n', 'd', '1'};		//
+	char pic1[4] = {'p', 'i', 'c', '1'};		/
+	char txt1[4] = {'t', 'x', 't', '1'};		/
+	char grp1[4] = {'g', 'r', 'p', '1'};		//
+	char grs1[4] = {'g', 'r', 's', '1'};		
+	char gre1[4] = {'g', 'r', 'e', '1'};		
+	char pas1[4] = {'p', 'a', 's', '1'};		
+	char pae1[4] = {'p', 'a', 'e', '1'};		
 //	char lyt1[4] = {'l', 'y', 't', '1'};
 //	char lyt1[4] = {'l', 'y', 't', '1'};
 //	char lyt1[4] = {'l', 'y', 't', '1'};
@@ -1715,6 +1715,405 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 			get_value(subnode, tempCoord, 256);
 			chunk.angle = atof(tempCoord);
 			printf("angle: %08x\t", chunk.angle);
+		}
+	}
+	if ( memcmp(temp, txt1, sizeof(txt1)) == 0)
+	{
+		// create a pane chunk
+		 brlyt_pane_chunk chunk;
+
+		printf("found a txt1\n");
+
+		if(mxmlElementGetAttr(node, "name") != NULL)
+			strcpy(temp, mxmlElementGetAttr(node, "name"));
+		else{
+			printf("No name attribute found!\nQuitting!\n");
+			exit(1);
+		}
+		strcpy(chunk.name, temp);
+		printf("Name: %s\t", chunk.name);
+
+		mxml_node_t *subnode = mxmlFindElement(node, node, "coords", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			mxml_node_t *valnode;
+			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.x = atof(tempCoord);
+				printf("x: %f\t", chunk.x);
+			}
+			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.y = atof(tempCoord);
+				printf("y: %f\t", chunk.x);
+			}
+			valnode = mxmlFindElement(subnode, subnode, "z", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.z = atof(tempCoord);
+				printf("z: %f\t", chunk.x);
+			}
+		}
+		subnode = mxmlFindElement(node, node, "flip", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			mxml_node_t *valnode;
+			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.flip_x = atof(tempCoord);
+				printf("flip_x: %f\t", chunk.flip_x);
+			}
+			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.flip_y = atof(tempCoord);
+				printf("flip_y: %f\t", chunk.flip_x);
+			}
+		}
+		subnode = mxmlFindElement(node, node, "zoom", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			mxml_node_t *valnode;
+			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.xmag = atof(tempCoord);
+				printf("xmag: %f\t", chunk.xmag);
+			}
+			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.ymag = atof(tempCoord);
+				printf("ymag: %f\t", chunk.ymag);
+			}
+		}
+		subnode = mxmlFindElement(node, node, "size", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			mxml_node_t *valnode;
+			valnode = mxmlFindElement(subnode, subnode, "width", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.width = atof(tempCoord);
+				printf("width: %f\t", chunk.width);
+			}
+			valnode = mxmlFindElement(subnode, subnode, "height", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.height = atof(tempCoord);
+				printf("height: %f\t", chunk.height);
+			}
+		}
+		
+		subnode = mxmlFindElement(node, node, "flags", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			char tempCoord[256];
+			get_value(subnode, tempCoord, 256);
+			chunk.flag1 = strtol(tempCoord, NULL, 16);
+			chunk.flag2 = strtol(&(tempCoord[9]), NULL, 16);
+			printf("flag1: %08x\tflag2: %08x\t", chunk.flag1, chunk.flag2);
+		}
+		subnode = mxmlFindElement(node, node, "alpha", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			char tempCoord[256];
+			get_value(subnode, tempCoord, 256);
+			chunk.alpha = strtol(tempCoord, NULL, 16);
+			chunk.alpha2 = strtol(&(tempCoord[9]), NULL, 16);
+			printf("alpha: %08x\talpha2: %08x\t", chunk.alpha, chunk.alpha2);
+		}
+		subnode = mxmlFindElement(node, node, "rotate", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			char tempCoord[256];
+			get_value(subnode, tempCoord, 256);
+			chunk.angle = atof(tempCoord);
+			printf("angle: %08x\t", chunk.angle);
+		}
+//        u16 len1;			//
+  //      u16 len2;			//
+//        u16 mat_off;
+ //       u16 font_idx;			/
+ //       u8 unk4;
+  //      u8 pad[3];      // [0, 0, 0]
+   //     u32 name_offs;
+    //    u32 color1;			//
+     //   u32 color2;			//
+      //  float font_size_x;		//
+       // float font_size_y;		//
+        //float char_space;		//
+        //float line_space;		//
+		brlyt_text_chunk chunk2;
+		subnode = mxmlFindElement(node, node, "font", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			// get index
+			char temp[256];
+			if(mxmlElementGetAttr(subnode, "index") != NULL)
+				strcpy(temp, mxmlElementGetAttr(subnode, "index"));
+			else{
+				printf("No index attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			//strcpy(chunk2.font_idx, temp);
+			//chunk2.font_idx = strtol(temp, NULL, 10);
+			chunk2.font_idx = atoi(temp);
+			printf("Font_idx: %s\t", chunk2.font_idx);
+			printf("font index string: %s", temp);
+
+			mxml_node_t *valnode;
+			valnode = mxmlFindElement(subnode, subnode, "xsize", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk2.font_size_x = atof(tempCoord);
+				printf("font_size_x: %f\t", chunk2.font_size_x);
+			}
+			valnode = mxmlFindElement(subnode, subnode, "ysize", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk2.font_size_y = atof(tempCoord);
+				printf("font_size_y: %f\t", chunk2.font_size_y);
+			}
+			valnode = mxmlFindElement(subnode, subnode, "charsize", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk2.char_space = atof(tempCoord);
+				printf("char_space: %f\t", chunk2.char_space);
+			}
+			valnode = mxmlFindElement(subnode, subnode, "linesize", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk2.line_space = atof(tempCoord);
+				printf("line_space: %f\t", chunk2.line_space);
+			}
+		}
+
+		subnode = mxmlFindElement(node, node, "length", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			char tempCoord[256];
+			get_value(subnode, tempCoord, 256);
+			chunk2.len1 = strtoul(tempCoord, NULL, 16);
+			chunk2.len2 = strtoul(tempCoord+5, NULL, 16);
+			printf("len1: %04x\tlen2: %04x\t", chunk2.len1, chunk2.len2);
+		}
+		subnode = mxmlFindElement(node, node, "color", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			char tempCoord[256];
+			get_value(subnode, tempCoord, 256);
+			chunk2.color1 = strtoul(tempCoord, NULL, 16);
+			chunk2.color2 = strtoul(tempCoord+9, NULL, 16);
+			printf("color1: %08x\tcolor2: %08x\t", chunk2.color1, chunk2.color2);
+		}
+
+	}
+	if ( memcmp(temp, pic1, sizeof(pic1)) == 0)
+	{
+		// create a pane chunk
+		 brlyt_pane_chunk chunk;
+	
+		printf("found a pic1\n");
+
+		if(mxmlElementGetAttr(node, "name") != NULL)
+			strcpy(temp, mxmlElementGetAttr(node, "name"));
+		else{
+			printf("No name attribute found!\nQuitting!\n");
+			exit(1);
+		}
+		strcpy(chunk.name, temp);
+		printf("Name: %s\t", chunk.name);
+
+		mxml_node_t *subnode = mxmlFindElement(node, node, "coords", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			mxml_node_t *valnode;
+			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.x = atof(tempCoord);
+				printf("x: %f\t", chunk.x);
+
+			}
+			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.y = atof(tempCoord);
+				printf("y: %f\t", chunk.x);
+			}
+			valnode = mxmlFindElement(subnode, subnode, "z", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.z = atof(tempCoord);
+				printf("z: %f\t", chunk.x);
+			}
+		}
+		subnode = mxmlFindElement(node, node, "flip", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			mxml_node_t *valnode;
+			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.flip_x = atof(tempCoord);
+				printf("flip_x: %f\t", chunk.flip_x);
+			}
+			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.flip_y = atof(tempCoord);
+				printf("flip_y: %f\t", chunk.flip_x);
+			}
+		}
+		subnode = mxmlFindElement(node, node, "zoom", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			mxml_node_t *valnode;
+			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.xmag = atof(tempCoord);
+				printf("xmag: %f\t", chunk.xmag);
+			}
+			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.ymag = atof(tempCoord);
+				printf("ymag: %f\t", chunk.ymag);
+			}
+		}
+		subnode = mxmlFindElement(node, node, "size", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			mxml_node_t *valnode;
+			valnode = mxmlFindElement(subnode, subnode, "width", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.width = atof(tempCoord);
+				printf("width: %f\t", chunk.width);
+			}
+			valnode = mxmlFindElement(subnode, subnode, "height", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.height = atof(tempCoord);
+				printf("height: %f\t", chunk.height);
+			}
+		}
+		
+		subnode = mxmlFindElement(node, node, "flags", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			char tempCoord[256];
+			get_value(subnode, tempCoord, 256);
+			chunk.flag1 = strtol(tempCoord, NULL, 16);
+			chunk.flag2 = strtol(&(tempCoord[9]), NULL, 16);
+			printf("flag1: %08x\tflag2: %08x\t", chunk.flag1, chunk.flag2);
+		}
+		subnode = mxmlFindElement(node, node, "alpha", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			char tempCoord[256];
+			get_value(subnode, tempCoord, 256);
+			chunk.alpha = strtol(tempCoord, NULL, 16);
+			chunk.alpha2 = strtol(&(tempCoord[9]), NULL, 16);
+			printf("alpha: %08x\talpha2: %08x\t", chunk.alpha, chunk.alpha2);
+		}
+		subnode = mxmlFindElement(node, node, "rotate", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			char tempCoord[256];
+			get_value(subnode, tempCoord, 256);
+			chunk.angle = atof(tempCoord);
+			printf("angle: %08x\t", chunk.angle);
+		}
+//        u32 vtx_colors[4];      // [4294967295L, 4294967295L, 4294967295L, 4294967295L]
+//        u16 mat_off;
+//        u8 num_texcoords;			//
+//        u8 padding;             // 0
+		brlyt_pic_chunk chunk2;
+		subnode = mxmlFindElement(node, node, "colors", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			mxml_node_t *valnode;
+			int i;
+			for (i=0;i<4; i++)
+			{
+				valnode = mxmlFindElement(subnode, subnode, "vtx", NULL, NULL, MXML_DESCEND);
+				if (valnode != NULL)
+				{
+					char tempCoord[256];
+					get_value(valnode, tempCoord, 256);
+					chunk2.vtx_colors[i] = strtoul(&(tempCoord[2]), NULL, 16);
+					printf("vtx_colors: %08x\t", chunk2.vtx_colors[i]);
+				}
+			}
+		}
+		subnode = mxmlFindElement(node, node, "coordinates", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			mxml_node_t *setnode;
+			setnode = mxmlFindElement(subnode, subnode, "set", NULL, NULL, MXML_DESCEND);
+			if (setnode != NULL)
+			{
+				mxml_node_t *valnode;
+				int numberOfCoordinates;
+				for (valnode=mxmlFindElement(setnode, setnode, "coord", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "coord", NULL, NULL, MXML_DESCEND) )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						float coordGotten = atof(tempCoord);
+						printf("coord: %f\t", coordGotten);
+				}
+			}
 		}
 	}
 	if ( memcmp(temp, grp1, sizeof(grp1)) == 0)

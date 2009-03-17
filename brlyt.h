@@ -19,7 +19,7 @@ typedef struct
 	u32		unk1;			// 0xFEFF0008
 	u32		filesize;		// The filesize of the brlyt.
 	u16		lyt_offset;		// Offset to the lyt1 section.
-	u16		unk2;			// Unknown.
+	u16		unk2;			// Number of sections.
 } brlyt_header;
 
 typedef struct
@@ -81,7 +81,8 @@ typedef struct
 
 typedef struct
 {
-	int a;
+	char a;
+	char pad[3];
 	float width;
 	float height;
 } brlyt_lytheader_chunk;
@@ -145,6 +146,9 @@ typedef struct
 {
 	u8 unk[16];
 } brlyt_10b_chunk;
+
+void swapBytes(unsigned char* char1, unsigned char* char2);
+int bitExtraction(unsigned int num, unsigned int start, unsigned int end);
 
 void parse_brlyt(char *filename);
 void make_brlyt(char* infile, char* outfile);
