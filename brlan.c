@@ -26,6 +26,7 @@
 #endif //DEBUGBRLAN
 
 #define MAXIMUM_TAGS_SIZE		(0x1000)
+#define MAXIMUM_TIMGS_SIZE		(0x1000)
 
 fourcc tag_FourCCs[] = { "RLPA", "RLTS", "RLVI", "RLVC", "RLMC", "RLTP" };
 
