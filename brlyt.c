@@ -1176,16 +1176,16 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 
 	printf("temp holds: %c%c%c%c\t", temp[0], temp[1], temp[2], temp[3]);
 
-	char lyt1[4] = {'l', 'y', 't', '1'};		//
-	char txl1[4] = {'t', 'x', 'l', '1'};		//
-	char fnl1[4] = {'f', 'n', 'l', '1'};		//
+	char lyt1[4] = {'l', 'y', 't', '1'};		//	//
+	char txl1[4] = {'t', 'x', 'l', '1'};		//	//
+	char fnl1[4] = {'f', 'n', 'l', '1'};		//	//
 	char mat1[4] = {'m', 'a', 't', '1'};
-	char pan1[4] = {'p', 'a', 'n', '1'};		//
-	char wnd1[4] = {'w', 'n', 'd', '1'};		//
-	char bnd1[4] = {'b', 'n', 'd', '1'};		//
-	char pic1[4] = {'p', 'i', 'c', '1'};		/
-	char txt1[4] = {'t', 'x', 't', '1'};		/
-	char grp1[4] = {'g', 'r', 'p', '1'};		//
+	char pan1[4] = {'p', 'a', 'n', '1'};		//	//
+	char wnd1[4] = {'w', 'n', 'd', '1'};		//	//
+	char bnd1[4] = {'b', 'n', 'd', '1'};		//	//
+	char pic1[4] = {'p', 'i', 'c', '1'};		//	/
+	char txt1[4] = {'t', 'x', 't', '1'};		//	/
+	char grp1[4] = {'g', 'r', 'p', '1'};		//	//
 	char grs1[4] = {'g', 'r', 's', '1'};		
 	char gre1[4] = {'g', 'r', 'e', '1'};		
 	char pas1[4] = {'p', 'a', 's', '1'};		
