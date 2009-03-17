@@ -1,0 +1,9 @@
+//
+// Prefix header for all source files of the 'BannerPlayer' target in the 'BannerPlayer' project
+//
+
+#include "SDL.h"
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
