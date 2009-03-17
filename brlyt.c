@@ -662,6 +662,26 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 		printf("                flags: %08x\n", be32(data3.flags));
 		printf("                bitmask: %08x\n", bit_extract(flaggs, 28, 31));
 #else
+		printf("			<name>%s</name>\n", data3.name);
+		printf("			<colors>\n");
+		printf("				<tev>%#x</tev>\n", be16(data3.tev_color[0]));
+		printf("				<tev>%#x</tev>\n", be16(data3.tev_color[1]));
+		printf("				<tev>%#x</tev>\n", be16(data3.tev_color[2]));
+		printf("				<tev>%#x</tev>\n", be16(data3.tev_color[3]));
+		printf("				<unk>%#x</unk>\n", be16(data3.unk_color[0]));
+		printf("				<unk>%#x</unk>\n", be16(data3.unk_color[1]));
+		printf("				<unk>%#x</unk>\n", be16(data3.unk_color[2]));
+		printf("				<unk>%#x</unk>\n", be16(data3.unk_color[3]));
+		printf("				<unk2>%#x</unk2>\n", be16(data3.unk_color_2[0]));
+		printf("				<unk2>%#x</unk2>\n", be16(data3.unk_color_2[1]));
+		printf("				<unk2>%#x</unk2>\n", be16(data3.unk_color_2[2]));
+		printf("				<unk2>%#x</unk2>\n", be16(data3.unk_color_2[3]));
+		printf("				<tev_k>%#x</tev_k>\n", be16(data3.tev_kcolor[0]));
+		printf("				<tev_k>%#x</tev_k>\n", be16(data3.tev_kcolor[1]));
+		printf("				<tev_k>%#x</tev_k>\n", be16(data3.tev_kcolor[2]));
+		printf("				<tev_k>%#x</tev_k>\n", be16(data3.tev_kcolor[3]));
+		printf("			</colors>\n");
+		printf("			<flags>%08x</flags>\n", be32(data3.flags));
 #endif //OLD_BRLYT_OUTSTYLE
 		int n = 0;
 		for (n;n<bit_extract(flaggs, 28,31);n++)
@@ -675,6 +695,10 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 			printf("                wrap_t: %08x\n", data4.wrap_t);
 			printf("                name: %s\n", getMaterial(tplOffset));
 #else
+			printf("			<material name=\"%s\">\n", getMaterial(tplOffset));
+			printf("				<wrap_s>%08x</wrap_s>\n", data4.wrap_s);
+			printf("				<wrap_t>%08x</wrap_t>\n", data4.wrap_t);
+			printf("			</material>\n");
 #endif //OLD_BRLYT_OUTSTYLE
 		}
 
@@ -688,6 +712,12 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 #ifdef OLD_BRLYT_OUTSTYLE
                         printf("                ua2: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
 #else
+			printf("			<ua2>\n");
+			printf("				<data>%08x</data>\n", data4.unk[0]);
+			printf("				<data>%08x</data>\n", data4.unk[1]);
+			printf("				<data>%08x</data>\n", data4.unk[2]);
+			printf("				<data>%08x</data>\n", data4.unk[3]);
+			printf("			</ua2>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                         //pos += item_size;
                 }
@@ -701,6 +731,12 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 #ifdef OLD_BRLYT_OUTSTYLE
                         printf("                ua3: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
 #else
+			printf("			<ua3>\n");
+			printf("				<data>%08x</data>\n", data4.unk[0]);
+			printf("				<data>%08x</data>\n", data4.unk[1]);
+			printf("				<data>%08x</data>\n", data4.unk[2]);
+			printf("				<data>%08x</data>\n", data4.unk[3]);
+			printf("			</ua3>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                         //pos += item_size;
                 }
@@ -720,6 +756,12 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 #ifdef OLD_BRLYT_OUTSTYLE
                         printf("                ua4: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
 #else
+			printf("			<ua4>\n");
+			printf("				<data>%08x</data>\n", data4.unk[0]);
+			printf("				<data>%08x</data>\n", data4.unk[1]);
+			printf("				<data>%08x</data>\n", data4.unk[2]);
+			printf("				<data>%08x</data>\n", data4.unk[3]);
+			printf("			</ua4>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                         //pos += item_size;
                 }
@@ -733,6 +775,12 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 #ifdef OLD_BRLYT_OUTSTYLE
                         printf("                ua5: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
 #else
+			printf("			<ua5>\n");
+			printf("				<data>%08x</data>\n", data4.unk[0]);
+			printf("				<data>%08x</data>\n", data4.unk[1]);
+			printf("				<data>%08x</data>\n", data4.unk[2]);
+			printf("				<data>%08x</data>\n", data4.unk[3]);
+			printf("			</ua5>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                         //pos += item_size;
                 }
@@ -746,6 +794,12 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 #ifdef OLD_BRLYT_OUTSTYLE
                         printf("                ua6: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
 #else
+			printf("			<ua6>\n");
+			printf("				<data>%08x</data>\n", data4.unk[0]);
+			printf("				<data>%08x</data>\n", data4.unk[1]);
+			printf("				<data>%08x</data>\n", data4.unk[2]);
+			printf("				<data>%08x</data>\n", data4.unk[3]);
+			printf("			</ua6>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                         //pos += item_size;
                 }
@@ -762,6 +816,13 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 			printf("                ua7 d: %08x\n", be32(data4.d));
 			printf("                ua7 e: %08x\n", be32(data4.e));
 #else
+			printf("			<ua7>\n");
+                        printf("				<a>%08x</a>\n", be32(data4.a));
+			printf("				<b>%08x</b>\n", be32(data4.b));
+			printf("				<c>%f</c>\n", float_swap_bytes(data4.c));
+			printf("				<d>%08x</d>\n", be32(data4.d));
+			printf("				<e>%08x</e>\n", be32(data4.e));
+			printf("			</ua7>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                         //pos += item_size;
                 }
@@ -775,6 +836,12 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 #ifdef OLD_BRLYT_OUTSTYLE
                         printf("                ua8: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
 #else
+			printf("			<ua8>\n");
+			printf("				<data>%08x</data>\n", data4.unk[0]);
+			printf("				<data>%08x</data>\n", data4.unk[1]);
+			printf("				<data>%08x</data>\n", data4.unk[2]);
+			printf("				<data>%08x</data>\n", data4.unk[3]);
+			printf("			</ua8>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                         //pos += item_size;
                 }
@@ -788,6 +855,23 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 #ifdef OLD_BRLYT_OUTSTYLE
                         printf("                ua8: %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3], data4.unk[4], data4.unk[5], data4.unk[6], data4.unk[7], data4.unk[8], data4.unk[9], data4.unk[10], data4.unk[11], data4.unk[12], data4.unk[13], data4.unk[14], data4.unk[15]);
 #else
+			printf("			<ua9>\n");
+			printf("				<data>%08x</data>\n", data4.unk[0]);
+			printf("				<data>%08x</data>\n", data4.unk[1]);
+			printf("				<data>%08x</data>\n", data4.unk[2]);
+			printf("				<data>%08x</data>\n", data4.unk[3]);
+			printf("				<data>%08x</data>\n", data4.unk[4]);
+			printf("				<data>%08x</data>\n", data4.unk[5]);
+			printf("				<data>%08x</data>\n", data4.unk[6]);
+			printf("				<data>%08x</data>\n", data4.unk[7]);
+			printf("				<data>%08x</data>\n", data4.unk[8]);
+			printf("				<data>%08x</data>\n", data4.unk[9]);
+			printf("				<data>%08x</data>\n", data4.unk[10]);
+			printf("				<data>%08x</data>\n", data4.unk[11]);
+			printf("				<data>%08x</data>\n", data4.unk[12]);
+			printf("				<data>%08x</data>\n", data4.unk[13]);
+			printf("				<data>%08x</data>\n", data4.unk[14]);
+			printf("			</ua9>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                         //pos += item_size;
                 }
@@ -801,6 +885,12 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 #ifdef OLD_BRLYT_OUTSTYLE
                         printf("                uaa: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
 #else
+			printf("			<uaa>\n");
+			printf("				<data>%08x</data>\n", data4.unk[0]);
+			printf("				<data>%08x</data>\n", data4.unk[1]);
+			printf("				<data>%08x</data>\n", data4.unk[2]);
+			printf("				<data>%08x</data>\n", data4.unk[3]);
+			printf("			</uaa>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                         //pos += item_size;
                 }
@@ -814,6 +904,12 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 #ifdef OLD_BRLYT_OUTSTYLE
                         printf("                uab: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
 #else
+			printf("			<uab>\n");
+			printf("				<data>%08x</data>\n", data4.unk[0]);
+			printf("				<data>%08x</data>\n", data4.unk[1]);
+			printf("				<data>%08x</data>\n", data4.unk[2]);
+			printf("				<data>%08x</data>\n", data4.unk[3]);
+			printf("			</uab>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                         //pos += item_size;
                 }
