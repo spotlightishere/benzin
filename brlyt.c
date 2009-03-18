@@ -637,7 +637,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 	printf("                offs: %08x\n", be16(data.offs));
 #else
 	printf("type=\"%c%c%c%c\" count=\"%d\">\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3], be16(data.num));
-	printf("		<entries>\n");
+//	printf("		<entries");
 #endif //OLD_BRLYT_OUTSTYLE
 	int n = 0;
 	for (n;n<be16(data.num);n++)
@@ -662,7 +662,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 		printf("                flags: %08x\n", be32(data3.flags));
 		printf("                bitmask: %08x\n", bit_extract(flaggs, 28, 31));
 #else
-		printf("			<name>%s</name>\n", data3.name);
+		printf("		<entries name=\"%s\">\n", data3.name);
 		printf("			<colors>\n");
 		printf("				<tev>%#x</tev>\n", be16(data3.tev_color[0]));
 		printf("				<tev>%#x</tev>\n", be16(data3.tev_color[1]));
@@ -923,11 +923,13 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 //		mat['unk_bits_0_3'] = bit_extract(flags, 0, 3) //# Overwritten by stu        ff
 //		vars['materials'].append(mat)
 //		pos += 4
-
+#ifndef OLD_BRLYT_OUTSTYLE
+		printf("		</entries>\n");
+#endif //OLD_BRLYT_OUTSTYLE
 		BRLYT_fileoffset = tempDataLocation;		
 	}
 #ifndef OLD_BRLYT_OUTSTYLE
-	printf("		</entries>\n");
+//	printf("		</entries>\n");
 	printf("	</tag>\n");
 #endif //OLD_BRLYT_OUTSTYLE
 }
@@ -1286,10 +1288,6 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 	char gre1[4] = {'g', 'r', 'e', '1'};		
 	char pas1[4] = {'p', 'a', 's', '1'};		
 	char pae1[4] = {'p', 'a', 'e', '1'};		
-//	char lyt1[4] = {'l', 'y', 't', '1'};
-//	char lyt1[4] = {'l', 'y', 't', '1'};
-//	char lyt1[4] = {'l', 'y', 't', '1'};
-//	char lyt1[4] = {'l', 'y', 't', '1'};
 
 	if ( memcmp(temp, lyt1, sizeof(lyt1)) == 0)
 	{
@@ -1402,7 +1400,304 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 	}
 	if ( memcmp(temp, mat1, sizeof(mat1)) == 0)
 	{
+		// create a pane chunk
+		//brlyt_pane_chunk chunk;
 
+		printf("found a mat1\n");
+
+//		if(mxmlElementGetAttr(node, "name") != NULL)
+//			strcpy(temp, mxmlElementGetAttr(node, "name"));
+//		else{
+//			printf("No name attribute found!\nQuitting!\n");
+//			exit(1);
+//		}
+//		strcpy(chunk.name, temp);
+//		printf("Name: %s\t", chunk.name);
+
+		int numberOfEntries = 0;
+		brlyt_material_chunk chunk;
+		mxml_node_t *subnode;
+		for(subnode=mxmlFindElement(node,node,"entries",NULL,NULL,MXML_DESCEND);subnode!=NULL;subnode=mxmlFindElement(subnode,node,"entries",NULL,NULL,MXML_DESCEND))
+		{
+			numberOfEntries += 1;
+			char temp[256];
+			if(mxmlElementGetAttr(subnode, "name") != NULL)
+				strcpy(temp, mxmlElementGetAttr(subnode, "name"));
+			else{
+				printf("No name attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			strcpy(chunk.name, temp);
+			printf("Name: %s\t", chunk.name);
+
+			mxml_node_t *setnode;
+			setnode = mxmlFindElement(subnode, subnode, "colors", NULL, NULL, MXML_DESCEND);
+			if (setnode != NULL)
+			{
+				mxml_node_t *valnode;
+				int colorNumber = 0;
+				for (valnode=mxmlFindElement(setnode, setnode, "tev", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "tev", NULL, NULL, MXML_DESCEND) )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunk.tev_color[colorNumber] = strtoul(tempCoord, NULL, 16);
+						//float coordGotten = atof(tempCoord);
+						printf("tev_color: %08x\t", chunk.tev_color[colorNumber]);
+						colorNumber+=1;
+				}
+				colorNumber = 0;
+				for (valnode=mxmlFindElement(setnode, setnode, "unk", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "unk", NULL, NULL, MXML_DESCEND) )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunk.unk_color[colorNumber] = strtoul(tempCoord, NULL, 16);
+						//float coordGotten = atof(tempCoord);
+						printf("unk_color: %08x\t", chunk.unk_color[colorNumber]);
+						colorNumber+=1;
+				}
+				colorNumber = 0;
+				for (valnode=mxmlFindElement(setnode, setnode, "unk2", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "unk2", NULL, NULL, MXML_DESCEND) )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunk.unk_color_2[colorNumber] = strtoul(tempCoord, NULL, 16);
+						//float coordGotten = atof(tempCoord);
+						printf("unk_color_2: %08x\t", chunk.unk_color_2[colorNumber]);
+						colorNumber+=1;
+				}
+				colorNumber = 0;
+				for (valnode=mxmlFindElement(setnode, setnode, "tev_k", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "tev_k", NULL, NULL, MXML_DESCEND) )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunk.tev_kcolor[colorNumber] = strtoul(tempCoord, NULL, 16);
+						//float coordGotten = atof(tempCoord);
+						printf("tev_kcolor: %08x\t", chunk.tev_kcolor[colorNumber]);
+						colorNumber+=1;
+				}
+			}	
+			setnode = mxmlFindElement(subnode,subnode,"flags",NULL,NULL,MXML_DESCEND);
+			if (setnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(setnode, tempCoord, 256);
+				chunk.flags = strtoul(tempCoord, NULL, 16);
+				printf("flags: %08x\t", chunk.flags);
+			}
+			brlyt_ua2_chunk chunkUa2;
+			setnode = mxmlFindElement(subnode, subnode, "ua2", NULL, NULL, MXML_DESCEND);
+			if (setnode != NULL)
+			{
+				mxml_node_t *valnode;
+				int dataNumber = 0;
+				for (valnode=mxmlFindElement(setnode, setnode, "data", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "data", NULL, NULL, MXML_DESCEND) )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunkUa2.unk[dataNumber] = atof(tempCoord);
+						//float coordGotten = atof(tempCoord);
+						printf("ua2_data: %f\t", chunkUa2.unk[dataNumber]);
+						dataNumber+=1;
+				}
+			}
+			brlyt_4b_chunk chunkUa3;
+			setnode = mxmlFindElement(subnode, subnode, "ua3", NULL, NULL, MXML_DESCEND);
+			if (setnode != NULL)
+			{
+				mxml_node_t *valnode;
+				int dataNumber = 0;
+				for (valnode=mxmlFindElement(setnode, setnode, "data", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "data", NULL, NULL, MXML_DESCEND) )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunkUa3.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
+						//float coordGotten = atof(tempCoord);
+						printf("ua3_data: %02x\t", chunkUa3.unk[dataNumber]);
+						dataNumber+=1;
+				}
+			}
+			brlyt_4b_chunk chunkUa4;
+			setnode = mxmlFindElement(subnode, subnode, "ua4", NULL, NULL, MXML_DESCEND);
+			if (setnode != NULL)
+			{
+				mxml_node_t *valnode;
+				int dataNumber = 0;
+				for (valnode=mxmlFindElement(setnode, setnode, "data", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "data", NULL, NULL, MXML_DESCEND) )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunkUa3.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
+						//float coordGotten = atof(tempCoord);
+						printf("ua4_data: %02x\t", chunkUa4.unk[dataNumber]);
+						dataNumber+=1;
+				}
+			}
+			brlyt_4b_chunk chunkUa5;
+			setnode = mxmlFindElement(subnode, subnode, "ua5", NULL, NULL, MXML_DESCEND);
+			if (setnode != NULL)
+			{
+				mxml_node_t *valnode;
+				int dataNumber = 0;
+				for (valnode=mxmlFindElement(setnode, setnode, "data", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "data", NULL, NULL, MXML_DESCEND) )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunkUa5.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
+						//float coordGotten = atof(tempCoord);
+						printf("ua5_data: %02x\t", chunkUa3.unk[dataNumber]);
+						dataNumber+=1;
+				}
+			}
+			brlyt_4b_chunk chunkUa6;
+			setnode = mxmlFindElement(subnode, subnode, "ua6", NULL, NULL, MXML_DESCEND);
+			if (setnode != NULL)
+			{
+				mxml_node_t *valnode;
+				int dataNumber = 0;
+				for (valnode=mxmlFindElement(setnode, setnode, "data", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "data", NULL, NULL, MXML_DESCEND) )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunkUa6.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
+						//float coordGotten = atof(tempCoord);
+						printf("ua6_data: %02x\t", chunkUa3.unk[dataNumber]);
+						dataNumber+=1;
+				}
+			}
+			brlyt_ua7_chunk chunkUa7;
+			setnode = mxmlFindElement(subnode, subnode, "ua7", NULL, NULL, MXML_DESCEND);
+			if (setnode != NULL)
+			{
+				mxml_node_t *valnode;
+				valnode=mxmlFindElement(setnode, setnode, "a", NULL, NULL, MXML_DESCEND);
+				if ( valnode != NULL )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunkUa7.a = strtoul(tempCoord, NULL, 16);
+						//float coordGotten = atof(tempCoord);
+						printf("ua7_a: %08x\t", chunkUa7.a);
+				}
+				valnode=mxmlFindElement(setnode, setnode, "b", NULL, NULL, MXML_DESCEND);
+				if ( valnode != NULL )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunkUa7.b = strtoul(tempCoord, NULL, 16);
+						//float coordGotten = atof(tempCoord);
+						printf("ua7_b: %08x\t", chunkUa7.b);
+				}
+				valnode=mxmlFindElement(setnode, setnode, "c", NULL, NULL, MXML_DESCEND);
+				if ( valnode != NULL )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunkUa7.c = atof(tempCoord);
+						//float coordGotten = atof(tempCoord);
+						printf("ua7_c: %f\t", chunkUa7.c);
+				}
+				valnode=mxmlFindElement(setnode, setnode, "d", NULL, NULL, MXML_DESCEND);
+				if ( valnode != NULL )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunkUa7.d = strtoul(tempCoord, NULL, 16);
+						//float coordGotten = atof(tempCoord);
+						printf("ua7_d: %08x\t", chunkUa7.d);
+				}
+				valnode=mxmlFindElement(setnode, setnode, "e", NULL, NULL, MXML_DESCEND);
+				if ( valnode != NULL )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunkUa7.e = strtoul(tempCoord, NULL, 16);
+						//float coordGotten = atof(tempCoord);
+						printf("ua7_e: %08x\t", chunkUa7.e);
+				}
+			}
+			brlyt_4b_chunk chunkUa8;
+			setnode = mxmlFindElement(subnode, subnode, "ua8", NULL, NULL, MXML_DESCEND);
+			if (setnode != NULL)
+			{
+				mxml_node_t *valnode;
+				int dataNumber = 0;
+				for (valnode=mxmlFindElement(setnode, setnode, "data", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "data", NULL, NULL, MXML_DESCEND) )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunkUa8.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
+						//float coordGotten = atof(tempCoord);
+						printf("ua8_data: %02x\t", chunkUa8.unk[dataNumber]);
+						dataNumber+=1;
+				}
+			}
+			brlyt_10b_chunk chunkUa9;
+			setnode = mxmlFindElement(subnode, subnode, "ua9", NULL, NULL, MXML_DESCEND);
+			if (setnode != NULL)
+			{
+				mxml_node_t *valnode;
+				int dataNumber = 0;
+				for (valnode=mxmlFindElement(setnode, setnode, "data", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "data", NULL, NULL, MXML_DESCEND) )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunkUa9.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
+						//float coordGotten = atof(tempCoord);
+						printf("ua9_data: %02x\t", chunkUa9.unk[dataNumber]);
+						dataNumber+=1;
+				}
+			}
+			brlyt_4b_chunk chunkUaa;
+			setnode = mxmlFindElement(subnode, subnode, "uaa", NULL, NULL, MXML_DESCEND);
+			if (setnode != NULL)
+			{
+				mxml_node_t *valnode;
+				int dataNumber = 0;
+				for (valnode=mxmlFindElement(setnode, setnode, "data", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "data", NULL, NULL, MXML_DESCEND) )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunkUaa.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
+						//float coordGotten = atof(tempCoord);
+						printf("uaa_data: %02x\t", chunkUaa.unk[dataNumber]);
+						dataNumber+=1;
+				}
+			}
+			brlyt_4b_chunk chunkUab;
+			setnode = mxmlFindElement(subnode, subnode, "uab", NULL, NULL, MXML_DESCEND);
+			if (setnode != NULL)
+			{
+				mxml_node_t *valnode;
+				int dataNumber = 0;
+				for (valnode=mxmlFindElement(setnode, setnode, "data", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "data", NULL, NULL, MXML_DESCEND) )
+				{
+						char tempCoord[256];
+						get_value(valnode, tempCoord, 256);
+						//chunk2.vtx_colors[i] = strtoul(tempCoord, NULL, 16);
+						chunkUab.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
+						//float coordGotten = atof(tempCoord);
+						printf("uab_data: %02x\t", chunkUab.unk[dataNumber]);
+						dataNumber+=1;
+				}
+			}
+		}
 	}
 	if ( memcmp(temp, pan1, sizeof(pan1)) == 0)
 	{
@@ -2246,6 +2541,22 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 				}
 			}
 		}
+	}
+	if ( memcmp(temp, grs1, sizeof(grs1)) == 0)
+	{
+
+	}
+	if ( memcmp(temp, gre1, sizeof(gre1)) == 0)
+	{
+
+	}
+	if ( memcmp(temp, pas1, sizeof(pas1)) == 0)
+	{
+
+	}
+	if ( memcmp(temp, pae1, sizeof(pae1)) == 0)
+	{
+
 	}
 	printf("\n");
 }
