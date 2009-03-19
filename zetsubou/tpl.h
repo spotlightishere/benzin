@@ -39,6 +39,14 @@
 // CMP (S3TC compressed, 2x2 blocks of 4x4 tiles)
 #define TPL_FORMAT_CMP		14
 
+// Normal Min Filter value. (Unknown value)
+#define TPL_MIN_FILTER_NORMAL	0x00010000
+// Clamp Min Filter value? (Unknown value)
+#define TPL_MIN_FILTER_CLAMP	0x00000001
+// Normal Mag Filter value. (Unknown value)
+#define TPL_MAG_FILTER_NORMAL	0x00010000
+// Clamp Mag Filter value? (Unknown value)
+#define TPL_MAG_FILTER_CLAMP	0x00000001
 
 typedef struct texthead
 {
@@ -46,15 +54,15 @@ typedef struct texthead
 	u16 width;			// Width of the TPL image.
 	u32 format;			// Format of the TPL image. (Use #defines pl0x.)
 	u32 offs;			// Offset to actual image data.
-	u32 wrap_s;			// Wrap S?
-	u32 wrap_t;			// Wrap T?
-	u32 min;			// Min?
-	u32 mag;			// Mag?
+	u32 wrap_s;			// Wrap S.
+	u32 wrap_t;			// Wrap T.
+	u32 min;			// Min filter.
+	u32 mag;			// Mag filter.
 	f32 lod_bias;			// LOD Bias?
 	u8  edge_lod;			// Edge LOD?
 	u8  min_lod;			// Minimum LOD?
 	u8  max_lod;			// Maximum LOD?
-	u8  unpacked;			// Unpacked (Size?)
+	u8  unpacked;			// Unpacked?
 } TPL_header;
 
 typedef struct bmphead
@@ -82,5 +90,6 @@ typedef struct bmpv3infohead
 } TPL_BMPInfoHeaderV3;
 
 int TPL_ConvertToBMP(u8* tplbuf, u32 tplsize, char basename[]);
+int TPL_ConvertFromBMPs(const u32 count, char *bmps[], char outname[], u32 format);
 
 #endif //_TPL_H_
