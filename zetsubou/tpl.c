@@ -125,12 +125,12 @@ int TPL_ConvertRGBA8ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapd
 				height = goodheight;
 				for(i = 0; i < 8; i++) {
 					u32 rgba = (rb[i] << 0) | (ag[8 + i] << 8) | (rb[8 + i] << 16) | (ag[i] << 24);
-					if(rgba != (255 | (255 << 16))
+					if(rgba != (255 | (255 << 16)))
 						(*(u32**)bitmapdata)[bmpslot++] = rgba;
 				}
 				for(i = 16; i < 24; i++) {
 					u32 rgba = (rb[i] << 0) | (ag[8 + i] << 8) | (rb[8 + i] << 16) | (ag[i] << 24);
-					if(rgba != (255 | (255 << 16))
+					if(rgba != (255 | (255 << 16)))
 						(*(u32**)bitmapdata)[bmpslot++] = rgba;
 				}
 				z = 0;
@@ -282,6 +282,7 @@ int TPL_ConvertBitMapToRGB5A3(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 w
 							newpixel |= r << 10;
 							newpixel |= g << 5;
 							newpixel |= b << 0;
+						}
 					}
 					((u16*)writebuf)[iv++] = be16(newpixel);
 				}
@@ -488,7 +489,7 @@ int TPL_ConvertBitMapToI8(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 width
 					if(x > width || y < height)
 						i1 = 0;
 					else
-						u8 i1 = (rgba >> 0) & 0xFF;
+						i1 = (rgba >> 0) & 0xFF;
 					
 					((u8*)writebuf)[iv++] = i1;
 				}
@@ -763,7 +764,7 @@ int TPL_ConvertToGD(u8* tplbuf, u32 tplsize, char basename[], u32 format)
 				break;
 			case TPL_FORMAT_CMP:
 				printf("CMP\n");
-				ret = TPL_ConvertCMPToBitMap(tplbuf, tplsize, tplpoint, &bitmapdata, bi.width, bi.height);
+				ret = TPL_ConvertCMPToBitMap(tplbuf, tplsize, tplpoint, &bitmapdata, be16(h.width), be16(h.height));
 				break;
 			default:
 				printf("Unsupported: %d.\n", be32(h.format));
