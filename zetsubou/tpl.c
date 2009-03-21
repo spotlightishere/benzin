@@ -3,7 +3,9 @@
  *  Zetsubou
  *
  *  Created by Alex Marshall on 09/03/17.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
+ *  Copyright 2009 HACKERCHANNEL. All rights reserved.
+ *
+ *  Licensed under the terms of the GNU GPLv2.
  *
  */
 
@@ -518,6 +520,15 @@ int TPL_ConvertBitMapToIA8(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 widt
 	return outsz;
 }
 
+
+/* This section of code was taken from Segher's Wii.git @ http://git.infradead.org/users/segher/wii.git?a=blob_plain;f=tpl2ppm.c;hb=HEAD
+
+ Copyright 2007,2008  Segher Boessenkool  <segher@kernel.crashing.org>
+ Licensed under the terms of the GNU GPL, version 2
+ http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
+
+*/ 
+
 #define round_up(x,n) (-(-(x) & -(n)))
 
 static u16 avg(u16 w0, u16 w1, u16 c0, u16 c1)
@@ -593,6 +604,8 @@ int TPL_ConvertCMPToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapdat
 		}
 	return outsz;
 }
+
+/* End Segher's stuff. */
 
 int TPL_ConvertToGD(u8* tplbuf, u32 tplsize, char basename[], u32 format)
 {

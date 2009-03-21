@@ -2,8 +2,10 @@
  *  endian.c
  *  Zetsubou
  *
- *  Created by Alex Marshall on 09/03/16.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
+ *  Created by Alex Marshall on 09/03/17.
+ *  Copyright 2009 HACKERCHANNEL. All rights reserved.
+ *
+ *  Licensed under the terms of the GNU GPLv2.
  *
  */
 
