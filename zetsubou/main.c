@@ -17,16 +17,17 @@
 
 void bad_args(char progname[])
 {
-	printf("Invalid usage. Usage:\n\t%s r <file.tpl>\nOr:\n\t%s w <type> <file1.bmp> [file2.bmp...] <out.tpl>\n", progname, progname);
+	printf("Invalid usage. Usage:\n\t%s r[bmp|png] <file.tpl>\nOr:\n\t%s w[bmp|png] <type> <file1.bmp> [file2.bmp...] <out.tpl>\n", progname, progname);
 	exit(1);
 }
 
 int main(int argc, char *argv[])
 {
-	printf("Zetsubou v0.1. Written by SquidMan (Alex Marshall)\nRGB5A3 code was contributed by booto.\nBased off of gentpl.\n\n");
+	printf("Zetsubou v0.1. Written by SquidMan (Alex Marshall)\nFormat information from YAGCD. RGB5A3 code by booto. CMP code by segher.\nBased off of gentpl by comex.\n\n");
 	if(argc < 3)
 		bad_args(argv[0]);
 	char type = toupper(argv[1][0]);
+	char fmt = toupper(argv[1][1]);
 	if(type == 'R') {	// Read TPL.
 		if(argc != 3)
 			bad_args(argv[0]);
@@ -38,16 +39,28 @@ int main(int argc, char *argv[])
 		char *basename = (char*)calloc(strlen(argv[2]) + 1, 1);
 		int arg1strlen = strlen(argv[2]);
 		int i;
-		for(i = 0; (i < arg1strlen) && (argv[2][i] != '.'); i++) basename[i] = argv[2][i];
+		for(i = 0; (i < arg1strlen); i++) {
+			if((argv[2][i] == '.') && ((argv[2][i + 1] != '.') && (argv[2][i + 1] != '/')))
+				break;
+			basename[i] = argv[2][i];
+		}
 		fseek(fp, 0, SEEK_END);
 		u32 tplsize = ftell(fp);
 		u8* tplbuf  = (u8*)malloc(tplsize);
 		fseek(fp, 0, SEEK_SET);
 		fread(tplbuf, tplsize, 1, fp);
 		fclose(fp);
-		int ret = TPL_ConvertToBMP(tplbuf, tplsize, basename);
+		int ret;
+		int outfmt;
+		if(fmt == 'B')
+			outfmt = 0;
+		else if(fmt == 'P')
+			outfmt = 1;
+		else
+			bad_args(argv[0]);
+		ret = TPL_ConvertToGD(tplbuf, tplsize, basename, outfmt);
 		if(ret < 0) {
-			printf("Error converting to BMP.\n");
+			printf("Error converting from TPL.\n");
 			exit(1);
 		}
 	}else if(type == 'W') {	// Write TPL.
@@ -57,7 +70,6 @@ int main(int argc, char *argv[])
 		int i;
 		for(i = 0; i < argc - 4; i++)
 			names[i] = argv[i + 3];
-		printf("%d\n", argc);
 		int format;
 		char formatstr[256];
 		memset(formatstr, 0, 256);
@@ -73,9 +85,17 @@ int main(int argc, char *argv[])
 		else if(strcmp(formatstr, "CI8") == 0) format = TPL_FORMAT_CI8;
 		else if(strcmp(formatstr, "CI14X2") == 0) format = TPL_FORMAT_CI14X2;
 		else if(strcmp(formatstr, "CMP") == 0) format = TPL_FORMAT_CMP;
-		int ret = TPL_ConvertFromBMPs(argc - 4, names, argv[argc - 1], format);
+		int ret;
+		int outfmt;
+		if(fmt == 'B')
+			outfmt = 0;
+		else if(fmt == 'P')
+			outfmt = 1;
+		else
+			bad_args(argv[0]);
+		ret = TPL_ConvertFromGDs(argc - 4, names, argv[argc - 1], format, outfmt);
 		if(ret < 0) {
-			printf("Error converting BMPs.\n");
+			printf("Error converting to TPL.\n");
 			exit(1);
 		}
 	}
