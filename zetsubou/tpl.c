@@ -17,6 +17,8 @@
 #include "tpl.h"
 #include "endian.h"
 
+#define align(x, y) ((x) + ((x) % (y)))
+
 int TPL_ConvertRGB565ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapdata, u32 width, u32 height)
 {
 	s32 x, y;
@@ -56,11 +58,11 @@ int TPL_ConvertBitMapToRGB565(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 w
 	u8* subbitmapdata = bitmapdata;
 	if(subbitmapdata == NULL)
 		return -1;
-	*tplbuf = (u8*)calloc(width * height, 2);
+	*tplbuf = (u8*)calloc(align(width, 4) * align(height, 4), 2);
 	if(*tplbuf == NULL)
 		return -1;
 	u8* writebuf = *tplbuf;
-	u32 outsz = width * height * 2;
+	u32 outsz = align(width, 4) * align(height, 4) * 2;
 	for(iv = 0, y1 = 0; y1 < height; y1 += 4) {
 		for(x1 = 0; x1 < width; x1 += 4) {
 			for(y = y1; y < (y1 + 4); y++) {
@@ -147,12 +149,12 @@ int TPL_ConvertBitMapToRGBA8(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 wi
 	s32 x1, y1;
 	u32 iv;
 	u8* subbitmapdata = bitmapdata;
-	*tplbuf = (u8*)calloc(width * height, 4);
+	*tplbuf = (u8*)calloc(align(width, 4) * align(height, 4), 4);
 	if(*tplbuf == NULL)
 		return -1;
 	u32 i;
 	u8* writebuf = *tplbuf;
-	u32 outsz = width * height * 4;
+	u32 outsz = align(width, 4) * align(height, 4) * 4;
 	i = 0;
 	int z = 0;
 	u32 rgba[32];
@@ -244,11 +246,11 @@ int TPL_ConvertBitMapToRGB5A3(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 w
 	u8* subbitmapdata = bitmapdata;
 	if(subbitmapdata == NULL)
 		return -1;
-	*tplbuf = (u8*)calloc(width * height, 2);
+	*tplbuf = (u8*)calloc(align(width, 4) * align(height, 4), 2);
 	if(*tplbuf == NULL)
 		return -1;
 	u8* writebuf = *tplbuf;
-	u32 outsz = width * height * 2;
+	u32 outsz = align(width, 4) * align(height, 4) * 2;
 	for(iv = 0, y1 = 0; y1 < height; y1 += 4) {
 		for(x1 = 0; x1 < width; x1 += 4) {
 			for(y = y1; y < (y1 + 4); y++) {
@@ -303,7 +305,7 @@ int TPL_ConvertI4ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapdata
 	*bitmapdata = (u8*)calloc(width * height, 8);
 	if(*bitmapdata == NULL)
 		return -1;
-	u32 outsz = width * height * 4;
+	u32 outsz = align(width, 4) * align(height, 4) * 4;
 	for(iv = 0, y1 = 0; y1 < height; y1 += 8) {
 		for(x1 = 0; x1 < width; x1 += 8) {
 			for(y = y1; y < (y1 + 8); y++) {
@@ -338,11 +340,11 @@ int TPL_ConvertBitMapToI4(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 width
 	u8* subbitmapdata = bitmapdata;
 	if(subbitmapdata == NULL)
 		return -1;
-	*tplbuf = (u8*)calloc(width * height / 2, 1);
+	*tplbuf = (u8*)calloc(align(width, 4) * align(height, 4) / 2, 1);
 	if(*tplbuf == NULL)
 		return -1;
 	u8* writebuf = *tplbuf;
-	u32 outsz = width * height / 2;
+	u32 outsz = align(width, 4) * align(height, 4) / 2;
 	for(iv = 0, y1 = 0; y1 < height; y1 += 8) {
 		for(x1 = 0; x1 < width; x1 += 8) {
 			for(y = y1; y < (y1 + 8); y++) {
@@ -407,11 +409,11 @@ int TPL_ConvertBitMapToIA4(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 widt
 	u8* subbitmapdata = bitmapdata;
 	if(subbitmapdata == NULL)
 		return -1;
-	*tplbuf = (u8*)calloc(width * height, 1);
+	*tplbuf = (u8*)calloc(align(width, 4) * align(height, 4), 1);
 	if(*tplbuf == NULL)
 		return -1;
 	u8* writebuf = *tplbuf;
-	u32 outsz = width * height;
+	u32 outsz = align(width, 4) * align(height, 4);
 	for(iv = 0, y1 = 0; y1 < height; y1 += 4) {
 		for(x1 = 0; x1 < width; x1 += 8) {
 			for(y = y1; y < (y1 + 4); y++) {
@@ -475,11 +477,11 @@ int TPL_ConvertBitMapToI8(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 width
 	u8* subbitmapdata = bitmapdata;
 	if(subbitmapdata == NULL)
 		return -1;
-	*tplbuf = (u8*)calloc(width * height, 1);
+	*tplbuf = (u8*)calloc(align(width, 4) * align(height, 4), 1);
 	if(*tplbuf == NULL)
 		return -1;
 	u8* writebuf = *tplbuf;
-	u32 outsz = width * height;
+	u32 outsz = align(width, 4) * align(height, 4);
 	for(iv = 0, y1 = 0; y1 < height; y1 += 4) {
 		for(x1 = 0; x1 < width; x1 += 8) {
 			for(y = y1; y < (y1 + 4); y++) {
@@ -539,11 +541,11 @@ int TPL_ConvertBitMapToIA8(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 widt
 	u8* subbitmapdata = bitmapdata;
 	if(subbitmapdata == NULL)
 		return -1;
-	*tplbuf = (u8*)calloc(width * height, 2);
+	*tplbuf = (u8*)calloc(align(width, 4) * align(height, 4), 2);
 	if(*tplbuf == NULL)
 		return -1;
 	u8* writebuf = *tplbuf;
-	u32 outsz = width * height * 2;
+	u32 outsz = align(width, 4) * align(height, 4) * 2;
 	for(iv = 0, y1 = 0; y1 < height; y1 += 4) {
 		for(x1 = 0; x1 < width; x1 += 4) {
 			for(y = y1; y < (y1 + 4); y++) {
