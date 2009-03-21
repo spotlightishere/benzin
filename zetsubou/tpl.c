@@ -31,7 +31,7 @@ int TPL_ConvertRGB565ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmap
 		for(x1 = 0; x1 < width; x1 += 4) {
 			for(y = y1; y < (y1 + 4); y++) {
 				for(x = x1; x < (x1 + 4); x++) {
-					if(x > width || y > height)
+					if((x >= width) || (y >= height))
 						continue;
 					u16 oldpixel = *(u16*)(tplbuf + (tplpoint + ((iv++) * 2)));
 					oldpixel = be16(oldpixel);
@@ -66,7 +66,7 @@ int TPL_ConvertBitMapToRGB565(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 w
 			for(y = y1; y < (y1 + 4); y++) {
 				for(x = x1; x < (x1 + 4); x++) {
 					u16 newpixel = 0;
-					if(x > width || y > height)
+					if((x >= width) || (y >= height))
 						newpixel = 0;
 					else {
 						u32 rgba = ((u32*)subbitmapdata)[x + (y * width)];
@@ -110,7 +110,7 @@ int TPL_ConvertRGBA8ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapd
 					height = goodheight;
 					fflush(stdout);
 					u16 oldpixel = *(u16*)(tplbuf + (tplpoint + ((x + (y * width)) * 2)));
-					if(x > width || y > height) {
+					if((x >= width) || (y >= height)) {
 						ag[i] = 0;
 						rb[i++] = 255;
 					}else{
@@ -164,7 +164,7 @@ int TPL_ConvertBitMapToRGBA8(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 wi
 		for(x1 = 0; x1 < width; x1 += 4) {
 			for(y = y1; y < (y1 + 4); y++) {
 				for(x = x1; x < (x1 + 4); x++) {
-					if(x > width || y > height)
+					if((x >= width) || (y >= height))
 						rgba[z] = 0;
 					else
 						rgba[z] = ((u32*)subbitmapdata)[x + (y * width)];
@@ -209,7 +209,7 @@ int TPL_ConvertRGB5A3ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmap
 			for(y = y1; y < (y1 + 4); y++) {
 				for(x = x1; x < (x1 + 4); x++) {
 					u16 oldpixel = *(u16*)(tplbuf + (tplpoint + ((iv++) * 2)));
-					if(x > width || y > height)
+					if((x >= width) || (y >= height))
 						continue;
 					oldpixel = be16(oldpixel);
 					if(oldpixel & (1 << 15)) {
@@ -254,7 +254,7 @@ int TPL_ConvertBitMapToRGB5A3(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 w
 			for(y = y1; y < (y1 + 4); y++) {
 				for(x = x1; x < (x1 + 4); x++) {
 					u16 newpixel = 0;
-					if(x > width || y > height)
+					if((x >= width) || (y >= height))
 						newpixel = 0;
 					else {
 						u32 rgba = ((u32*)subbitmapdata)[x + (y * width)];
@@ -308,7 +308,7 @@ int TPL_ConvertI4ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapdata
 		for(x1 = 0; x1 < width; x1 += 8) {
 			for(y = y1; y < (y1 + 8); y++) {
 				for(x = x1; x < (x1 + 8); x += 2, iv++) {
-					if(x > width || y > height)
+					if((x >= width) || (y >= height))
 						continue;
 					u8 oldpixel = tplbuf[tplpoint + iv];
 					u8 b = (oldpixel >> 4) * 255 / 15;
@@ -348,7 +348,7 @@ int TPL_ConvertBitMapToI4(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 width
 			for(y = y1; y < (y1 + 8); y++) {
 				for(x = x1; x < (x1 + 8); x += 2) {
 					u8 newpixel;
-					if(x > width || y > height)
+					if((x >= width) || (y >= height))
 						newpixel = 0;
 					else {
 						u32 rgba = ((u32*)subbitmapdata)[x + (y * width)];
@@ -384,7 +384,7 @@ int TPL_ConvertIA4ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapdat
 			for(y = y1; y < (y1 + 4); y++) {
 				for(x = x1; x < (x1 + 8); x++) {
 					u8 oldpixel = *(u8*)(tplbuf + (tplpoint + ((iv++))));
-					if(x > width || y > height)
+					if((x >= width) || (y >= height))
 						continue;
 					u8 b = ((oldpixel >> 4)  * 255) / 15;
 					u8 g = ((oldpixel >> 4)  * 255) / 15;
@@ -417,7 +417,7 @@ int TPL_ConvertBitMapToIA4(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 widt
 			for(y = y1; y < (y1 + 4); y++) {
 				for(x = x1; x < (x1 + 8); x++) {
 					u8 newpixel;
-					if(x > width || y < height)
+					if((x >= width) || (y >= height))
 						newpixel = 0;
 					else {
 						u32 rgba = ((u32*)subbitmapdata)[x + (y * width)];
@@ -452,7 +452,7 @@ int TPL_ConvertI8ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapdata
 			for(y = y1; y < (y1 + 4); y++) {
 				for(x = x1; x < (x1 + 8); x++) {
 					u8 oldpixel = *(u8*)(tplbuf + (tplpoint + ((iv++) * 1)));
-					if(x > width || y > height)
+					if((x >= width) || (y >= height))
 						continue;
 					u8 b = oldpixel;
 					u8 g = oldpixel;
@@ -486,7 +486,7 @@ int TPL_ConvertBitMapToI8(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 width
 				for(x = x1; x < (x1 + 8); x++) {
 					u32 rgba = ((u32*)subbitmapdata)[x + (y * width)];
 					u8 i1;
-					if(x > width || y < height)
+					if((x >= width) || (y >= height))
 						i1 = 0;
 					else
 						i1 = (rgba >> 0) & 0xFF;
@@ -516,7 +516,7 @@ int TPL_ConvertIA8ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapdat
 			for(y = y1; y < (y1 + 4); y++) {
 				for(x = x1; x < (x1 + 4); x++) {
 					u16 oldpixel = *(u16*)(tplbuf + (tplpoint + ((iv++) * 2)));
-					if(x > width || y > height)
+					if((x >= width) || (y >= height))
 						continue;
 					u8 b = oldpixel >> 8;
 					u8 g = oldpixel >> 8;
@@ -549,7 +549,7 @@ int TPL_ConvertBitMapToIA8(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 widt
 			for(y = y1; y < (y1 + 4); y++) {
 				for(x = x1; x < (x1 + 4); x++) {
 					u16 newpixel;
-					if(x > width || y < height)
+					if((x >= width) || (y >= height))
 						newpixel = 0;
 					else{
 						u32 rgba = ((u32*)subbitmapdata)[x + (y * width)];
