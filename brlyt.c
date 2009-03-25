@@ -96,6 +96,16 @@ float float_swap_bytes(float float1)
 	return *newFloat;
 }
 
+u16 short_swap_bytes(u16 short1)
+{
+	unsigned char* short1c; short1c = (unsigned char*)&short1;
+	unsigned char charTemp = 0x00;
+	charTemp = short1c[0]; short1c[0] = short1c[1]; short1c[1] = charTemp;
+
+	short *newShort; newShort = (short*)short1c;
+	return *newShort;
+}
+
 unsigned int bit_extract(unsigned int num, unsigned int start, unsigned int end)
 {
 	if (end == 100) end = start;
@@ -204,7 +214,7 @@ void PrintBRLYTEntry_grp1(brlyt_entry entry, u8* brlyt_file)
 	int offset;
 	offset = 20;
 	int n = 0;
-	for (n;n<be16(data.numsubs);n++)
+	for (n;n<short_swap_bytes(data.numsubs);n++)
 	{
 		char sub[16];
 		BRLYT_ReadDataFromMemory(sub, brlyt_file, sizeof(sub));
@@ -238,7 +248,7 @@ void PrintBRLYTEntry_txl1(brlyt_entry entry, u8* brlyt_file)
 	pos += data.offs;
 	int bpos = pos;
 	int n = 0;
-	for (n;n<be16(data.num);n++)
+	for (n;n<short_swap_bytes(data.num);n++)
 	{
                 brlyt_offsunk_chunk data2;
                 BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_offsunk_chunk));
@@ -296,7 +306,7 @@ void PrintBRLYTEntry_fnl1(brlyt_entry entry, u8* brlyt_file)
         pos += data.offs;
         int bpos = pos;
         int n = 0;
-	for (n;n<be16(data.num);n++)
+	for (n;n<short_swap_bytes(data.num);n++)
         {
                 brlyt_offsunk_chunk data2;
                 BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_offsunk_chunk));
@@ -530,7 +540,7 @@ void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file)
 	printf("                num_texcoords: %08x\n", data2.num_texcoords);
 	printf("                padding: %08x\n", data2.padding);
 #else
-	printf("		<tpl name=\"%s\"></tpl>\n", getMaterial(be16(data2.mat_off)));
+	printf("		<tpl name=\"%s\"></tpl>\n", getMaterial(short_swap_bytes(data2.mat_off)));
 	printf("		<colors>\n");
 	printf("			<vtx>0x%08X</vtx>\n", be32(data2.vtx_colors[0]));
 	printf("			<vtx>0x%08X</vtx>\n", be32(data2.vtx_colors[1]));
@@ -622,8 +632,8 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file)
         printf("                char_space: %f\n", float_swap_bytes(data2.char_space));
         printf("                line_space: %f\n", float_swap_bytes(data2.line_space));
 #else
-	printf("		<length>%04x-%04x</length>\n", be16(data2.len1), be16(data2.len2));
-	printf("		<font index=\"%d\">\n", be16(data2.font_idx));
+	printf("		<length>%04x-%04x</length>\n", short_swap_bytes(data2.len1), short_swap_bytes(data2.len2));
+	printf("		<font index=\"%d\">\n", short_swap_bytes(data2.font_idx));
 	printf("			<xsize>%f</xsize>\n", float_swap_bytes(data2.font_size_x));
 	printf("			<ysize>%f</ysize>\n", float_swap_bytes(data2.font_size_y));
 	printf("			<xsize>%f</xsize>\n", float_swap_bytes(data2.font_size_x));
@@ -645,10 +655,10 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 	printf("                num: %08x\n", be16(data.num));
 	printf("                offs: %08x\n", be16(data.offs));
 #else
-	printf("type=\"%c%c%c%c\" count=\"%d\">\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3], be16(data.num));
+	printf("type=\"%c%c%c%c\" count=\"%d\">\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3], short_swap_bytes(data.num));
 #endif //OLD_BRLYT_OUTSTYLE
 	int n = 0;
-	for (n;n<be16(data.num);n++)
+	for (n;n<short_swap_bytes(data.num);n++)
 	{
 		int offset;
 		BRLYT_ReadDataFromMemory(&offset, brlyt_file, sizeof(offset));
@@ -670,22 +680,22 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 #else
 		printf("		<entries name=\"%s\">\n", data3.name);
 		printf("			<colors>\n");
-		printf("				<tev>%#x</tev>\n", be16(data3.tev_color[0]));
-		printf("				<tev>%#x</tev>\n", be16(data3.tev_color[1]));
-		printf("				<tev>%#x</tev>\n", be16(data3.tev_color[2]));
-		printf("				<tev>%#x</tev>\n", be16(data3.tev_color[3]));
-		printf("				<unk>%#x</unk>\n", be16(data3.unk_color[0]));
-		printf("				<unk>%#x</unk>\n", be16(data3.unk_color[1]));
-		printf("				<unk>%#x</unk>\n", be16(data3.unk_color[2]));
-		printf("				<unk>%#x</unk>\n", be16(data3.unk_color[3]));
-		printf("				<unk2>%#x</unk2>\n", be16(data3.unk_color_2[0]));
-		printf("				<unk2>%#x</unk2>\n", be16(data3.unk_color_2[1]));
-		printf("				<unk2>%#x</unk2>\n", be16(data3.unk_color_2[2]));
-		printf("				<unk2>%#x</unk2>\n", be16(data3.unk_color_2[3]));
-		printf("				<tev_k>%#x</tev_k>\n", be16(data3.tev_kcolor[0]));
-		printf("				<tev_k>%#x</tev_k>\n", be16(data3.tev_kcolor[1]));
-		printf("				<tev_k>%#x</tev_k>\n", be16(data3.tev_kcolor[2]));
-		printf("				<tev_k>%#x</tev_k>\n", be16(data3.tev_kcolor[3]));
+		printf("				<tev>%#x</tev>\n", short_swap_bytes(data3.tev_color[0]));
+		printf("				<tev>%#x</tev>\n", short_swap_bytes(data3.tev_color[1]));
+		printf("				<tev>%#x</tev>\n", short_swap_bytes(data3.tev_color[2]));
+		printf("				<tev>%#x</tev>\n", short_swap_bytes(data3.tev_color[3]));
+		printf("				<unk>%#x</unk>\n", short_swap_bytes(data3.unk_color[0]));
+		printf("				<unk>%#x</unk>\n", short_swap_bytes(data3.unk_color[1]));
+		printf("				<unk>%#x</unk>\n", short_swap_bytes(data3.unk_color[2]));
+		printf("				<unk>%#x</unk>\n", short_swap_bytes(data3.unk_color[3]));
+		printf("				<unk2>%#x</unk2>\n", short_swap_bytes(data3.unk_color_2[0]));
+		printf("				<unk2>%#x</unk2>\n", short_swap_bytes(data3.unk_color_2[1]));
+		printf("				<unk2>%#x</unk2>\n", short_swap_bytes(data3.unk_color_2[2]));
+		printf("				<unk2>%#x</unk2>\n", short_swap_bytes(data3.unk_color_2[3]));
+		printf("				<tev_k>%#x</tev_k>\n", short_swap_bytes(data3.tev_kcolor[0]));
+		printf("				<tev_k>%#x</tev_k>\n", short_swap_bytes(data3.tev_kcolor[1]));
+		printf("				<tev_k>%#x</tev_k>\n", short_swap_bytes(data3.tev_kcolor[2]));
+		printf("				<tev_k>%#x</tev_k>\n", short_swap_bytes(data3.tev_kcolor[3]));
 		printf("			</colors>\n");
 		printf("			<flags>%08x</flags>\n", be32(data3.flags));
 #endif //OLD_BRLYT_OUTSTYLE
@@ -694,7 +704,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 		{
 			brlyt_texref_chunk data4;
 			BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_texref_chunk));
-			int tplOffset = be16(data4.tex_offs);
+			int tplOffset = short_swap_bytes(data4.tex_offs);
 #ifdef OLD_BRLYT_OUTSTYLE
 			printf("                texoffs: %08x\n", be16(data4.tex_offs));
 			printf("                wrap_s: %08x\n", data4.wrap_s);
@@ -1032,7 +1042,7 @@ void parse_brlyt(char *filename)
 	BRLYT_ReadDataFromMemory(&header, brlyt_file, sizeof(brlyt_header));
 	BRLYT_CheckHeaderSanity(header, file_size);
 	brlyt_entry *entries;
-	BRLYT_fileoffset = be16(header.lyt_offset);
+	BRLYT_fileoffset = short_swap_bytes(header.lyt_offset);
 	brlyt_entry_header tempentry;
 	int i;
 	dbgprintf("curr %08x max %08x\n", BRLYT_fileoffset, file_size);
@@ -1048,7 +1058,7 @@ void parse_brlyt(char *filename)
 		printf("Couldn't allocate for entries!\n");
 		exit(1);
 	}
-	BRLYT_fileoffset = be16(header.lyt_offset);
+	BRLYT_fileoffset = short_swap_bytes(header.lyt_offset);
 	for(i = 0; i < entrycount; i++) {
 		dbgprintf("&(entries[i]) = %08x\n", &(entries[i]));
 		BRLYT_ReadDataFromMemoryX(&tempentry, brlyt_file, sizeof(brlyt_entry_header));
@@ -1066,8 +1076,8 @@ void parse_brlyt(char *filename)
 	printf("	Unk1: %08x\n", be32(header.unk1));
 	printf("	Filesize: %lu\n", be32(header.filesize));
 	printf("		%s real file size!\n", be32(header.filesize) == file_size ? "Matches" : "Does not match");
-	printf("	Offset to lyt1: %04x\n", be16(header.lyt_offset));
-	printf("	Unk2: %04x\n", be16(header.unk2));
+	printf("	Offset to lyt1: %04x\n", short_swap_bytes(header.lyt_offset));
+	printf("	Unk2: %04x\n", short_swap_bytes(header.unk2));
 	printf("\nBRLYT Entries:");
 #else
 	printf("<?xml version=\"1.0\"?>\n" \
@@ -1357,7 +1367,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 					lengthOfNames += 1;
 				}
 			}
-			chunk.num = be16(numEntries);
+			chunk.num = short_swap_bytes(numEntries);
 			chunk.offs = 0;
 			fseek(fp, numoffsOffset, SEEK_SET);
 			fwrite(&chunk, sizeof(chunk), 1, fp);
@@ -1435,7 +1445,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 					lengthOfNames += 1;
 				}
 			}
-			chunk.num = be16(numEntries);
+			chunk.num = short_swap_bytes(numEntries);
 			chunk.offs = 0;
 			fseek(fp, numoffsOffset, SEEK_SET);
 			fwrite(&chunk, sizeof(chunk), 1, fp);
@@ -1472,7 +1482,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 		for(subnode=mxmlFindElement(node, node, "entries", NULL, NULL, MXML_DESCEND);subnode!=NULL;subnode=mxmlFindElement(subnode, node, "entries", NULL, NULL, MXML_DESCEND))
 			numberOfEntries++;
 
-		numchunk.num = be16(numberOfEntries);
+		numchunk.num = short_swap_bytes(numberOfEntries);
 		numchunk.offs = 0;
 		fwrite(&numchunk, sizeof(numchunk), 1, fp);
 		*fileOffset = *fileOffset + sizeof(numchunk);
@@ -1521,7 +1531,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 						
 					chunk.tev_color[colorNumber] = strtoul(tempCoord, NULL, 16);
 
-					chunk.tev_color[colorNumber] = be16(chunk.tev_color[colorNumber]);
+					chunk.tev_color[colorNumber] = short_swap_bytes(chunk.tev_color[colorNumber]);
 
 					colorNumber+=1;
 				}
@@ -1533,7 +1543,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 					
 					chunk.unk_color[colorNumber] = strtoul(tempCoord, NULL, 16);
 
-					chunk.unk_color[colorNumber] = be16(chunk.unk_color[colorNumber]);
+					chunk.unk_color[colorNumber] = short_swap_bytes(chunk.unk_color[colorNumber]);
 
 					colorNumber+=1;
 				}
@@ -1545,7 +1555,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 						
 					chunk.unk_color_2[colorNumber] = strtoul(tempCoord, NULL, 16);
 
-					chunk.unk_color_2[colorNumber] = be16(chunk.unk_color_2[colorNumber]);
+					chunk.unk_color_2[colorNumber] = short_swap_bytes(chunk.unk_color_2[colorNumber]);
 
 					colorNumber+=1;
 				}
@@ -1584,7 +1594,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 				printf("No name attribute found!\nQuitting!\n");
 					exit(1);
 				}
-				chunkTexRef.tex_offs = be16(findOffset(temp));
+				chunkTexRef.tex_offs = short_swap_bytes(findOffset(temp));
 
 				valnode=mxmlFindElement(setnode, setnode, "wrap_s", NULL, NULL, MXML_DESCEND);
 
@@ -2354,7 +2364,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 				exit(1);
 			}
 			chunk2.font_idx = atoi(temp);
-			chunk2.font_idx = be16(chunk2.font_idx);
+			chunk2.font_idx = short_swap_bytes(chunk2.font_idx);
 
 			mxml_node_t *valnode;
 			valnode = mxmlFindElement(subnode, subnode, "xsize", NULL, NULL, MXML_DESCEND);
@@ -2393,9 +2403,9 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 			char tempCoord[256];
 			get_value(subnode, tempCoord, 256);
 			chunk2.len1 = strtoul(tempCoord, NULL, 16);
-			chunk2.len1 = be16(chunk2.len1);
+			chunk2.len1 = short_swap_bytes(chunk2.len1);
 			chunk2.len2 = strtoul(tempCoord+5, NULL, 16);
-			chunk2.len2 = be16(chunk2.len2);
+			chunk2.len2 = short_swap_bytes(chunk2.len2);
 		}
 		subnode = mxmlFindElement(node, node, "color", NULL, NULL, MXML_DESCEND);
 		if (subnode != NULL)
@@ -2545,7 +2555,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 				printf("No name attribute found!\nQuitting!\n");
 				exit(1);
 			}
-			chunk2.mat_off = be16(findOffset(temp));
+			chunk2.mat_off = short_swap_bytes(findOffset(temp));
 		}
 		subnode = mxmlFindElement(node, node, "colors", NULL, NULL, MXML_DESCEND);
 		if (subnode != NULL)
@@ -2638,7 +2648,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 				}
 			}
 		}
-		chunk.numsubs = be16(numSubs);
+		chunk.numsubs = short_swap_bytes(numSubs);
 		fwrite(&chunk, sizeof(chunk), 1, fp);
 		*fileOffset = *fileOffset + sizeof(chunk);
 		fwrite(subs, sizeof(char) * subsLength, 1, fp);
@@ -2674,8 +2684,8 @@ void WriteBRLYTHeader(brlyt_header rlythead, FILE* fp)
 	writehead.magic[3] = rlythead.magic[3];
 	writehead.unk1 = be32(rlythead.unk1);
 	writehead.filesize = be32(rlythead.filesize);
-	writehead.lyt_offset = be16(rlythead.lyt_offset);
-	writehead.unk2 = be16(rlythead.unk2);
+	writehead.lyt_offset = short_swap_bytes(rlythead.lyt_offset);
+	writehead.unk2 = short_swap_bytes(rlythead.unk2);
 
 	fwrite(&writehead, sizeof(brlyt_header), 1, fp);
 }
