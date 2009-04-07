@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <GD.h>
+#include <gd.h>
 
 #include "tpl.h"
 #include "endian.h"
@@ -781,10 +781,10 @@ int TPL_ConvertToGD(u8* tplbuf, u32 tplsize, char basename[], u32 format)
 			for(x = 0; x < be16(h.width); x++) {
 				u32 rgba = ((u32*)bitmapdata)[x + (y * be16(h.width))];
 				rgba = be32(rgba);
-				u8 r = (rgba >> 0)  & 0xFF;
-				u8 g = (rgba >> 8)  & 0xFF;
-				u8 b = (rgba >> 16) & 0xFF;
-				u8 a = 254 - 2*((rgba >> 24) & 0xFF);
+				u8 r = (rgba >> 8)  & 0xFF;
+				u8 g = (rgba >> 16)  & 0xFF;
+				u8 b = (rgba >> 24) & 0xFF;
+				u8 a = 254 - 2*((rgba >> 0) & 0xFF);
 				if(a == 254) a++;
 				int clr = gdTrueColorAlpha(r, g, b, a);
 				gdImageSetPixel(im, x, y, clr);
@@ -873,7 +873,7 @@ int TPL_ConvertFromGDs(const u32 count, char *gds[], char outname[], u32 format,
 				u8 r = (u8)gdImageRed(im, p);
 				u8 g = (u8)gdImageGreen(im, p);
 				u8 b = (u8)gdImageBlue(im, p);
-				u32 rgba = (r << 0) | (g << 8) | (b << 16) | (a << 24);
+				u32 rgba = (r << 8) | (g << 16) | (b << 24) | (a << 0);
 				rgba = be32(rgba);
 				((u32*)bitmapdata)[x + (y * width)] = rgba;
 			}
