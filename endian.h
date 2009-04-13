@@ -11,6 +11,10 @@ u16 be16(u16 x);
 
 u32 be32(u32 x);
 
+u16 short_swap_bytes(u16 short1);
+
+u32 int_swap_bytes(u32 int1);
+
 // __int64 for MSVC, "long long" for gcc
 u64 be64(u64 x);
 

@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mxml.h>
+#include <wchar.h>
 
 #include "general.h"
 #include "types.h"
@@ -47,6 +48,9 @@ static size_t BRLYT_fileoffset = 0;
 char *materials;
 int numberOfMaterials;
 int lengthOfMaterials;
+char *textures;
+int numberOfTextures;
+int lengthOfTextures;
 
 static int FourCCsMatch(fourcc cc1, fourcc cc2)
 {
@@ -96,15 +100,17 @@ float float_swap_bytes(float float1)
 	return *newFloat;
 }
 
+/*
 u16 short_swap_bytes(u16 short1)
 {
 	unsigned char* short1c; short1c = (unsigned char*)&short1;
 	unsigned char charTemp = 0x00;
 	charTemp = short1c[0]; short1c[0] = short1c[1]; short1c[1] = charTemp;
 
-	short *newShort; newShort = (short*)short1c;
+	unsigned short *newShort; newShort = (unsigned short*)short1c;
 	return *newShort;
 }
+*/
 
 unsigned int bit_extract(unsigned int num, unsigned int start, unsigned int end)
 {
@@ -126,12 +132,13 @@ unsigned int bit_extract(unsigned int num, unsigned int start, unsigned int end)
 	{
 		secondMask *=2;
 	}
-	mask = firstMask = secondMask;
+	secondMask -= 1;
+	mask = firstMask - secondMask;
 	int ret = (num & mask) >> (31 - end);
 	return ret;
 }
 
-char* getMaterial(int offset)
+char* getMaterial(u16 offset)
 {
 
 	if (offset == 0) return materials;
@@ -140,12 +147,28 @@ char* getMaterial(int offset)
 	if (offset > 1)
 	{
 		int n = 1;
-		for (n; n<offset;n++) mat = mat + strlen(mat) + 1;
+		for (n; n<offset;n++)
+			mat = mat + strlen(mat) + 1;
 	}
 	return mat;
 }
 
-u16 findOffset(char *mats)
+char* getTexture(u16 offset)
+{
+
+        if (offset == 0) return textures;
+        char *tex = textures + strlen(textures) + 1;
+
+        if (offset > 1)
+        {
+                int n = 1;
+                for (n; n<offset;n++)
+                        tex = tex + strlen(tex) + 1;
+        }
+        return tex;
+}
+
+u16 findMatOffset(char *mats)
 {
 	int isEqual = 1;
 	char* mat = materials;
@@ -157,6 +180,47 @@ u16 findOffset(char *mats)
 		mat = mat + strlen(mat) + 1;
 	}
 	return i;
+}
+
+u16 findTexOffset(char *tex)
+{
+        int isEqual = 1;
+        char* texs = textures;
+        int i;
+        for (i = 0; isEqual != 0; )
+        {
+                isEqual = strcmp(tex, texs);
+                if (isEqual != 0) i++;
+                texs = texs + strlen(texs) + 1;
+        }
+        return i;
+}
+
+void ASCIIfromUnicode(unsigned char* bufferOut, unsigned char* bufferIn, u32 size)
+{
+	unsigned char tempBuffer;
+	unsigned char charOne[2] = { 0,0 };
+	unsigned char charTwo[2] = { 0,0 };
+	int i;
+	for (i=0;i<size;i++)
+	{
+		charOne[0] = bufferIn[(i*2)+0];
+		charTwo[0] = bufferIn[(i*2)+1];
+		tempBuffer = (strtoul(charOne, NULL, 16)*16) + strtoul(charTwo, NULL, 16);
+		//bufferOut[i] = strtoul(tempBuffer, NULL, 16);
+//		if (tempBuffer[0] != 0x30)
+//		{
+			bufferOut[i] = tempBuffer;
+//		} else {
+//			bufferOut[i] = 0x00;
+//		}
+	}
+	return;
+}
+
+char* getUnicodeFromASCII(char* buffer)
+{
+	return buffer;
 }
 
 int BRLYT_ReadEntries(u8* brlyt_file, size_t file_size, brlyt_header header, brlyt_entry* entries)
@@ -221,7 +285,7 @@ void PrintBRLYTEntry_grp1(brlyt_entry entry, u8* brlyt_file)
 #ifdef OLD_BRLYT_OUTSTYLE
 		printf("                sub: %s\n", sub);
 #else
-		printf("		<sub>%s</sub>\n", sub);
+		printf("			<sub>%s</sub>\n", sub);
 #endif //OLD_BRLYT_OUTSTYLE
 		offset += 16;
 	}
@@ -275,13 +339,13 @@ void PrintBRLYTEntry_txl1(brlyt_entry entry, u8* brlyt_file)
 #endif //OLD_BRLYT_OUTSTYLE
                 BRLYT_fileoffset = tempLocation;
 		int oldsize = sizeof(name);
-		dbgprintf("size of materials before: %08x\n", sizeof(materials));
-		int newSize = lengthOfMaterials+sizeof(name);
-		materials = realloc(materials, newSize);
-		numberOfMaterials += 1;
-		memcpy(materials+lengthOfMaterials, name, sizeof(name));
-		dbgprintf("mats: %s\tnamsize: %08x\tmatsize: %08x\tnewsize: %08x\n", materials+lengthOfMaterials, sizeof(name), lengthOfMaterials, newSize);
-		lengthOfMaterials = newSize;
+		dbgprintf("size of textures before: %08x\n", sizeof(textures));
+		int newSize = lengthOfTextures+sizeof(name);
+		textures = realloc(textures, newSize);
+		numberOfTextures += 1;
+		memcpy(textures+lengthOfTextures, name, sizeof(name));
+		dbgprintf("tex: %s\tnamsize: %08x\ttexsize: %08x\tnewsize: %08x\n", textures+lengthOfMaterials, sizeof(name), lengthOfTextures, newSize);
+		lengthOfTextures = newSize;
 	}
 #ifndef OLD_BRLYT_OUTSTYLE
 	printf("		</entries>\n");
@@ -351,9 +415,9 @@ void PrintBRLYTEntry_pan1(brlyt_entry entry, u8* brlyt_file)
         printf("                alpha: %08x\n", data.alpha);
         printf("                alpha2: %08x\n", data.alpha2);
         printf("                name: %s\n", data.name);
-        printf("                x: %f\n", float_swap_bytes(data.x));
-        printf("                y: %f\n", float_swap_bytes(data.y));
-        printf("                z: %f\n", float_swap_bytes(data.z));
+        printf("                x: %.16f\n", float_swap_bytes(data.x));
+        printf("                y: %.16f\n", float_swap_bytes(data.y));
+        printf("                z: %.16f\n", float_swap_bytes(data.z));
         printf("                flip_x: %f\n", float_swap_bytes(data.flip_x));
         printf("                flip_y: %f\n", float_swap_bytes(data.flip_y));
         printf("                angle: %f\n", float_swap_bytes(data.angle));
@@ -366,9 +430,9 @@ void PrintBRLYTEntry_pan1(brlyt_entry entry, u8* brlyt_file)
 	printf("		<flags>%08x-%08x</flags>\n", data.flag1, data.flag2);
 	printf("		<alpha>%08x-%08x</alpha>\n", data.alpha, data.alpha2);
 	printf("		<coords>\n");
-	printf("			<x>%f</x>\n", float_swap_bytes(data.x));
-	printf("			<y>%f</y>\n", float_swap_bytes(data.y));
-	printf("			<z>%f</z>\n", float_swap_bytes(data.z));
+	printf("			<x>%.16f</x>\n", float_swap_bytes(data.x));
+	printf("			<y>%.16f</y>\n", float_swap_bytes(data.y));
+	printf("			<z>%.16f</z>\n", float_swap_bytes(data.z));
 	printf("		</coords>\n");
 	printf("		<flip>\n");
 	printf("			<x>%f</x>\n", float_swap_bytes(data.flip_x));
@@ -466,9 +530,9 @@ void PrintBRLYTEntry_bnd1(brlyt_entry entry, u8* brlyt_file)
 	printf("		<flags>%08x-%08x</flags>\n", data.flag1, data.flag2);
 	printf("		<alpha>%08x-%08x</alpha>\n", data.alpha, data.alpha2);
 	printf("		<coords>\n");
-	printf("			<x>%f</x>\n", float_swap_bytes(data.x));
-	printf("			<y>%f</y>\n", float_swap_bytes(data.y));
-	printf("			<z>%f</z>\n", float_swap_bytes(data.z));
+	printf("			<x>%.16f</x>\n", float_swap_bytes(data.x));
+	printf("			<y>%.16f</y>\n", float_swap_bytes(data.y));
+	printf("			<z>%.16f</z>\n", float_swap_bytes(data.z));
 	printf("		</coords>\n");
 	printf("		<flip>\n");
 	printf("			<x>%f</x>\n", float_swap_bytes(data.flip_x));
@@ -516,9 +580,9 @@ void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file)
 	printf("		<flags>%08x-%08x</flags>\n", data.flag1, data.flag2);
 	printf("		<alpha>%08x-%08x</alpha>\n", data.alpha, data.alpha2);
 	printf("		<coords>\n");
-	printf("			<x>%f</x>\n", float_swap_bytes(data.x));
-	printf("			<y>%f</y>\n", float_swap_bytes(data.y));
-	printf("			<z>%f</z>\n", float_swap_bytes(data.z));
+	printf("			<x>%.20f</x>\n", float_swap_bytes(data.x));
+	printf("			<y>%.20f</y>\n", float_swap_bytes(data.y));
+	printf("			<z>%.20f</z>\n", float_swap_bytes(data.z));
 	printf("		</coords>\n");
 	printf("		<flip>\n");
 	printf("			<x>%f</x>\n", float_swap_bytes(data.flip_x));
@@ -536,7 +600,7 @@ void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file)
 #endif //OLD_BRLYT_OUTSTYLE
 #ifdef OLD_BRLYT_OUTSTYLE
 	printf("                vtx_colors: %u,%u,%u,%u\n", be32(data2.vtx_colors[0]), be32(data2.vtx_colors[1]), be32(data2.vtx_colors[2]), be32(data2.vtx_colors[3]));
-	printf("                mat_off: %08x\n", be16(data2.mat_off));
+	printf("                mat_off: %08x\n", short_swap_bytes(data2.mat_off));
 	printf("                num_texcoords: %08x\n", data2.num_texcoords);
 	printf("                padding: %08x\n", data2.padding);
 #else
@@ -597,9 +661,9 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file)
 	printf("		<flags>%08x-%08x</flags>\n", data.flag1, data.flag2);
 	printf("		<alpha>%08x-%08x</alpha>\n", data.alpha, data.alpha2);
 	printf("		<coords>\n");
-	printf("			<x>%f</x>\n", float_swap_bytes(data.x));
-	printf("			<y>%f</y>\n", float_swap_bytes(data.y));
-	printf("			<z>%f</z>\n", float_swap_bytes(data.z));
+	printf("			<x>%.16f</x>\n", float_swap_bytes(data.x));
+	printf("			<y>%.16f</y>\n", float_swap_bytes(data.y));
+	printf("			<z>%.16f</z>\n", float_swap_bytes(data.z));
 	printf("		</coords>\n");
 	printf("		<flip>\n");
 	printf("			<x>%f</x>\n", float_swap_bytes(data.flip_x));
@@ -614,12 +678,16 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file)
 	printf("			<width>%f</width>\n", float_swap_bytes(data.width));
 	printf("			<height>%f</height>\n", float_swap_bytes(data.height));
 	printf("		</size>\n");
+//	for (i;i<something;i++)
+//	{
 #endif //OLD_BRLYT_OUTSTYLE
 	brlyt_text_chunk data2;
 	BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_text_chunk));
+	unsigned char texty[be16(data2.len2)];
+	memcpy(texty, &brlyt_file[BRLYT_fileoffset], short_swap_bytes(data2.len2));
 #ifdef OLD_BRLYT_OUTSTYLE
 	printf("                len1: %08x\n", be16(data2.len1));
-	printf("                len2: %08x\n", be16(data2.len2));
+	printf("                len2: %08x\n", short_swap_bytes(data2.len2));
 	printf("                mat_off: %08x\n", be16(data2.mat_off));
 	printf("                font_idx: %08x\n", be16(data2.font_idx));
 	printf("                unk4: %08x\n", data2.unk4);
@@ -631,18 +699,31 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file)
         printf("                font_size_y: %f\n", float_swap_bytes(data2.font_size_y));
         printf("                char_space: %f\n", float_swap_bytes(data2.char_space));
         printf("                line_space: %f\n", float_swap_bytes(data2.line_space));
+	printf("		text: ");
+	int q; for (q=0;q<short_swap_bytes(data2.len2);q++)
+	{
+		printf("%02x", texty[q]);
+	}
+	printf("\n");
 #else
 	printf("		<length>%04x-%04x</length>\n", short_swap_bytes(data2.len1), short_swap_bytes(data2.len2));
 	printf("		<font index=\"%d\">\n", short_swap_bytes(data2.font_idx));
 	printf("			<xsize>%f</xsize>\n", float_swap_bytes(data2.font_size_x));
 	printf("			<ysize>%f</ysize>\n", float_swap_bytes(data2.font_size_y));
-	printf("			<xsize>%f</xsize>\n", float_swap_bytes(data2.font_size_x));
 	printf("			<charsize>%f</charsize>\n", float_swap_bytes(data2.char_space));
 	printf("			<linesize>%f</linesize>\n", float_swap_bytes(data2.line_space));
+	printf("			<unk>%02x</unk>\n", data2.unk4);
 	printf("		</font>\n");
 	printf("		<color>%08x-%08x</color>\n", be32(data2.color1), be32(data2.color2));
+	printf("		<text>");
+	int q; for (q=0;q<short_swap_bytes(data2.len2);q++)
+	{
+		printf("%02x", texty[q]);
+	}
+	printf("</text>>\n");
 	printf("	</tag>\n");
 #endif //OLD_BRLYT_OUTSTYLE
+//	}
 }
 
 void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
@@ -692,13 +773,23 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 		printf("				<unk2>%#x</unk2>\n", short_swap_bytes(data3.unk_color_2[1]));
 		printf("				<unk2>%#x</unk2>\n", short_swap_bytes(data3.unk_color_2[2]));
 		printf("				<unk2>%#x</unk2>\n", short_swap_bytes(data3.unk_color_2[3]));
-		printf("				<tev_k>%#x</tev_k>\n", short_swap_bytes(data3.tev_kcolor[0]));
-		printf("				<tev_k>%#x</tev_k>\n", short_swap_bytes(data3.tev_kcolor[1]));
-		printf("				<tev_k>%#x</tev_k>\n", short_swap_bytes(data3.tev_kcolor[2]));
-		printf("				<tev_k>%#x</tev_k>\n", short_swap_bytes(data3.tev_kcolor[3]));
+		printf("				<tev_k>%#x</tev_k>\n", be32(data3.tev_kcolor[0]));
+		printf("				<tev_k>%#x</tev_k>\n", be32(data3.tev_kcolor[1]));
+		printf("				<tev_k>%#x</tev_k>\n", be32(data3.tev_kcolor[2]));
+		printf("				<tev_k>%#x</tev_k>\n", be32(data3.tev_kcolor[3]));
 		printf("			</colors>\n");
 		printf("			<flags>%08x</flags>\n", be32(data3.flags));
 #endif //OLD_BRLYT_OUTSTYLE
+
+		int oldsize = 1+strlen(data3.name);
+		dbgprintf("size of materials before: %08x\n", sizeof(materials));
+		int newSize = lengthOfMaterials+strlen(data3.name)+1;
+		materials = realloc(materials, newSize);
+		numberOfMaterials += 1;
+		memcpy(materials+lengthOfMaterials, data3.name, 1+strlen(data3.name));
+		dbgprintf("mats: %s\tnamsize: %08x\tmatsize: %08x\tnewsize: %08x\n", materials+lengthOfMaterials, strlen(data3.name), lengthOfMaterials, newSize);
+		lengthOfMaterials = newSize;
+
 		int n = 0;
 		for (n;n<bit_extract(flaggs, 28,31);n++)
 		{
@@ -709,9 +800,9 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 			printf("                texoffs: %08x\n", be16(data4.tex_offs));
 			printf("                wrap_s: %08x\n", data4.wrap_s);
 			printf("                wrap_t: %08x\n", data4.wrap_t);
-			printf("                name: %s\n", getMaterial(tplOffset));
+			printf("                name: %s\n", getTexture(tplOffset));
 #else
-			printf("			<material name=\"%s\">\n", getMaterial(tplOffset));
+			printf("			<material name=\"%s\">\n", getTexture(tplOffset));
 			printf("				<wrap_s>%08x</wrap_s>\n", data4.wrap_s);
 			printf("				<wrap_t>%08x</wrap_t>\n", data4.wrap_t);
 			printf("			</material>\n");
@@ -726,13 +817,16 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_ua2_chunk));
 #ifdef OLD_BRLYT_OUTSTYLE
                         printf("                ua2: %08x, %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3], data4.unk[4]);
+			int s; for (s=0;s<20;s++) printf("%02x ", brlyt_file[BRLYT_fileoffset + s -20]); printf("\n");
+			for (s=0;s<5;s++) printf("%f", float_swap_bytes(data4.unk[s]));
+			printf("\n");
 #else
 			printf("			<ua2>\n");
-			printf("				<data>%08x</data>\n", data4.unk[0]);
-			printf("				<data>%08x</data>\n", data4.unk[1]);
-			printf("				<data>%08x</data>\n", data4.unk[2]);
-			printf("				<data>%08x</data>\n", data4.unk[3]);
-			printf("                                                <data>%08x</data>\n", data4.unk[4]);
+			printf("				<data>%f</data>\n", float_swap_bytes(data4.unk[0]));
+			printf("				<data>%f</data>\n", float_swap_bytes(data4.unk[1]));
+			printf("				<data>%f</data>\n", float_swap_bytes(data4.unk[2]));
+			printf("				<data>%f</data>\n", float_swap_bytes(data4.unk[3]));
+			printf("                                <data>%f</data>\n", float_swap_bytes(data4.unk[4]));
 			printf("			</ua2>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                 }
@@ -873,6 +967,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 			printf("				<data>%08x</data>\n", data4.unk[12]);
 			printf("				<data>%08x</data>\n", data4.unk[13]);
 			printf("				<data>%08x</data>\n", data4.unk[14]);
+			printf("				<data>%08x</data>\n", data4.unk[15]);
 			printf("			</ua9>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                 }
@@ -888,7 +983,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 			printf("			<uaa>\n");
 			printf("				<data>%08x</data>\n", data4.unk[0]);
 			printf("				<data>%08x</data>\n", data4.unk[1]);
-			printf("				<data>%08x</data>/\n", data4.unk[2]);
+			printf("				<data>%08x</data>\n", data4.unk[2]);
 			printf("				<data>%08x</data>\n", data4.unk[3]);
 			printf("			</uaa>\n");
 #endif //OLD_BRLYT_OUTSTYLE
@@ -1024,6 +1119,9 @@ void parse_brlyt(char *filename)
 	materials = (char*)malloc(12);
 	numberOfMaterials = 0;
 	lengthOfMaterials = 0;
+	textures = (char*)malloc(12);
+	numberOfTextures = 0;
+	lengthOfTextures = 0;
 	FILE* fp = fopen(filename, "rb");
 	if(fp == NULL) {
 		printf("Error! Couldn't open %s!\n", filename);
@@ -1089,6 +1187,7 @@ void parse_brlyt(char *filename)
 #endif //OLD_BRLYT_OUTSTYLE
 
 	free(materials);
+	free(textures);
 
 }
 
@@ -1347,7 +1446,6 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 
 					oldNameLength = lengthOfNames;
 					lengthOfNames += strlen(tempSub);
-					//printf("name: %s\t", tempSub);
 
 					offsunks = realloc(offsunks, (numEntries + 1)*(2 * sizeof(u32)));
 					if (offsunks == NULL) printf("NULLed by a realloc\n");
@@ -1385,14 +1483,18 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 		fseek(fp, *fileOffset, SEEK_SET);
 		fwrite(names, lengthOfNames, 1, fp);
 		*fileOffset = *fileOffset + lengthOfNames;
-		if ((*fileOffset % 2) == 1)
+		if ((*fileOffset % 4) > 0)
 		{
-			char nuller = '\0';
-			fwrite(&nuller, sizeof(char), 1, fp);
-			*fileOffset = *fileOffset + 1;
+			u8 toAdd = 4-(*fileOffset % 4);
+			char nuller[3] = {'\0', '\0', '\0'};
+			fwrite(&nuller, sizeof(char), toAdd, fp);
+			*fileOffset = *fileOffset + toAdd;
 		}
-		materials = malloc(lengthOfNames * sizeof(char));
-		memcpy(materials, names, lengthOfNames * sizeof(char));
+//		materials = malloc(lengthOfNames * sizeof(char));
+//		memcpy(materials, names, lengthOfNames * sizeof(char));
+//		free(names);
+		textures = malloc(lengthOfNames * sizeof(char));
+		memcpy(textures, names, lengthOfNames * sizeof(char));
 		free(names);
 	}
 	if ( memcmp(temp, fnl1, sizeof(fnl1)) == 0)
@@ -1463,11 +1565,12 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 		fseek(fp, *fileOffset, SEEK_SET);
 		fwrite(names, lengthOfNames, 1, fp);
 		*fileOffset = *fileOffset + lengthOfNames;
-		if ((*fileOffset % 2) == 1)
+		if ((*fileOffset % 4) > 0)
 		{
-			char nuller = '\0';
-			fwrite(&nuller, sizeof(char), 1, fp);
-			*fileOffset = *fileOffset + 1;
+			u8 toAdd = 4-(*fileOffset % 4);
+			char nuller[3] = {'\0', '\0', '\0'};
+			fwrite(&nuller, sizeof(char), toAdd, fp);
+			*fileOffset = *fileOffset + toAdd;
 		}
 		free(names);
 	}
@@ -1497,7 +1600,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 
 		offsets[numberOfEntries] = be32(matSize + initialOffset);
 		fwrite(&offsets[0], sizeof(int), actualNumber, fp);
-		*fileOffset = *fileOffset + numberOfEntries;
+		*fileOffset = *fileOffset + (actualNumber * 4);  //changed from numberOfEntries
 
 		for(subnode=mxmlFindElement(node,node,"entries",NULL,NULL,MXML_DESCEND);subnode!=NULL;subnode=mxmlFindElement(subnode,node,"entries",NULL,NULL,MXML_DESCEND))
 		{
@@ -1517,6 +1620,11 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 			}
 			memcpy(chunk.name, zeroed, 20 * sizeof(char));
 			strcpy(chunk.name, temp);
+
+			materials = realloc(materials, lengthOfMaterials + strlen(chunk.name) + 1);
+			memcpy(&materials[lengthOfMaterials], chunk.name, strlen(chunk.name) + 1);
+			lengthOfMaterials += (1 + strlen(chunk.name));
+			numberOfMaterials += 1;
 
 			mxml_node_t *setnode;
 			setnode = mxmlFindElement(subnode, subnode, "colors", NULL, NULL, MXML_DESCEND);
@@ -1566,7 +1674,6 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 					get_value(valnode, tempCoord, 256);
 						
 					chunk.tev_kcolor[colorNumber] = be32(strtoul(tempCoord, NULL, 16));
-
 					colorNumber+=1;
 				}
 			}	
@@ -1591,10 +1698,10 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 				if(mxmlElementGetAttr(setnode, "name") != NULL)
 					strcpy(temp, mxmlElementGetAttr(setnode, "name"));
 				else{
-				printf("No name attribute found!\nQuitting!\n");
+					printf("No name attribute found!\nQuitting!\n");
 					exit(1);
 				}
-				chunkTexRef.tex_offs = short_swap_bytes(findOffset(temp));
+				chunkTexRef.tex_offs = short_swap_bytes(findTexOffset(temp));
 
 				valnode=mxmlFindElement(setnode, setnode, "wrap_s", NULL, NULL, MXML_DESCEND);
 
@@ -1606,10 +1713,11 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 
 				get_value(valnode, tempCoord, 256);
 				chunkTexRef.wrap_t = strtoul(tempCoord, NULL, 16);
+
+				fwrite(&chunkTexRef, sizeof(chunkTexRef), 1, fp);
+				*fileOffset = *fileOffset + sizeof(chunkTexRef);
+				matSize += sizeof(chunkTexRef);
 			}
-			fwrite(&chunkTexRef, sizeof(chunkTexRef), 1, fp);
-			*fileOffset = *fileOffset + sizeof(chunkTexRef);
-			matSize += sizeof(chunkTexRef);
 
 			brlyt_ua2_chunk chunkUa2;
 			setnode = mxmlFindElement(subnode, subnode, "ua2", NULL, NULL, MXML_DESCEND);
@@ -1623,7 +1731,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 					get_value(valnode, tempCoord, 256);
 
 					chunkUa2.unk[dataNumber] = float_swap_bytes(atof(tempCoord));
-
+					
 					dataNumber+=1;
 				}
 				fwrite(&chunkUa2, sizeof(chunkUa2), 1, fp);
@@ -1660,7 +1768,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 						char tempCoord[256];
 						get_value(valnode, tempCoord, 256);
 
-						chunkUa3.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
+						chunkUa4.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
 
 						dataNumber+=1;
 				}
@@ -1775,8 +1883,8 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 				matSize += sizeof(chunkUa8);
 			}
 			brlyt_10b_chunk chunkUa9;
-			setnode = mxmlFindElement(subnode, subnode, "ua9", NULL, NULL, MXML_DESCEND);
-			if (setnode != NULL)
+			for (setnode = mxmlFindElement(subnode, subnode, "ua9", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "ua9", NULL, NULL, MXML_DESCEND))
+//			if (setnode != NULL)
 			{
 				mxml_node_t *valnode;
 				int dataNumber = 0;
@@ -2230,7 +2338,8 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 	}
 	if ( memcmp(temp, txt1, sizeof(txt1)) == 0)
 	{
-		 brlyt_pane_chunk chunk;
+		brlyt_pane_chunk chunk;
+		brlyt_text_chunk chunk2;
 
 		if(mxmlElementGetAttr(node, "name") != NULL)
 			strcpy(temp, mxmlElementGetAttr(node, "name"));
@@ -2243,6 +2352,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 		for (j=0; j<24; j++) zeroed[j] = 0;
 		memcpy(chunk.name, zeroed, 24 * sizeof(char));
 		strcpy(chunk.name, temp);
+		chunk2.mat_off = short_swap_bytes(findMatOffset(temp));
 
 		mxml_node_t *subnode = mxmlFindElement(node, node, "coords", NULL, NULL, MXML_DESCEND);
 		if (subnode != NULL)
@@ -2352,7 +2462,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 			chunk.angle = float_swap_bytes(atof(tempCoord));
 		}
 
-		brlyt_text_chunk chunk2;
+//		brlyt_text_chunk chunk2;
 		subnode = mxmlFindElement(node, node, "font", NULL, NULL, MXML_DESCEND);
 		if (subnode != NULL)
 		{
@@ -2395,6 +2505,13 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 				get_value(valnode, tempCoord, 256);
 				chunk2.line_space = float_swap_bytes(atof(tempCoord));
 			}
+			valnode = mxmlFindElement(subnode, subnode, "unk", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk2.unk4 = strtol(tempCoord, NULL, 16);
+			}
 		}
 
 		subnode = mxmlFindElement(node, node, "length", NULL, NULL, MXML_DESCEND);
@@ -2415,10 +2532,32 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 			chunk2.color1 = be32(strtoul(tempCoord, NULL, 16));
 			chunk2.color2 = be32(strtoul(tempCoord+9, NULL, 16));
 		}
+		u8 textyLength = short_swap_bytes(chunk2.len2);
+		if ((textyLength % 4) != 0)
+			textyLength += (4 - (textyLength % 4));
+		unsigned char texty[textyLength];
+		subnode = mxmlFindElement(node, node, "text", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			char tempCoord[256];
+			get_value(subnode, tempCoord, 256);
+			//memcpy(texty, tempCoord, short_swap_bytes(chunk2.len2));
+			ASCIIfromUnicode(texty, tempCoord, short_swap_bytes(chunk2.len2));
+		}
 		fwrite(&chunk, sizeof(chunk), 1, fp);
 		*fileOffset = *fileOffset + sizeof(chunk);
+
+		chunk2.name_offs=be32(0x74);
+		chunk2.pad[0]= 0;chunk2.pad[1]=0;chunk2.pad[2]=0;
 		fwrite(&chunk2, sizeof(chunk2), 1, fp);
 		*fileOffset = *fileOffset + sizeof(chunk2);
+		int q; for (q=short_swap_bytes(chunk2.len2);q<textyLength;q++)
+		{
+			q++;
+			texty[q] = 0x00;
+		}
+		fwrite(texty, textyLength, 1, fp);
+		*fileOffset = *fileOffset + textyLength;
 	}
 	if ( memcmp(temp, pic1, sizeof(pic1)) == 0)
 	{
@@ -2555,7 +2694,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 				printf("No name attribute found!\nQuitting!\n");
 				exit(1);
 			}
-			chunk2.mat_off = short_swap_bytes(findOffset(temp));
+			chunk2.mat_off = short_swap_bytes(findMatOffset(temp));
 		}
 		subnode = mxmlFindElement(node, node, "colors", NULL, NULL, MXML_DESCEND);
 		if (subnode != NULL)
@@ -2580,8 +2719,8 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 		if (subnode != NULL)
 		{
 			mxml_node_t *setnode;
-			setnode = mxmlFindElement(subnode, subnode, "set", NULL, NULL, MXML_DESCEND);
-			if (setnode != NULL)
+			for (setnode = mxmlFindElement(subnode, subnode, "set", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "set", NULL, NULL, MXML_DESCEND))
+//			if (setnode != NULL)
 			{
 				picCoords = realloc(picCoords, sizeof(float) * 8 * sets);
 				mxml_node_t *valnode;
@@ -2628,7 +2767,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 		strcpy(chunk.name, temp);
 		int numSubs = 0;
 		char *subs;
-		subs;
+		subs=malloc(0);
 		u32 subsLength = 0;
 
 		mxml_node_t *subnode = mxmlFindElement(node, node, "subs", NULL, NULL, MXML_DESCEND);
@@ -2641,9 +2780,12 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 					u32 oldSubsLength = subsLength;
 					char tempSub[256];
 					get_value(valnode, tempSub, 256);
-					subsLength += strlen(tempSub);
+					subsLength += 16;
+					u8 stringLength = strlen(tempSub) + 1;
 					subs = realloc(subs, 1 + sizeof(char) * subsLength);
 					strcpy(&subs[oldSubsLength], tempSub);
+					for (stringLength;stringLength<17;stringLength++)
+						subs[oldSubsLength+stringLength] = 0x00;
 					numSubs++;
 				}
 			}
@@ -2692,6 +2834,7 @@ void WriteBRLYTHeader(brlyt_header rlythead, FILE* fp)
 
 void write_brlyt(char *infile, char *outfile)
 {
+	u32 timesIn = 0;
 	unsigned int fileOffset = 0;
 	FILE* fpx = fopen(infile, "r");
 	if(fpx == NULL) {
@@ -2788,6 +2931,7 @@ void make_brlyt(char* infile, char* outfile)
 	printf("\x1b[33mParsing XMLYT @ \x1b[0m%s.\n", infile);
 	write_brlyt(infile, outfile);
 	free(materials);
+	free(textures);
 	printf("\x1b[34mParsing XMLYT @ \x1b[0m%s complete.\n", infile);
 }
 
