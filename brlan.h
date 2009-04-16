@@ -61,7 +61,7 @@ typedef struct
 typedef struct
 {
 	char		name[20];		// Name of the BRLAN entry. (Must be defined in the BRLYT)
-	u32		flags;			// Flags? (If bit 25 is set, we have another u32 after the entry. It's use is unknown.)
+	u32		flags;			// Flags? (If bit 25 is set, we have another u32 after the entry. It's use is known. It is the offset to another tag)
 	u32		anim_header_len;	// Length of the animation header which is directly after this entry.
 } brlan_entry;
 

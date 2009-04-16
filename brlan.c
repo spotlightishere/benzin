@@ -35,6 +35,8 @@ char tag_types_list[15][24];
 static size_t BRLAN_fileoffset = 0;
 FILE* xmlanout;
 
+u8 somethingIsSet = 0;
+
 static void BRLAN_ReadDataFromMemoryX(void* destination, void* input, size_t size)
 {
 	u8* out = (u8*)destination;
@@ -121,28 +123,28 @@ static void DisplayTagInformation(int idx, tag_header* heads, tag_entry** entrie
 #endif // OLD_BRLAN_OUTSTYLE
 	for(i = 0; i < head.entry_count; i++) {
 #ifndef OLD_BRLAN_OUTSTYLE
-		if(be16(entryinfos[i].type) < 16)
-			printf("\t\t<entry type=\"%s\">\n", tag_types_list[be16(entryinfos[i].type)]);
+		if(short_swap_bytes(entryinfos[i].type) < 16)
+			printf("\t\t<entry type=\"%s\">\n", tag_types_list[short_swap_bytes(entryinfos[i].type)]);
 		else
-			printf("\t\t<entry type=\"%u\">\n", be16(entryinfos[i].type));
+			printf("\t\t<entry type=\"%u\">\n", short_swap_bytes(entryinfos[i].type));
 #endif // OLD_BRLAN_OUTSTYLE
 #ifdef OLD_BRLAN_OUTSTYLE
 		printf("			Entry %u:\n", i);
-		if(be16(entryinfos[i].type) < 16)
-			printf("				Type: %s (%04x)\n", tag_types_list[be16(entryinfos[i].type)], be16(entryinfos[i].type));
+		if(short_swap_bytes(entryinfos[i].type) < 16)
+			printf("				Type: %s (%04x)\n", tag_types_list[short_swap_bytes(entryinfos[i].type)], short_swap_bytes(entryinfos[i].type));
 		else
-			printf("				Type: Unknown (%04x)\n", be16(entryinfos[i].type));
+			printf("				Type: Unknown (%04x)\n", short_swap_bytes(entryinfos[i].type));
 // User doesn't need to know the offset
 //		printf("				Offset: %lu\n", be32(entries[i].offset));
 
 // Yet again, these are always the same, and seem to maybe be some marker. don't bother to show.
-/*		printf("				Unk1: %04x\n", be16(entryinfos[i].pad1));
-		printf("				Unk2: %04x\n", be16(entryinfos[i].unk1));
+/*		printf("				Unk1: %04x\n", short_swap_bytes(entryinfos[i].pad1));
+		printf("				Unk2: %04x\n", short_swap_bytes(entryinfos[i].unk1));
 		printf("				Unk3: %08x\n", be32(entryinfos[i].unk2)); */
-		printf("				Triplet Count: %u\n", be16(entryinfos[i].coord_count));
+		printf("				Triplet Count: %u\n", short_swap_bytes(entryinfos[i].coord_count));
 		printf("				Triplets:\n");
 #endif // OLD_BRLAN_OUTSTYLE
-		for(z = 0; z < be16(entryinfos[i].coord_count); z++)
+		for(z = 0; z < short_swap_bytes(entryinfos[i].coord_count); z++)
 			DisplayTagData(datas[i][z], z);
 #ifndef OLD_BRLAN_OUTSTYLE
 		printf("\t\t</entry>\n");
@@ -150,8 +152,7 @@ static void DisplayTagInformation(int idx, tag_header* heads, tag_entry** entrie
 	}
 }
 
-static void ReadTagFromBRLAN(int idx, u8* brlan_file, tag_header *head, tag_entry** entries,
-		       tag_entryinfo** entryinfo, tag_data*** data)
+static void ReadTagFromBRLAN(int idx, u8* brlan_file, tag_header *head, tag_entry** entries, tag_entryinfo** entryinfo, tag_data*** data)
 {
 	int taghead_location = BRLAN_fileoffset;
 	BRLAN_ReadDataFromMemory(&head[idx], brlan_file, sizeof(tag_header));
@@ -162,11 +163,11 @@ static void ReadTagFromBRLAN(int idx, u8* brlan_file, tag_header *head, tag_entr
 	dbgprintf("reallocated entryinfo[idx]\n");
 	if(data[idx] == NULL) {
 		dbgprintf("callocating data[idx]\n");
-		data[idx] = (tag_data**)malloc(sizeof(tag_data*) * head[idx].entry_count);
+		data[idx] = (tag_data**)malloc(sizeof(tag_data) * head[idx].entry_count);
 		dbgprintf("callocated data[idx]\n");
 	}else{
 		dbgprintf("reallocating data[idx] %08x\n", data[idx]);
-		data[idx] = (tag_data**)realloc(data[idx], sizeof(tag_data*) * head[idx].entry_count);
+		data[idx] = (tag_data**)realloc(data[idx], sizeof(tag_data) * head[idx].entry_count);
 		dbgprintf("reallocated data[idx]\n");
 	}
 	for(i = 0; i < head[idx].entry_count; i++) {
@@ -179,10 +180,10 @@ static void ReadTagFromBRLAN(int idx, u8* brlan_file, tag_header *head, tag_entr
 		BRLAN_fileoffset = be32(entries[idx][i].offset) + taghead_location;
 		dbgprintf("read entry infos. 0x%08x\n", &entryinfo[idx][i]);
 		BRLAN_ReadDataFromMemory(&entryinfo[idx][i], brlan_file, sizeof(tag_entryinfo));
-		dbgprintf("read entry info 0x%08x. %u\n", &data[idx][i][0], be16(entryinfo[idx][i].coord_count));
-		data[idx][i] = realloc(NULL, sizeof(tag_data) * be16(entryinfo[idx][i].coord_count));
+		dbgprintf("read entry info 0x%08x. %u\n", &data[idx][i][0], short_swap_bytes(entryinfo[idx][i].coord_count));
+		data[idx][i] = realloc(NULL, sizeof(tag_data) * short_swap_bytes(entryinfo[idx][i].coord_count));
 		dbgprintf("reallocated data[i].\n");
-		for(z = 0; z < be16(entryinfo[idx][i].coord_count); z++) {
+		for(z = 0; z < short_swap_bytes(entryinfo[idx][i].coord_count); z++) {
 			dbgprintf("reading data 0x%08x\n", &data[idx][i][z]);
 			BRLAN_ReadDataFromMemory(&data[idx][i][z], brlan_file, sizeof(tag_data));
 			dbgprintf("read data.\n");
@@ -231,7 +232,7 @@ void parse_brlan(char* filename)
 	brlan_header header;
 	BRLAN_ReadDataFromMemoryX(&header, brlan_file, sizeof(brlan_header));
 	dbgprintf("brlan_header read to.\n");
-	BRLAN_fileoffset = be16(header.pai1_offset);
+	BRLAN_fileoffset = short_swap_bytes(header.pai1_offset);
 	brlan_pai1_universal universal;
 	BRLAN_ReadDataFromMemoryX(&universal, brlan_file, sizeof(brlan_pai1_universal));
 	dbgprintf("pa1_universal read to.\n");
@@ -240,9 +241,10 @@ void parse_brlan(char* filename)
 	brlan_pai1_header_type1 pai1_header1;
 	brlan_pai1_header_type2 pai1_header2;
 	brlan_pai1_header_type2 pai1_header;
-	
+
 	if((be32(universal.flags) & (1 << 25)) >= 1) {
 		pai1_header_type = 2;
+		somethingIsSet = 1;
 		BRLAN_ReadDataFromMemory(&pai1_header2, brlan_file, sizeof(brlan_pai1_header_type2));
 	} else {
 		pai1_header_type = 1;
@@ -253,13 +255,15 @@ void parse_brlan(char* filename)
 	CreateGlobal_pai1(&pai1_header, pai1_header1, pai1_header2, pai1_header_type);
 	dbgprintf("pai1 global created.\n");
 	
-	int tagcount = be16(pai1_header.num_entries);
+	int tagcount = short_swap_bytes(pai1_header.num_entries);
+//	int tagcount = short_swap_bytes(pai1_header.num_entries);
 	dbgprintf("tagcount done.\n");
 	u32 *taglocations = (u32*)calloc(tagcount, sizeof(u32));
 	dbgprintf("allocated tag locations.\n");
 	fourcc CCs[256];
 	memset(CCs, 0, 256*4);
-	BRLAN_fileoffset = be32(pai1_header.entry_offset) + be16(header.pai1_offset);
+	BRLAN_fileoffset = be32(pai1_header.entry_offset) + short_swap_bytes(header.pai1_offset);
+//	BRLAN_fileoffset = be32(pai1_header.entry_offset) + short_swap_bytes(header.pai1_offset);
 	dbgprintf("allocated fourccs.\n");
 	BRLAN_ReadDataFromMemory(taglocations, brlan_file, tagcount * sizeof(u32));
 	dbgprintf("read tag locations.\n");
@@ -274,12 +278,14 @@ void parse_brlan(char* filename)
 	tag_data ***intag_datas = NULL;
 	dbgprintf("rlpa datas created.\n");
 	int intag_cnt = 1;
+	dbgprintf("Number of tagcount: %d\n", tagcount);
 	for(i = 0; i < tagcount; i++) {
-		BRLAN_fileoffset = be32(taglocations[i]) + be16(header.pai1_offset);
+		BRLAN_fileoffset = be32(taglocations[i]) + short_swap_bytes(header.pai1_offset);
 		dbgprintf("fileoffset set.\n");
 		BRLAN_ReadDataFromMemory(&(tag_entries[i]), brlan_file, sizeof(brlan_entry));
 		dbgprintf("got tag entry.\n");
 		if((be32(tag_entries[i].flags) & (1 << 25)) >= 1) {
+			somethingIsSet = 1;
 			BRLAN_fileoffset += sizeof(u32);
 			dbgprintf("skipped extra.\n");
 		}
@@ -322,12 +328,13 @@ void parse_brlan(char* filename)
 	
 #ifndef OLD_BRLAN_OUTSTYLE
 	printf("<?xml version=\"1.0\"?>\n" \
-	       "<xmlan framesize=\"%lu\">\n", be16(pai1_header.framesize));
+	       "<xmlan framesize=\"%lu\" flags=\"%02x\">\n", short_swap_bytes(pai1_header.framesize), pai1_header.flags);
 #endif // OLD_BRLAN_OUTSTYLE
-	int timgs = be16(pai1_header.num_timgs);
+	int timgs = short_swap_bytes(pai1_header.num_timgs);
+	printf("Number of TPL files: %d\n", timgs);
 	intag_cnt = 0;
 	int oldoffset = BRLAN_fileoffset;
-	BRLAN_fileoffset = be16(header.pai1_offset) + sizeof(brlan_pai1_header_type1);
+	BRLAN_fileoffset = short_swap_bytes(header.pai1_offset) + sizeof(brlan_pai1_header_type1);
 	dbgprintf("fileoffset %08x\n", BRLAN_fileoffset);
 	int tableoff = BRLAN_fileoffset;
 	int currtableoff = BRLAN_fileoffset;
@@ -361,17 +368,17 @@ void parse_brlan(char* filename)
 	printf("		%s real file size!\n", be32(header.file_size) == file_size ? "Matches" : "Does not match");
 		       
 	// Not important to user, why bother.
-/*	printf("	pai1 Offset: %04x\n", be16(header.pai1_offset));
-	printf("	pai1 Count: %04x\n", be16(header.pai1_count)); */
+/*	printf("	pai1 Offset: %04x\n", short_swap_bytes(header.pai1_offset));
+	printf("	pai1 Count: %04x\n", short_swap_bytes(header.pai1_count)); */
 	printf("\npai1 header:\n");
 	printf("	Type: %d\n", pai1_header_type);
 	printf("	Magic: %c%c%c%c\n", pai1_header.magic[0], pai1_header.magic[1], pai1_header.magic[2], pai1_header.magic[3]);
 	printf("	Size: %lu\n", be32(pai1_header.size));
-	printf("	Framesize: %u\n", be16(pai1_header.framesize));
+	printf("	Framesize: %u\n", short_swap_bytes(pai1_header.framesize));
 	printf("	Flags: %02x\n", pai1_header.flags);
 	printf("	unk1: %02x\n", pai1_header.unk1);
-	printf("	Number of Textures: %u\n", be16(pai1_header.num_timgs));
-	printf("	Number of Entries: %u\n", be16(pai1_header.num_entries));
+	printf("	Number of Textures: %u\n", short_swap_bytes(pai1_header.num_timgs));
+	printf("	Number of Entries: %u\n", short_swap_bytes(pai1_header.num_entries));
 	printf("	unk2: %08lx\n", be32(pai1_header.unk2));
 		       
 	// Not important to user, why bother.
@@ -379,7 +386,7 @@ void parse_brlan(char* filename)
 		       
 	printf("\nBRLAN entries:");
 #endif // OLD_BRLAN_OUTSTYLE
-		       for(i = 0; i < tagcount; i++) {
+	for(i = 0; i < tagcount; i++) {
 #ifndef OLD_BRLAN_OUTSTYLE
 		printf("\t<tag ");
 		if(strlen(tag_entries[i].name) > 0)
@@ -388,7 +395,10 @@ void parse_brlan(char* filename)
 		if(be32(tag_entries[i].flags) == 0x01000000)
 		       printf("format=\"%s\">\n", "Normal");
 		else
-		       printf("format=\"%08x\">\n", be32(tag_entries[i].flags));
+		{
+			somethingIsSet = 1;
+			printf("format=\"%08x\">\n", be32(tag_entries[i].flags));
+		}
 #endif // OLD_BRLAN_OUTSTYLE
 
 #ifdef OLD_BRLAN_OUTSTYLE
@@ -415,6 +425,41 @@ void parse_brlan(char* filename)
 		printf("\t</tag>\n");
 #endif // OLD_BRLAN_OUTSTYLE
 	}
+	if (somethingIsSet)
+	{
+		tag_header extraTagHeader;
+		tag_entry extraTagEntry;
+		tag_entryinfo extraTagEntryInfo;
+		tag_data extraTagData;
+		//read brlan_tag_header
+		BRLAN_ReadDataFromMemory(&extraTagHeader, brlan_file, sizeof(tag_header));
+		//read brlan_tag_entry
+		BRLAN_ReadDataFromMemory(&extraTagEntry, brlan_file, sizeof(tag_entry));
+		//read brlan_tag_entryinfo
+		BRLAN_ReadDataFromMemory(&extraTagEntryInfo, brlan_file, sizeof(tag_entryinfo));
+		u32 p1 = be32(extraTagData.part1);
+		u32 p2 = be32(extraTagData.part2);
+		u32 p3 = be32(extraTagData.part3);
+		printf("\t<extratag type=\"%c%c%c%c\">\n", extraTagHeader.magic[0], extraTagHeader.magic[1], extraTagHeader.magic[2], extraTagHeader.magic[3]);
+		printf("\t\t<entry>\n");
+		int q;for(q=0;q<short_swap_bytes(extraTagEntryInfo.coord_count);q++)
+		{
+			BRLAN_ReadDataFromMemory(&extraTagData, brlan_file, sizeof(tag_data));
+			u32 p1 = be32(extraTagData.part1);
+			u32 p2 = be32(extraTagData.part2);
+			u32 p3 = be32(extraTagData.part3);
+
+			printf("\t\t\t<triplet>\n");
+			printf("\t\t\t\t<frame>%.6f</frame>\n", *(f32*)&p1);
+			printf("\t\t\t\t<value>%.6f</value>\n", *(f32*)&p2);
+			printf("\t\t\t\t<blend>%.6f</blend>\n", *(f32*)&p3);
+			printf("\t\t\t</triplet>\n");
+		}
+		printf("\t\t</entry>\n");
+		printf("\t</extratag>\n");
+		//free(extraBytesOne);
+		//free(extraBytesTwo);
+	}
 #ifndef OLD_BRLAN_OUTSTYLE
 	printf("</xmlan>\n");
 #endif // OLD_BRLAN_OUTSTYLE
@@ -440,10 +485,10 @@ void WriteBRLANTagEntries(tag_entry* entry, u8 count, FILE* fp)
 void WriteBRLANTagEntryinfos(tag_entryinfo entryinfo, FILE* fp)
 {
 	tag_entryinfo writeentryinfo;
-	writeentryinfo.type = be16(entryinfo.type);
-	writeentryinfo.unk1 = be16(entryinfo.unk1);
-	writeentryinfo.coord_count = be16(entryinfo.coord_count);
-	writeentryinfo.pad1 = be16(entryinfo.pad1);
+	writeentryinfo.type = short_swap_bytes(entryinfo.type);
+	writeentryinfo.unk1 = short_swap_bytes(entryinfo.unk1);
+	writeentryinfo.coord_count = short_swap_bytes(entryinfo.coord_count);
+	writeentryinfo.pad1 = short_swap_bytes(entryinfo.pad1);
 	writeentryinfo.unk2 = be32(entryinfo.unk2);
 	fwrite(&writeentryinfo, sizeof(tag_entryinfo), 1, fp);
 }
@@ -556,6 +601,14 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 	fseek(fp, 0, SEEK_SET);
 	entr->anim_header_len = 0;
 	WriteBRLANEntry(entr, fp);
+	u32 fillerIntOffset = ftell(fp);
+	u32 fillerInt = be32(0x60);
+	if (entr->flags & 0x02000000)
+	{
+		fillerInt = be32(0x60);	// sizeof(wholeFile) - 
+		fwrite(&fillerInt, sizeof(u32), 1, fp);
+		BRLAN_fileoffset += 4;
+	}
 	WriteBRLANTagHeader(head, fp);
 	u32 entryloc = ftell(fp);
 	WriteBRLANTagEntries(entry, head->entry_count, fp);
@@ -568,12 +621,132 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 	}
 	u32 oldpos = ftell(fp);
 	fseek(fp, entryloc, SEEK_SET);
+	for(x=0;x<head->entry_count;x++)
+		entry[x].offset -= sizeof(u32) * (head->entry_count - 1);
 	WriteBRLANTagEntries(entry, head->entry_count, fp);
 	fseek(fp, oldpos, SEEK_SET);
 	u32 filesz = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
-	entr->anim_header_len = sizeof(tag_header) + (sizeof(tag_entry) * head->entry_count);
+	char tagRLPA[4] = {'R','L','P','A' };
+	char tagRLMC[4] = {'R','L','M','C' };
+	char tagRLVC[4] = {'R','L','V','C' };
+	char tagRLVI[4] = {'R','L','V','I' };
+	if (memcmp(&head->magic, tagRLPA, 4) == 0) 
+	{
+		entr->anim_header_len = sizeof(brlan_entry);
+	} else if ((memcmp(&head->magic, tagRLMC, 4) == 0) || (memcmp(&head->magic, tagRLVC, 4) == 0)) {
+		entr->anim_header_len = (head->entry_count * (sizeof(tag_entry) + sizeof(tag_data) + sizeof(tag_entryinfo)));
+	} else {
+		entr->anim_header_len = sizeof(tag_header) + (sizeof(tag_entry) * head->entry_count);
+	}
+	if (entr->flags & 0x02000000)
+	{
+		entr->anim_header_len += 4;
+		u32 tempOffset = ftell(fp);
+		fillerInt = be32(filesz);
+		fseek(fp, fillerIntOffset, SEEK_SET);
+		fwrite(&fillerInt, sizeof(u32), 1, fp);
+		BRLAN_fileoffset += 4;
+		fseek(fp, tempOffset, SEEK_SET);
+	}
 	WriteBRLANEntry(entr, fp);
+
+	// write the final tag if flag & 0x02000000
+	 mxml_node_t *addonnode = NULL;
+	 mxml_node_t *addonsubnode = NULL;
+	 mxml_node_t *addonsubsubnode = NULL;
+	 tag_header addonTagHeader;
+	 tag_entry addonTagEntry;
+	 tag_entryinfo addonTagEntryInfo;
+	 tag_data *addonTagData;
+//	tag_data addonTagData;
+	 char tempChar[256];
+	 addonnode = mxmlFindElement(tree, tree, "extratag", NULL, NULL, MXML_DESCEND);
+	 if (addonnode != NULL)
+	 {
+		printf("in the box\n");
+		if(mxmlElementGetAttr(addonnode, "type") != NULL)
+			strcpy(temp, mxmlElementGetAttr(addonnode, "type"));
+		else{
+			printf("No type attribute found!\nSkipping this entry!\n");
+		}
+		printf("addon magic: %c%c%c%c\n", temp[0], temp[1], temp[2], temp[3]);
+		//addonTagHeader.magic = temp;
+		memcpy(addonTagHeader.magic, temp, 4);
+		printf("addon tagheader magic: %s\n", addonTagHeader.magic);
+		addonTagHeader.entry_count = 0x01;
+		addonTagHeader.pad1 = 0x0;
+		addonTagHeader.pad2 = 0x0;
+		addonTagHeader.pad3 = 0x0;
+		addonTagEntry.offset = be32(0x0c);
+		addonTagEntryInfo.type = short_swap_bytes(0x10);
+		addonTagEntryInfo.unk1 = short_swap_bytes(0x0200);
+		addonTagEntryInfo.pad1 = 0x0000;
+		addonTagEntryInfo.unk2 = be32(0x0000000C);
+		addonTagEntryInfo.coord_count = 0x0;
+	
+		for(addonsubnode = mxmlFindElement(addonnode, addonnode, "triplet", NULL, NULL, MXML_DESCEND); addonsubnode != NULL; addonsubnode = mxmlFindElement(addonsubnode, addonnode, "triplet", NULL, NULL, MXML_DESCEND))
+		{
+			addonTagEntryInfo.coord_count +=1;
+			u8 tC = addonTagEntryInfo.coord_count;
+			addonTagData = realloc(addonTagData, sizeof(tag_data) * tC);
+			addonsubsubnode = mxmlFindElement(addonsubnode, addonsubnode, "frame", NULL, NULL, MXML_DESCEND);
+			if (addonsubsubnode != NULL)
+			{
+				get_value(addonsubsubnode, tempChar, 256);
+				f32 f1 = atof(tempChar);
+				addonTagData[tC-1].part1 = *(u32*)&f1;
+				addonTagData[tC-1].part1 = int_swap_bytes(addonTagData[tC-1].part1);
+
+//				addonTagData.part1 = *(u32*)&f1;
+//				addonTagData.part1 = int_swap_bytes(addonTagData.part1);
+			}
+	
+			addonsubsubnode = mxmlFindElement(addonsubnode, addonsubnode, "value", NULL, NULL, MXML_DESCEND);
+			if (addonsubsubnode != NULL)
+			{
+				get_value(addonsubsubnode, tempChar, 256);
+				f32 f2 = atof(tempChar);
+				addonTagData[tC-1].part2 = *(u32*)&f2;
+				addonTagData[tC-1].part2 = int_swap_bytes(addonTagData[tC-1].part2);
+
+//				addonTagData.part2 = *(u32*)&f2;
+//				addonTagData.part2 = int_swap_bytes(addonTagData.part2);
+			}
+	
+			addonsubsubnode = mxmlFindElement(addonsubnode, addonsubnode, "blend", NULL, NULL, MXML_DESCEND);
+			if(addonsubsubnode != NULL)
+			{
+				get_value(addonsubsubnode, tempChar, 256);
+				f32 f3 = atof(tempChar);
+				printf("f3: %f\n", f3);
+				addonTagData[tC-1].part3 = *(u32*)&f3;
+				addonTagData[tC-1].part3 = int_swap_bytes(addonTagData[tC-1].part3);
+
+//				addonTagData.part3 = *(u32*)&f3;
+//				addonTagData.part3 = int_swap_bytes(addonTagData.part3);
+			}
+		}
+		fseek(fp, oldpos, SEEK_SET);
+	//	WriteBRLANTagHeader(addonTagHeader, fp);
+		fwrite(&addonTagHeader, sizeof(tag_header), 1, fp);
+	//	WriteBRLANTagEntry(addonTagEntry, fp);
+		fwrite(&addonTagEntry, sizeof(tag_entry), 1, fp);
+	//	WriteBRLANTagInfo(addonTagEntryInfo, fp);
+		addonTagEntryInfo.coord_count = short_swap_bytes(addonTagEntryInfo.coord_count);
+		fwrite(&addonTagEntryInfo, sizeof(tag_entryinfo), 1, fp);
+	//	WriteExtraBytes(byte, fp);
+//		u32 extraOne = 0x0;
+//		fwrite(&extraOne, 4, 1, fp);
+	//	WriteBRLANTagData(addonTagData, fp);
+		fwrite(addonTagData, sizeof(tag_data), short_swap_bytes(addonTagEntryInfo.coord_count), fp);
+//		fwrite(&addonTagData, sizeof(tag_data), 1, fp);
+	//	WriteBRLANTwoExtraBytes(extraBytes, fp);
+//		u32 extraTwo[2] = {0x0, 0x0};
+//		fwrite(extraTwo, 8, 1, fp);
+		filesz = ftell(fp);
+	}
+
 	*blobsize = filesz;
 	*tagblob = (u8*)malloc(*blobsize);
 	fseek(fp, 0, SEEK_SET);
@@ -609,6 +782,7 @@ void create_tag_from_xml(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32
 	head.pad1 = 0;
 	head.pad2 = 0;
 	head.pad3 = 0;
+	memset(temp, 0, 256);
 	if(mxmlElementGetAttr(node, "format") != NULL)
 		strcpy(temp, mxmlElementGetAttr(node, "format"));
 	else{
@@ -621,7 +795,8 @@ void create_tag_from_xml(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32
 	if(strcmp(temp, "NORMAL") == 0)
 		entr.flags = 0x01000000;
 	else
-		entr.flags = atoi(temp);
+//		entr.flags = atoi(temp);
+		entr.flags = strtoul(temp, NULL, 16);
 	create_entries_from_xml(tree, node, &entr, &head, tagblob, blobsize);
 }
 
@@ -634,8 +809,8 @@ void WriteBRLANHeader(brlan_header rlanhead, FILE* fp)
 	writehead.magic[3] = rlanhead.magic[3];
 	writehead.unk1 = be32(rlanhead.unk1);
 	writehead.file_size = be32(rlanhead.file_size);
-	writehead.pai1_offset = be16(rlanhead.pai1_offset);
-	writehead.pai1_count = be16(rlanhead.pai1_count);
+	writehead.pai1_offset = short_swap_bytes(rlanhead.pai1_offset);
+	writehead.pai1_count = short_swap_bytes(rlanhead.pai1_count);
 	fwrite(&writehead, sizeof(brlan_header), 1, fp);
 }
 
@@ -647,11 +822,11 @@ void WriteBRLANPaiHeader(brlan_pai1_header_type1 paihead, FILE* fp)
 	writehead.magic[2] = paihead.magic[2];
 	writehead.magic[3] = paihead.magic[3];
 	writehead.size = be32(paihead.size);
-	writehead.framesize = be16(paihead.framesize);
+	writehead.framesize = short_swap_bytes(paihead.framesize);
 	writehead.flags = paihead.flags;
 	writehead.unk1 = paihead.unk1;
-	writehead.num_timgs = be16(paihead.num_timgs);
-	writehead.num_entries = be16(paihead.num_entries);
+	writehead.num_timgs = short_swap_bytes(paihead.num_timgs);
+	writehead.num_entries = short_swap_bytes(paihead.num_entries);
 	writehead.entry_offset = be32(paihead.entry_offset);
 	fwrite(&writehead, sizeof(brlan_pai1_header_type1), 1, fp);
 }
@@ -726,7 +901,16 @@ void write_brlan(char *infile, char* outfile)
 		strcpy(temp, "20");
 	}	
 	paihead.framesize = atoi(temp);
-	paihead.flags = 1;
+//	paihead.flags = 1;			// NOT ALWAYS 1
+	memset(temp, 0, 256);
+	if(mxmlElementGetAttr(tree, "flags") != NULL)
+	{
+		strcpy(temp, mxmlElementGetAttr(tree, "flags"));
+	} else {
+		printf("No flags attribute found!\nDefaulting to 1.");
+		paihead.flags = 1;
+	}
+	paihead.flags = atoi(temp);
 	paihead.unk1 = 0;
 	paihead.num_timgs = 0;
 	paihead.num_entries = 0;
@@ -736,7 +920,10 @@ void write_brlan(char *infile, char* outfile)
 	u8* tagchunksbig = (u8*)calloc(MAXIMUM_TAGS_SIZE, 1);
 	MEMORY* tagsmem = mopen(tagchunksbig, MAXIMUM_TAGS_SIZE, 3);
 	u32 totaltagsize = 0;
-	
+
+	u32 headerOffset;
+	u32 tagsbigOffset;
+	u32 blobOffsets[256];
 	u8* timgblob;
 	u32 timgsize;
 	u16 timgcount = 0;
@@ -758,15 +945,101 @@ void write_brlan(char *infile, char* outfile)
 		mwrite(temp, strlen(temp) + 1, 1, timgmem);
 		totaltimgize += strlen(temp) + 1;
 	}
+	headerOffset = ftell(fp);
 	for(node = mxmlFindElement(tree, tree, "tag", NULL, NULL, MXML_DESCEND); node != NULL; node = mxmlFindElement(node, tree, "tag", NULL, NULL, MXML_DESCEND)) {
 		blobcount++;
 		bloboffset = ftell(fp) + mtell(tagsmem) - (4 * (blobcount + 1));
+		blobOffsets[blobcount-1] = sizeof(brlan_pai1_header_type1) +mtell(tagsmem);
 		bloboffset = be32(bloboffset);
 		fwrite(&bloboffset, sizeof(u32), 1, fp);
 		create_tag_from_xml(tree, node, &tagblob, &blobsize);
 		mwrite(tagblob, blobsize, 1, tagsmem);
 		totaltagsize += blobsize;
 	}
+	tagsbigOffset = ftell(fp);
+	fseek(fp, headerOffset, SEEK_SET);
+	int j; for (j=0;j<blobcount;j++)
+	{
+		blobOffsets[j] += (blobcount * 4);
+		blobOffsets[j] = be32(blobOffsets[j]);
+		fwrite(&blobOffsets[j], sizeof(u32), 1, fp);
+	}
+	fseek(fp, tagsbigOffset, SEEK_SET);
+/*
+	//new home of the extra tag code
+	// write the final tag if flag & 0x02000000
+	 mxml_node_t *addonnode = NULL;
+	 mxml_node_t *addonsubnode = NULL;
+	 mxml_node_t *addonsubsubnode = NULL;
+	 tag_header addonTagHeader;
+	 tag_entry addonTagEntry;
+	 tag_entryinfo addonTagEntryInfo;
+	 tag_data addonTagData;
+	 char tempChar[256];
+	 addonnode = mxmlFindElement(tree, tree, "extratag", NULL, NULL, MXML_DESCEND);
+	 if (addonnode != NULL)
+	 {
+		printf("in the second box\n");
+		if(mxmlElementGetAttr(addonnode, "type") != NULL)
+			strcpy(temp, mxmlElementGetAttr(addonnode, "type"));
+		else{
+			printf("No type attribute found!\nSkipping this entry!\n");
+		}
+		//addonTagHeader.magic = temp;
+		memcpy(addonTagHeader.magic, temp, 4);
+		addonTagHeader.entry_count = 0x01;
+		addonTagHeader.pad1 = 0x0;
+		addonTagHeader.pad2 = 0x0;
+		addonTagHeader.pad3 = 0x0;
+		addonTagEntry.offset = be32(0x0c);
+		addonTagEntryInfo.type = short_swap_bytes(0x2);
+		addonTagEntryInfo.unk1 = short_swap_bytes(0x0200);
+		addonTagEntryInfo.pad1 = 0x0000;
+		addonTagEntryInfo.unk2 = be32(0x0000000C);
+		addonTagEntryInfo.coord_count = short_swap_bytes(0x01);
+	
+		for(addonsubnode = mxmlFindElement(addonnode, addonnode, "triplet", NULL, NULL, MXML_DESCEND); addonsubnode != NULL; addonsubnode = mxmlFindElement(addonsubnode, addonnode, "triplet", NULL, NULL, MXML_DESCEND))
+		{
+			addonsubsubnode = mxmlFindElement(addonsubnode, addonsubnode, "frame", NULL, NULL, MXML_DESCEND);
+			if (addonsubsubnode != NULL)
+			{
+				get_value(addonsubsubnode, tempChar, 256);
+				addonTagData.part1 = float_swap_bytes(atof(tempChar));
+			}
+	
+			addonsubsubnode = mxmlFindElement(addonsubnode, addonsubnode, "value", NULL, NULL, MXML_DESCEND);
+			if (addonsubsubnode != NULL)
+			{
+				get_value(addonsubsubnode, tempChar, 256);
+				addonTagData.part2 = float_swap_bytes(atof(tempChar));
+			}
+	
+			addonsubsubnode = mxmlFindElement(addonsubnode, addonsubnode, "blend", NULL, NULL, MXML_DESCEND);
+			if(addonsubsubnode != NULL)
+			{
+				get_value(addonsubsubnode, tempChar, 256);
+				addonTagData.part3 = float_swap_bytes(atof(tempChar));
+			}
+		}
+		fseek(fp, oldpos, SEEK_SET);
+	//	WriteBRLANTagHeader(addonTagHeader, fp);
+		fwrite(&addonTagHeader, sizeof(tag_header), 1, fp);
+	//	WriteBRLANTagEntry(addonTagEntry, fp);
+		fwrite(&addonTagEntry, sizeof(tag_entry), 1, fp);
+	//	WriteBRLANTagInfo(addonTagEntryInfo, fp);
+		fwrite(&addonTagEntryInfo, sizeof(tag_entryinfo), 1, fp);
+	//	WriteExtraBytes(byte, fp);
+		u32 extraOne = 0x0;
+		fwrite(&extraOne, 4, 1, fp);
+	//	WriteBRLANTagData(addonTagData, fp);
+		fwrite(&addonTagData, sizeof(tag_data), 1, fp);
+	//	WriteBRLANTwoExtraBytes(extraBytes, fp);
+		u32 extraTwo[2] = {0x0, 0x0};
+		fwrite(extraTwo, 8, 1, fp);
+		filesz = ftell(fp);
+	}
+*/
+
 	tagchunksbig = (u8*)mclose(tagsmem);
 	timgchunksbig = (u8*)mclose(timgmem);
 	fwrite(timgchunksbig, totaltimgize, 1, fp);
