@@ -76,7 +76,7 @@ static void DisplayTagData(tag_data data, int z)
 	u32 p2 = be32(data.part2);
 	u32 p3 = be32(data.part3);
 #ifndef OLD_BRLAN_OUTSTYLE
-	printf("\t\t\t<triplet>\n\t\t\t\t<frame>%.6f</frame>\n\t\t\t\t<value>%.6f</value>\n\t\t\t\t<blend>%.6f</blend>\n\t\t\t</triplet>\n", *(f32*)(&p1), *(f32*)(&p2), *(f32*)(&p3));
+	printf("\t\t\t<triplet>\n\t\t\t\t<frame>%.10f</frame>\n\t\t\t\t<value>%.10f</value>\n\t\t\t\t<blend>%.10f</blend>\n\t\t\t</triplet>\n", *(f32*)(&p1), *(f32*)(&p2), *(f32*)(&p3));
 #endif // OLD_BRLAN_OUTSTYLE
 #ifdef OLD_BRLAN_OUTSTYLE
 	printf("					Triplet %d:\n", z);
