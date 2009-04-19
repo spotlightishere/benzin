@@ -83,7 +83,7 @@ typedef struct
 typedef struct
 {
 	u16		type;			// Type (look at animtypes)
-	u16		unk1;			// ??? Every case has been 0x0200
+	u16		unk1;			// Every case has been 0x0200 // 0x0100 for pairs
 	u16		coord_count;		// How many coordinates.
 	u16		pad1;			// All cases I've seen is zero.
 	u32		unk2;			// ??? In every case I've seen, it is 0x0000000C.
@@ -95,6 +95,13 @@ typedef struct
 	u32		part2;			// If Bit 16 is set in flags, this is an f32, with another coordinate. (Bit 17 seems to act the same)
 	u32		part3;			// With Bit 16 set in flags, this seems to be yet another coordinate. (Bit 17 seems to act the same)
 } tag_data;
+
+typedef struct
+{
+	u32		part1;
+	u16		part2;
+	u16		padding;
+} tag_data2;
 
 
 void parse_brlan(char* filename);
