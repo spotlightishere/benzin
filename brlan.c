@@ -485,7 +485,6 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 		fillerInt = be32(filesz);
 		fseek(fp, fillerIntOffset, SEEK_SET);
 		fwrite(&fillerInt, sizeof(u32), 1, fp);
-//		BRLAN_fileoffset += 4;
 		fseek(fp, tempOffset, SEEK_SET);
 	}
 	WriteBRLANEntry(entr, fp);
@@ -520,8 +519,8 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 		addonTagHeader.pad2 = 0x0;
 		addonTagHeader.pad3 = 0x0;
 		fseek(fp, oldpos, SEEK_SET);
-		fwrite(&addonTagHeader, sizeof(tag_header), 1, fp);	// GET THIS IN PLACE
-//		addonTagEntry.offset = 0;
+		fwrite(&addonTagHeader, sizeof(tag_header), 1, fp);
+
 		mxml_node_t *entrynode;
 		for(entrynode = mxmlFindElement(addonnode, addonnode, "entry", NULL, NULL, MXML_DESCEND); entrynode != NULL; entrynode = mxmlFindElement(entrynode, addonnode, "entry", NULL, NULL, MXML_DESCEND))
 		{
@@ -551,7 +550,7 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 				addonTagEntryInfo[addonTagHeader.entry_count].unk1 = short_swap_bytes(0x0200);
 				addonTagEntryInfo[addonTagHeader.entry_count].coord_count +=1;
 				u32 tC = addonTagEntryInfo[addonTagHeader.entry_count].coord_count;
-//				addonTagData = realloc(addonTagData, tC*4)
+
 				addonTagData[addonTagHeader.entry_count] = realloc(addonTagData[addonTagHeader.entry_count], sizeof(tag_data) * tC);		// S E R I O U S  H E L P  N E E D E D //
 				addonsubsubnode = mxmlFindElement(addonsubnode, addonsubnode, "frame", NULL, NULL, MXML_DESCEND);
 				if (addonsubsubnode != NULL)
@@ -560,8 +559,6 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 					f32 f1 = atof(tempChar);
 					addonTagData[addonTagHeader.entry_count][tC-1].part1 = *(u32*)&f1;
 					addonTagData[addonTagHeader.entry_count][tC-1].part1 = int_swap_bytes(addonTagData[addonTagHeader.entry_count][tC-1].part1);
-					printf("f1: %.10f\tp1: %08x\n", f1, *(u32*)&f1);
-					printf("tagData: %08x\n", addonTagData[addonTagHeader.entry_count][tC-1].part1);
 				}
 				addonsubsubnode = mxmlFindElement(addonsubnode, addonsubnode, "value", NULL, NULL, MXML_DESCEND);
 				if (addonsubsubnode != NULL)
@@ -582,12 +579,10 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 			}
 			for(addonsubnode = mxmlFindElement(entrynode, entrynode, "pair", NULL, NULL, MXML_DESCEND); addonsubnode != NULL; addonsubnode = mxmlFindElement(addonsubnode, entrynode, "pair", NULL, NULL, MXML_DESCEND))
 			{
-				printf("is the pair\n");
 				addonTagEntryInfo[addonTagHeader.entry_count].unk1 = short_swap_bytes(0x0100);
 				addonTagEntryInfo[addonTagHeader.entry_count].coord_count +=1;
 				u32 tC = addonTagEntryInfo[addonTagHeader.entry_count].coord_count;
 
-//				addonTagData2 = addonTagData2 = realloc(addonTagData2, tC * 4);
 				addonTagData2[addonTagHeader.entry_count] = realloc(addonTagData2[addonTagHeader.entry_count], sizeof(tag_data2) * tC);
 				addonsubsubnode = mxmlFindElement(addonsubnode, addonsubnode, "data1", NULL, NULL, MXML_DESCEND);
 				if (addonsubsubnode != NULL)
@@ -610,26 +605,15 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 					addonTagData2[addonTagHeader.entry_count][tC-1].padding = short_swap_bytes((short)strtoul(tempChar, NULL, 16));
 				}
 			}
-//			fseek(fp, oldpos, SEEK_SET);
-//			fwrite(&addonTagHeader, sizeof(tag_header), 1, fp);	// GET THIS IN PLACE
 			addonTagEntry[addonTagHeader.entry_count].offset = sizeof(tag_header);
 			if (addonTagHeader.entry_count > 1)
 				addonTagEntry[addonTagHeader.entry_count].offset = addonTagEntry[addonTagHeader.entry_count-1].offset + (sizeof(tag_data) * addonTagEntryInfo[addonTagHeader.entry_count-1].coord_count) + sizeof(tag_header);
-//			fwrite(&addonTagEntry, sizeof(tag_entry), 1, fp);	// GET THIS FOR MULTIPLE ENTRIES
 			u32 eC = addonTagHeader.entry_count;
-//			addonTagEntryInfo[addonTagHeader.entry_count].coord_count = short_swap_bytes(addonTagEntryInfo[addonTagHeader.entry_count].coord_count);
 			addonTagEntryInfo[eC].coord_count = short_swap_bytes(addonTagEntryInfo[eC].coord_count);
-//			fwrite(&addonTagEntryInfo, sizeof(tag_entryinfo), 1, fp);
-//			if (addonTagEntryInfo[addonTagHeader.entry_count].unk1 == 0x2)
-//				fwrite(addonTagData, sizeof(tag_data), short_swap_bytes(addonTagEntryInfo.coord_count), fp);
-//			if (addonTagEntryInfo[addonTagHeader.entry_count].unk1 == 0x1)
-//				fwrite(addonTagData2, sizeof(tag_data2), short_swap_bytes(addonTagEntryInfo.coord_count), fp);
 			addonTagHeader.entry_count++;
-//			filesz = ftell(fp);
 		}
-//		filesz = ftell(fp);
 		fseek(fp, oldpos, SEEK_SET);
-		fwrite(&addonTagHeader, sizeof(tag_header), 1, fp);	// GET THIS IN PLACE
+		fwrite(&addonTagHeader, sizeof(tag_header), 1, fp);
 		int l; for (l=0;l<addonTagHeader.entry_count;l++)
 		{
 			addonTagEntry[l].offset += ( sizeof(tag_entry) * addonTagHeader.entry_count);
