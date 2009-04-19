@@ -359,6 +359,7 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 	tag_entry* entry = NULL;
 	tag_entryinfo* entryinfo = NULL;
 	tag_data** data = NULL;
+	tag_data2** data2 = NULL;
 	mxml_node_t *tempnode = NULL;
 	mxml_node_t *subnode = NULL;
 	mxml_node_t *subsubnode = NULL;
@@ -379,10 +380,15 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 		entry = realloc(entry, sizeof(tag_entry) * head->entry_count);
 		entryinfo = realloc(entryinfo, sizeof(tag_entryinfo) * head->entry_count);
 		if(data == NULL)
+		{
 			data = (tag_data**)malloc(sizeof(tag_data*) * head->entry_count);
-		else
+			data2 = (tag_data2**)malloc(sizeof(tag_data2*) * head->entry_count);
+		} else {
 			data = (tag_data**)realloc(data, sizeof(tag_data*) * head->entry_count);
+			data2 = (tag_data2**)realloc(data, sizeof(tag_data2*) * head->entry_count);
+		}
 		data[x] = NULL;
+		data2[x] = NULL;
 		memset(temp, 0, 256);
 		memset(temp2, 0, 256);
  		if(mxmlElementGetAttr(subnode, "type") != NULL)
@@ -407,6 +413,7 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 		entryinfo[x].coord_count = 0;
 		subsubnode = subnode;
 		for (i = 0, subsubnode = mxmlFindElement(subsubnode, subnode, "triplet", NULL, NULL, MXML_DESCEND); subsubnode != NULL; subsubnode = mxmlFindElement(subsubnode, subnode, "triplet", NULL, NULL, MXML_DESCEND), i++) {
+
 			entryinfo[x].coord_count++;
 			data[x] = realloc(data[x], sizeof(tag_data) * entryinfo[x].coord_count);
 			tempnode = mxmlFindElement(subsubnode, subsubnode, "frame", NULL, NULL, MXML_DESCEND);
@@ -430,6 +437,36 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 			}
 			get_value(tempnode, temp, 256);
 			*(f32*)(&(data[x][i].part3)) = atof(temp);
+		}
+		for (i = 0, subsubnode = mxmlFindElement(subnode, subnode, "pair", NULL, NULL, MXML_DESCEND); subsubnode != NULL; subsubnode = mxmlFindElement(subsubnode, subnode, "pair", NULL, NULL, MXML_DESCEND), i++) {
+			entryinfo[x].unk1 = 0x100;
+			printf("In the pair.  entryinfo[x].unk1: %04x\n", entryinfo[x].unk1);
+			entryinfo[x].coord_count++;
+			data2[x] = realloc(data2[x], sizeof(tag_data2) * entryinfo[x].coord_count);
+			tempnode = mxmlFindElement(subsubnode, subsubnode, "data1", NULL, NULL, MXML_DESCEND);
+			if(tempnode == NULL) {
+				printf("Couldn't find attribute \"data1\"!\n");
+				exit(1);
+			}
+			get_value(tempnode, temp, 256);
+			*(f32*)(&(data2[x][i].part1)) = atof(temp);
+//			data2[x][i].part1 = short_swap_bytes(strtoul(temp));
+			tempnode = mxmlFindElement(subsubnode, subsubnode, "data2", NULL, NULL, MXML_DESCEND);
+			if(tempnode == NULL) {
+				printf("Couldn't find attribute \"data2\"!\n");
+				exit(1);
+			}
+			get_value(tempnode, temp, 256);
+//			*(f32*)(&(data2[x][i].part2)) = atof(temp);
+			data2[x][i].part2 = short_swap_bytes(strtoul(temp, NULL, 16));
+			tempnode = mxmlFindElement(subsubnode, subsubnode, "padding", NULL, NULL, MXML_DESCEND);
+			if(tempnode == NULL) {
+				printf("Couldn't find attribute \"padding\"!\n");
+				exit(1);
+			}
+			get_value(tempnode, temp, 256);
+//			*(f32*)(&(data2[x][i].part3)) = atof(temp);
+			data2[x][i].padding = short_swap_bytes(strtoul(temp, NULL, 16));
 		}
 	}
 	FILE* fp = fopen("temp.blan", "wb+");
@@ -457,14 +494,38 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 		entryinfolocs[x] = ftell(fp);
 		if (x>0)
 		{
+			if ( entryinfo[x].unk1 == (0x200) )
+			{
 			entry[x].offset = entry[x-1].offset + sizeof(tag_entryinfo) + (entryinfo[x-1].coord_count * sizeof(tag_data));
+			}
+			if ( entryinfo[x].unk1 == (0x100) )
+			{
+				entry[x].offset = entry[x-1].offset + sizeof(tag_entryinfo) + (entryinfo[x-1].coord_count * sizeof(tag_data2));
+			}
 		} else {
 			entry[x].offset = x * (sizeof(tag_entryinfo) + sizeof(tag_data));
 		}
 		WriteBRLANTagEntryinfos(entryinfo[x], fp);
 		if (x==0) animLen = ftell(fp);
-		WriteBRLANTagData(data[x], entryinfo[x].coord_count, fp);
+		if ( entryinfo[x].unk1 == 0x200 )
+			WriteBRLANTagData(data[x], entryinfo[x].coord_count, fp);
+		if ( entryinfo[x].unk1 == 0x100 )
+		{
+//			WriteBRLANTagData(data2[x], entryinfo[x].coord_count, fp);
+			tag_data2 writedata;
+			int i;
+			for(i = 0; i < entryinfo[x].coord_count; i++) {
+				writedata.part1 = be32(data2[x][i].part1);
+				writedata.part2 = (data2[x][i].part2);
+				writedata.padding = (data2[x][i].padding);
+				fwrite(&writedata, sizeof(tag_data2), 1, fp);
+			}
+		}
 	}
+	if ( entryinfo[0].unk1 == 0x200 )
+		free(data);
+	if ( entryinfo[0].unk1 == 0x100 )
+		free(data2);	
 	u32 oldpos = ftell(fp);
 	fseek(fp, entryloc, SEEK_SET);
 	for(x=0;x<head->entry_count;x++)
@@ -636,7 +697,10 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 	fread(*tagblob, *blobsize, 1, fp);
 	free(entry);
 	free(entryinfo);
-	free(data);
+//	if (data != NULL )
+//		free(data);
+//	if (data2 != NULL )
+//		free(data2);
 	fclose(fp);
 	remove("temp.blan");
 	return filesz;
@@ -829,6 +893,7 @@ void write_brlan(char *infile, char* outfile)
 		mwrite(temp, strlen(temp) + 1, 1, timgmem);
 		totaltimgize += strlen(temp) + 1;
 	}
+	if ((totaltimgize % 4) != 0) totaltimgize += (4 - (totaltimgize % 4));
 	u32 tempoOffset = ftell(fp);
 	int q;
 	for(q=0;q<timgcount;q++)
