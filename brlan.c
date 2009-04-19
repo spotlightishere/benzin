@@ -171,8 +171,6 @@ void parse_brlan(char* filename)
 	BRLAN_fileoffset = be32(pai1_header.entry_offset) + short_swap_bytes(header.pai1_offset);
 	BRLAN_ReadDataFromMemory(taglocations, data, tagcount * sizeof(u32));
 
-	//for(i=0;i<tagcount;i++) printf("offset: %08x\n", taglocations[i]);
-
 	for(i = 0; i < tagcount; i++) {
 		u8 isTriplet = 0;
 		brlan_entry brlanEntry;
@@ -186,7 +184,6 @@ void parse_brlan(char* filename)
 		u32 offsetToExtras;
 		if((be32(brlanEntry.flags) & (1 << 25)) >= 1) {
 			somethingIsSet = 1;
-			//BRLAN_fileoffset += sizeof(u32);
 			BRLAN_ReadDataFromMemory(&offsetToExtras, data, 4);
 		}
 
@@ -447,7 +444,7 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 	u32 fillerInt = be32(0x60);
 	if (entr->flags & 0x02000000)
 	{
-		fillerInt = be32(0x60);	// sizeof(wholeFile) - 
+		fillerInt = be32(0x60);
 		fwrite(&fillerInt, sizeof(u32), 1, fp);
 		BRLAN_fileoffset += 4;
 	}
@@ -458,7 +455,6 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 	u32* entryinfolocs = (u32*)calloc(head->entry_count, sizeof(u32));
 	for(x = 0; x < head->entry_count; x++) {
 		entryinfolocs[x] = ftell(fp);
-//		entry[x].offset = entryinfolocs[x] - sizeof(brlan_entry);  // F I X + M E
 		if (x>0)
 		{
 			entry[x].offset = entry[x-1].offset + sizeof(tag_entryinfo) + (entryinfo[x-1].coord_count * sizeof(tag_data));
@@ -489,18 +485,13 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 	}
 	WriteBRLANEntry(entr, fp);
 
-	// write the final tag if flag & 0x02000000
 	mxml_node_t *addonnode = NULL;
 	mxml_node_t *addonsubnode = NULL;
 	mxml_node_t *addonsubsubnode = NULL;
 	tag_header addonTagHeader;
-//	tag_entry *addonTagEntry;
 	tag_entry addonTagEntry[256];
-//	tag_entryinfo *addonTagEntryInfo;
 	tag_entryinfo addonTagEntryInfo[256];
-//	tag_data *addonTagData;
 	tag_data *addonTagData[1024];
-//	tag_data2 *addonTagData2;
 	tag_data2 *addonTagData2[1024];
 	char tempChar[256];
 	if(entr->flags & 0x02000000)
@@ -548,7 +539,7 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 			for(addonsubnode = mxmlFindElement(entrynode, entrynode, "triplet", NULL, NULL, MXML_DESCEND); addonsubnode != NULL; addonsubnode = mxmlFindElement(addonsubnode, entrynode, "triplet", NULL, NULL, MXML_DESCEND))
 			{
 				addonTagEntryInfo[addonTagHeader.entry_count].unk1 = short_swap_bytes(0x0200);
-				addonTagEntryInfo[addonTagHeader.entry_count].coord_count +=1;
+				addonTagEntryInfo[addonTagHeader.entry_count].coord_count += 1;
 				u32 tC = addonTagEntryInfo[addonTagHeader.entry_count].coord_count;
 
 				addonTagData[addonTagHeader.entry_count] = realloc(addonTagData[addonTagHeader.entry_count], sizeof(tag_data) * tC);		// S E R I O U S  H E L P  N E E D E D //
@@ -605,10 +596,12 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 					addonTagData2[addonTagHeader.entry_count][tC-1].padding = short_swap_bytes((short)strtoul(tempChar, NULL, 16));
 				}
 			}
-			addonTagEntry[addonTagHeader.entry_count].offset = sizeof(tag_header);
-			if (addonTagHeader.entry_count > 1)
-				addonTagEntry[addonTagHeader.entry_count].offset = addonTagEntry[addonTagHeader.entry_count-1].offset + (sizeof(tag_data) * addonTagEntryInfo[addonTagHeader.entry_count-1].coord_count) + sizeof(tag_header);
 			u32 eC = addonTagHeader.entry_count;
+			u32 cC = addonTagEntryInfo[eC].coord_count;
+			addonTagEntry[addonTagHeader.entry_count].offset = sizeof(tag_header);
+			if (addonTagHeader.entry_count > 0)
+				addonTagEntry[addonTagHeader.entry_count].offset = addonTagEntry[addonTagHeader.entry_count-1].offset + sizeof(tag_entryinfo) + (sizeof(tag_data) * cC);
+
 			addonTagEntryInfo[eC].coord_count = short_swap_bytes(addonTagEntryInfo[eC].coord_count);
 			addonTagHeader.entry_count++;
 		}
@@ -616,18 +609,22 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 		fwrite(&addonTagHeader, sizeof(tag_header), 1, fp);
 		int l; for (l=0;l<addonTagHeader.entry_count;l++)
 		{
-			addonTagEntry[l].offset += ( sizeof(tag_entry) * addonTagHeader.entry_count);
+			addonTagEntry[l].offset += ( sizeof(tag_entry) * addonTagHeader.entry_count );
 			addonTagEntry[l].offset = int_swap_bytes(addonTagEntry[l].offset);
 		}
 		fwrite(&addonTagEntry, sizeof(tag_entry), addonTagHeader.entry_count, fp);
-		fwrite(&addonTagEntryInfo, sizeof(tag_entryinfo), addonTagHeader.entry_count, fp);
 
 		for (l=0;l<addonTagHeader.entry_count;l++)
 		{
+			fwrite(&addonTagEntryInfo[l], sizeof(tag_entryinfo), 1, fp);
 			if(addonTagEntryInfo[l].unk1 == 0x2)
+			{
 				fwrite(addonTagData[l], sizeof(tag_data), short_swap_bytes(addonTagEntryInfo[l].coord_count), fp);
+			}
 			if(addonTagEntryInfo[l].unk1 == 0x1)
+			{
 				fwrite(addonTagData2[l], sizeof(tag_data2), short_swap_bytes(addonTagEntryInfo[l].coord_count), fp);
+			}
 		}
 		filesz = ftell(fp);
 	}
@@ -800,7 +797,7 @@ void write_brlan(char *infile, char* outfile)
 	paihead.num_entries = 0;
 	paihead.entry_offset = sizeof(brlan_pai1_header_type1);
 	WriteBRLANPaiHeader(paihead, fp);
-	// Do header stuff here...
+
 	u8* tagchunksbig = (u8*)calloc(MAXIMUM_TAGS_SIZE, 1);
 	MEMORY* tagsmem = mopen(tagchunksbig, MAXIMUM_TAGS_SIZE, 3);
 	u32 totaltagsize = 0;
