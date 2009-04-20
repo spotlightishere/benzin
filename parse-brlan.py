@@ -41,6 +41,10 @@ for typ, chunk in ch:
        name = chunk[offs:offs + 0x14].rstrip('\0')
        
        aunk, aoffs = struct.unpack('>II', chunk[offs + 0x14:offs + 0x1c])
+       if aunk == 0:
+           # I don't know what a mvit is but it apparently is one
+           print 'lemmings: %s' % name
+           continue
        print name, hex(aoffs)
        aoffs += offs
        atyp = chunk[aoffs:aoffs+4]
