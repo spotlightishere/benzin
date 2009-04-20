@@ -1,9 +1,12 @@
 GENERICOBJECTS = main.o general.o memfile.o xml.o endian.o
 MAINOBJECTS = brlyt.o brlan.o
 OBJECTS = $(GENERICOBJECTS) $(MAINOBJECTS)
-LIBS = -lmxml
+LIBS = -L. -lmxml
 OUTPUT = benzin
-main: $(OBJECTS)
-	gcc -o $(OUTPUT) $(LIBS) $(OBJECTS)
+all: $(OUTPUT)
+%.o: %.c
+	gcc -m32 -c -o $@ $<
+$(OUTPUT): $(OBJECTS)
+	gcc -m32 -o $(OUTPUT) $(LIBS) $(OBJECTS)
 clean:
 	rm -f $(OUTPUT) $(OBJECTS)
