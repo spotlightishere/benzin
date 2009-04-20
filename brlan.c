@@ -194,6 +194,12 @@ void parse_brlan(char* filename)
 			BRLAN_ReadDataFromMemory(&offsetToExtras, data, 4);
 		}
 
+		if ((be32(brlanEntry.flags) | 0x00000000 )  == 0 )
+		{
+			printf("\t<mvit name=\"%s\" />\n", brlanEntry.name);
+			continue;
+		}  
+
 		if (somethingElseIsSet == 1)
 		{
 			BRLAN_ReadDataFromMemory(&tagHeader, data, sizeof(tag_header));
