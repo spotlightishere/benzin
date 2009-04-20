@@ -19,21 +19,6 @@
 #include "brlyt.h"
 #include "c_oop.h"
 
-#define RGBA8(w, x, y, z)\
-(									      \
-	(((u32)(z & 0xFF)) << 24) |					      \
-	(((u32)(w & 0xFF)) << 16) |					      \
-	(((u32)(x & 0xFF)) << 8)  |					      \
-	(((u32)(y & 0xFF)) << 0)					      \
-)
-
-#define RGB565(w, x, y, z)\
-(									      \
-	(((u16)((w & 0xFF) >> 3)) << 11) |				      \
-	(((u16)((x & 0xFF) >> 2)) << 6)  |				      \
-	(((u16)((y & 0xFF) >> 3)) << 0)					      \
-)
-
 static int AddEntryToBRLYT(BRLYT* brlyt, LYTEntry entry)
 {
 	return AddObjectToList((u8**)&brlyt->entries, (u32*)&brlyt->entrycnt, \
@@ -446,3 +431,11 @@ void LaichLyt_EndPane(BRLYT* brlyt, int pane)
 {
 	LaichLyt_EndEntry(brlyt, pane);
 }
+
+u8* LaichLyt_Compile(BRLYT* brlyt, u32* size)
+{
+	size = 0;
+	return NULL;
+}
+
+

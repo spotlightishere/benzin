@@ -104,3 +104,11 @@ void LaichAnim_EndTag(BRLAN* brlan, int tag)
 {
 	brlan->tags[tag].done = 1;
 }
+
+u8* LaichAnim_Compile(BRLAN* brlan, u32* size);
+{
+	*size = 0;
+	return NULL;
+}
+
+

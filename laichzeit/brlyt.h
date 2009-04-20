@@ -19,6 +19,21 @@
 
 #define USE_BRLYT
 
+#define RGBA8(w, x, y, z)\
+(									      \
+	(((u32)(z & 0xFF)) << 24) |					      \
+	(((u32)(w & 0xFF)) << 16) |					      \
+	(((u32)(x & 0xFF)) << 8)  |					      \
+	(((u32)(y & 0xFF)) << 0)					      \
+)
+
+#define RGB565(w, x, y, z)\
+(									      \
+	(((u16)((w & 0xFF) >> 3)) << 11) |				      \
+	(((u16)((x & 0xFF) >> 2)) << 6)  |				      \
+	(((u16)((y & 0xFF) >> 3)) << 0)					      \
+)
+
 typedef enum
 {
 	LYT_FONT_DEFAULT	= 0	// Default.
@@ -339,7 +354,7 @@ void	LaichLyt_EndMat  (BRLYT* brlyt, int mat  );
 void	LaichLyt_EndPic  (BRLYT* brlyt, int pic  );
 void	LaichLyt_EndText (BRLYT* brlyt, int text );
 void	LaichLyt_EndPane (BRLYT* brlyt, int pane );
-u8*	LaichLyt_Compile(BRLYT* brlyt);
+u8*	LaichLyt_Compile (BRLYT* brlyt, u32* size);
 
 
 #endif //BRLYT_H

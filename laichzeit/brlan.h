@@ -86,6 +86,6 @@ void	LaichAnim_AddTriplet(BRLAN* brlan, int tag, int anim, \
 			      f32 frame, f32 value, f32 interpolation);
 void	LaichAnim_EndAnim(BRLAN* brlan, int tag, int anim);
 void	LaichAnim_EndTag(BRLAN* brlan, int tag);
-u8*	LaichAnim_Compile(BRLAN* brlan);
+u8*	LaichAnim_Compile(BRLAN* brlan, u32* size);
 
 #endif //BRLAN_H
