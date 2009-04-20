@@ -5,8 +5,8 @@ LIBS = -L. -lmxml
 OUTPUT = benzin
 all: $(OUTPUT)
 %.o: %.c
-	gcc -m32 -c -o $@ $<
+	gcc -fno-strict-aliasing -c -o $@ $<
 $(OUTPUT): $(OBJECTS)
-	gcc -m32 -o $(OUTPUT) $(LIBS) $(OBJECTS)
+	gcc  -o $(OUTPUT) $(LIBS) $(OBJECTS)
 clean:
 	rm -f $(OUTPUT) $(OBJECTS)
