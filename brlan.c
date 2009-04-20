@@ -145,10 +145,10 @@ void parse_brlan(char* filename)
 	CreateGlobal_pai1(&pai1_header, pai1_header1, pai1_header2, pai1_header_type);
 
 	printf("<?xml version=\"1.0\"?>\n" \
-	       "<xmlan framesize=\"%lu\" flags=\"%02x\">\n", short_swap_bytes(pai1_header.framesize), pai1_header.flags);
+	       "<xmlan framesize=\"%lu\" flags=\"%02x\">\n", (long unsigned int)short_swap_bytes(pai1_header.framesize), pai1_header.flags);
 
 	int timgs = short_swap_bytes(pai1_header.num_timgs);
-	printf("Number of TPL files: %d\n", timgs);
+//	printf("Number of TPL files: %d\n", timgs);
 
 	BRLAN_fileoffset = short_swap_bytes(header.pai1_offset) + sizeof(brlan_pai1_header_type1);
 	if ( pai1_header_type == 2 ) BRLAN_fileoffset += 4;
@@ -738,7 +738,6 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 
 	if ((entr->flags & ( 1 << 25 )) && (entr->flags & ( 1 << 24 )))
 	{
-		printf("MADE IT IN THE MONKEY\nOffset: %08x\n", ftell(fp));
 		mxml_node_t *monkeynode = NULL;
 		mxml_node_t *monkeysubnode = NULL;
 		mxml_node_t *monkeysubsubnode = NULL;
@@ -897,14 +896,11 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 			filesz = ftell(fp);
 		}
 		}
-		printf("filesz: %08x\tftell: %08x\n", filesz, ftell(fp));
 		oldpos = ftell(fp);
 		fillerInt = be32(filesz);
 		fseek(fp, monkeyOffset, SEEK_SET);
 		fwrite(&fillerInt, sizeof(u32), 1, fp);
 		fseek(fp, oldpos, SEEK_SET);
-		printf("ftell after: %08x\n", ftell(fp));
-
 	}
 
 	mxml_node_t *addonnode = NULL;
@@ -918,7 +914,6 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 	char tempChar[256];
 	if(entr->flags & 0x02000000)
 	{
-	printf("MADE IT IN THE NANOOK\nOffset: %08x\n", ftell(fp));
 	addonnode = mxmlFindElement(node, tree, "extratag", NULL, NULL, MXML_DESCEND);
 	if (addonnode != NULL)
 	{
@@ -1278,6 +1273,11 @@ void write_brlan(char *infile, char* outfile)
 	u32 timgbigOffset = ftell(fp);
 	fseek(fp, tempoOffset, SEEK_SET);
 
+	mxml_node_t *mvitnode = NULL;
+	mxml_node_t *lastmvit = NULL;
+	mxml_node_t *testfortag = NULL;
+	mxml_node_t *testfortagmvit = NULL;
+
 	for(node = mxmlFindElement(tree, tree, "tag", NULL, NULL, MXML_DESCEND); node != NULL; node = mxmlFindElement(node, tree, "tag", NULL, NULL, MXML_DESCEND)) {
 		blobcount++;
 		bloboffset = ftell(fp) + mtell(tagsmem) - (4 * (blobcount + 1));
@@ -1287,6 +1287,29 @@ void write_brlan(char *infile, char* outfile)
 		create_tag_from_xml(tree, node, &tagblob, &blobsize);
 		mwrite(tagblob, blobsize, 1, tagsmem);
 		totaltagsize += blobsize;
+
+		mvitnode = mxmlFindElement(node, tree, "mvit", NULL, NULL, MXML_DESCEND);
+		if (mvitnode != NULL)
+		{
+			testfortag = mxmlFindElement(node, tree, "tag", NULL, NULL, MXML_DESCEND);
+			testfortagmvit = mxmlFindElement(testfortag, tree, "mvit", NULL, NULL, MXML_DESCEND);
+			if (mvitnode == testfortagmvit) continue;
+
+//			if(mvitnode == lastmvit) continue;
+			blobcount++;
+			bloboffset = ftell(fp) + mtell(tagsmem) - (4 * (blobcount + 1));
+			blobOffsets[blobcount-1] = sizeof(brlan_pai1_header_type1) + mtell(tagsmem);
+			bloboffset = be32(bloboffset);
+			fwrite(&bloboffset, sizeof(u32), 1, fp);
+			char name[24];
+			char tempChars[256];
+			strcpy(tempChars, mxmlElementGetAttr(mvitnode, "name"));
+			memset(name, 0, 24);
+			strcpy(name, tempChars);
+			mwrite(name, 24, 1, tagsmem);
+			totaltagsize += 24;
+//			lastmvit = mvitnode;
+		}
 	}
 	tagsbigOffset = ftell(fp);
 	fseek(fp, headerOffset, SEEK_SET);
