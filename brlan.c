@@ -365,7 +365,7 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 	mxml_node_t *subsubnode = NULL;
 	char temp[256];
 	char temp2[256];
-	char temp3[15][24];
+	char temp3[16][24];
 	int i, x;
 
 	for(i = 0; i < 16; i++)
@@ -400,11 +400,15 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 		}
 		for(i = 0; i < strlen(temp); i++)
 			temp2[i] = toupper(temp[i]);
-		for(i = 0; (i < 16) && (strcmp(temp3[i - 1], temp2) != 0); i++);
-		if(i == 16)
+		for(i = 0; (i < 17) && (strcmp(temp3[i - 1], temp2) != 0); i++);
+		if(i == 17)
+		{
 			i = atoi(temp2);
+		}
 		else
+		{
 			i--;
+		}
 		entry[x].offset = 0;
 		entryinfo[x].type = i;
 		entryinfo[x].unk1 = 0x0200;
@@ -440,7 +444,6 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 		}
 		for (i = 0, subsubnode = mxmlFindElement(subnode, subnode, "pair", NULL, NULL, MXML_DESCEND); subsubnode != NULL; subsubnode = mxmlFindElement(subsubnode, subnode, "pair", NULL, NULL, MXML_DESCEND), i++) {
 			entryinfo[x].unk1 = 0x100;
-			printf("In the pair.  entryinfo[x].unk1: %04x\n", entryinfo[x].unk1);
 			entryinfo[x].coord_count++;
 			data2[x] = realloc(data2[x], sizeof(tag_data2) * entryinfo[x].coord_count);
 			tempnode = mxmlFindElement(subsubnode, subsubnode, "data1", NULL, NULL, MXML_DESCEND);
@@ -450,14 +453,12 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 			}
 			get_value(tempnode, temp, 256);
 			*(f32*)(&(data2[x][i].part1)) = atof(temp);
-//			data2[x][i].part1 = short_swap_bytes(strtoul(temp));
 			tempnode = mxmlFindElement(subsubnode, subsubnode, "data2", NULL, NULL, MXML_DESCEND);
 			if(tempnode == NULL) {
 				printf("Couldn't find attribute \"data2\"!\n");
 				exit(1);
 			}
 			get_value(tempnode, temp, 256);
-//			*(f32*)(&(data2[x][i].part2)) = atof(temp);
 			data2[x][i].part2 = short_swap_bytes(strtoul(temp, NULL, 16));
 			tempnode = mxmlFindElement(subsubnode, subsubnode, "padding", NULL, NULL, MXML_DESCEND);
 			if(tempnode == NULL) {
@@ -465,7 +466,6 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 				exit(1);
 			}
 			get_value(tempnode, temp, 256);
-//			*(f32*)(&(data2[x][i].part3)) = atof(temp);
 			data2[x][i].padding = short_swap_bytes(strtoul(temp, NULL, 16));
 		}
 	}
@@ -511,7 +511,6 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 			WriteBRLANTagData(data[x], entryinfo[x].coord_count, fp);
 		if ( entryinfo[x].unk1 == 0x100 )
 		{
-//			WriteBRLANTagData(data2[x], entryinfo[x].coord_count, fp);
 			tag_data2 writedata;
 			int i;
 			for(i = 0; i < entryinfo[x].coord_count; i++) {
@@ -586,8 +585,8 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 			}
 			for(i = 0; i < strlen(temp); i++)
 				temp2[i] = toupper(temp[i]);
-			for(i = 0; (i < 16) && (strcmp(temp3[i - 1], temp2) != 0); i++);
-			if(i == 16)
+			for(i = 0; (i < 17) && (strcmp(temp3[i - 1], temp2) != 0); i++);
+			if(i == 17)
 				i = atoi(temp2);
 			else
 				i--;
@@ -697,10 +696,6 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 	fread(*tagblob, *blobsize, 1, fp);
 	free(entry);
 	free(entryinfo);
-//	if (data != NULL )
-//		free(data);
-//	if (data2 != NULL )
-//		free(data2);
 	fclose(fp);
 	remove("temp.blan");
 	return filesz;
