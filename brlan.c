@@ -183,23 +183,175 @@ void parse_brlan(char* filename)
 		BRLAN_ReadDataFromMemory(&brlanEntry, data, sizeof(brlan_entry));
 
 		u32 offsetToExtras;
-		u32 setOfOffsetsToOthers[2];
+		u32 offsetToOther;
 		if(((be32(brlanEntry.flags) & (1 << 24)) >= 1 ) && ((be32(brlanEntry.flags) & (1<<25)) >=1)) {
 			somethingElseIsSet = 1;
-			BRLAN_ReadDataFromMemory(&setOfOffsetsToOthers[0], data, 4);
-			BRLAN_ReadDataFromMemory(&setOfOffsetsToOthers[1], data, 4);
+			somethingIsSet = 1;
+			BRLAN_ReadDataFromMemory(&offsetToOther, data, 4);
+			BRLAN_ReadDataFromMemory(&offsetToExtras, data, 4);
 		}else if((be32(brlanEntry.flags) & (1 << 25)) >= 1) {
 			somethingIsSet = 1;
 			BRLAN_ReadDataFromMemory(&offsetToExtras, data, 4);
 		}
 
-//		if (somethingElseIsSet == 1)
-//		{
-//			BRLAN_ReadDataFromMemory(&tagHeader, data, sizeof(tag_header));
-//			printf("\t<tag name=\"%s\" type=\"%c%c%c%c\" ", brlanEntry.name, tagHeader.magic[0], tagHeader.magic[1], tagHeader.magic[2], tagHeader.magic[3]);
-//			printf("format=\"%08x\">\n", be32(brlanEntry.flags));
+		if (somethingElseIsSet == 1)
+		{
+			BRLAN_ReadDataFromMemory(&tagHeader, data, sizeof(tag_header));
+			printf("\t<tag name=\"%s\" type=\"%c%c%c%c\" ", brlanEntry.name, tagHeader.magic[0], tagHeader.magic[1], tagHeader.magic[2], tagHeader.magic[3]);
+			printf("format=\"%08x\">\n", be32(brlanEntry.flags));
+			u32 startOfEntries = BRLAN_fileoffset;
+			u32 sOE = startOfEntries;
+			u32 j;
+			for(j=0;j<tagHeader.entry_count;j++)
+			{
+				BRLAN_ReadDataFromMemory(&tagEntry, data, sizeof(tag_entry));
+				memcpy(&tagEntryInfo, &data[sOE - 8 + be32(tagEntry.offset)], sizeof(tag_entryinfo));
+				if(short_swap_bytes(tagEntryInfo.type) < 16)
+					printf("\t\t<entry type=\"%s\">\n", tag_types_list[short_swap_bytes(tagEntryInfo.type)]);
+				else
+					printf("\t\t<entry type=\"%u\">\n", short_swap_bytes(tagEntryInfo.type));
+				if ( tagEntryInfo.unk1 == short_swap_bytes(0x0200) ) isTriplet = 1;
+				int k; for(k=0;k<short_swap_bytes(tagEntryInfo.coord_count);k++)
+				{
+					if ( isTriplet == 1 )
+					{
+						tag_data tagData;
+						memcpy(&tagData, &data[sOE - 8 + be32(tagEntry.offset) + sizeof(tag_entryinfo)+ (k*sizeof(tag_data))], sizeof(tag_data));
+
+						u32 p1 = be32(tagData.part1);
+						u32 p2 = be32(tagData.part2);
+						u32 p3 = be32(tagData.part3);
+						printf("\t\t\t<triplet>\n");
+						printf("\t\t\t\t<frame>%.12f</frame>\n", *(f32*)(&p1));
+						printf("\t\t\t\t<value>%.12f</value>\n", *(f32*)(&p2));
+						printf("\t\t\t\t<blend>%.12f</blend>\n", *(f32*)(&p3));
+						printf("\t\t\t</triplet>\n");
 			
-//		}
+					} else {
+						tag_data2 tagData2;
+						memcpy(&tagData2, &data[sOE -8+ be32(tagEntry.offset) + sizeof(tag_entryinfo)+ (k*sizeof(tag_data2))], sizeof(tag_data2));
+						u32 p1 = be32(tagData2.part1);
+						u16 p2 = short_swap_bytes(tagData2.part2);
+						u16 p3 = short_swap_bytes(tagData2.padding);
+						printf("\t\t\t<pair>\n");
+						printf("\t\t\t\t<data1>%.12f</data1>\n", *(f32*)(&p1));
+						printf("\t\t\t\t<data2>%04x</data2>\n", p2);
+						printf("\t\t\t\t<padding>%04x</padding>\n", p3);
+						printf("\t\t\t</pair>\n");
+
+					}
+				}
+				printf("\t\t</entry>\n");
+				isTriplet = 0;
+			}
+			printf("\t</tag>\n");
+
+			BRLAN_fileoffset = brlanEntryOffset + be32(offsetToOther);
+			BRLAN_ReadDataFromMemory(&tagHeader, data, sizeof(tag_header));
+			printf("\t<monkey type=\"%c%c%c%c\">\n", tagHeader.magic[0], tagHeader.magic[1], tagHeader.magic[2], tagHeader.magic[3]);
+			startOfEntries = BRLAN_fileoffset;
+			sOE = startOfEntries;
+			
+			for(j=0;j<tagHeader.entry_count;j++)
+			{
+				BRLAN_ReadDataFromMemory(&tagEntry, data, sizeof(tag_entry));
+				memcpy(&tagEntryInfo, &data[sOE - 8 + be32(tagEntry.offset)], sizeof(tag_entryinfo));
+				if(short_swap_bytes(tagEntryInfo.type) < 16)
+					printf("\t\t<entry type=\"%s\">\n", tag_types_list[short_swap_bytes(tagEntryInfo.type)]);
+				else
+					printf("\t\t<entry type=\"%u\">\n", short_swap_bytes(tagEntryInfo.type));
+				if ( tagEntryInfo.unk1 == short_swap_bytes(0x0200) ) isTriplet = 1;
+				int k; for(k=0;k<short_swap_bytes(tagEntryInfo.coord_count);k++)
+				{
+					if ( isTriplet == 1 )
+					{
+						tag_data tagData;
+						memcpy(&tagData, &data[sOE - 8 + be32(tagEntry.offset) + sizeof(tag_entryinfo)+ (k*sizeof(tag_data))], sizeof(tag_data));
+
+						u32 p1 = be32(tagData.part1);
+						u32 p2 = be32(tagData.part2);
+						u32 p3 = be32(tagData.part3);
+						printf("\t\t\t<triplet>\n");
+						printf("\t\t\t\t<frame>%.12f</frame>\n", *(f32*)(&p1));
+						printf("\t\t\t\t<value>%.12f</value>\n", *(f32*)(&p2));
+						printf("\t\t\t\t<blend>%.12f</blend>\n", *(f32*)(&p3));
+						printf("\t\t\t</triplet>\n");
+			
+					} else {
+						tag_data2 tagData2;
+						memcpy(&tagData2, &data[sOE -8+ be32(tagEntry.offset) + sizeof(tag_entryinfo)+ (k*sizeof(tag_data2))], sizeof(tag_data2));
+						u32 p1 = be32(tagData2.part1);
+						u16 p2 = short_swap_bytes(tagData2.part2);
+						u16 p3 = short_swap_bytes(tagData2.padding);
+						printf("\t\t\t<pair>\n");
+						printf("\t\t\t\t<data1>%.12f</data1>\n", *(f32*)(&p1));
+						printf("\t\t\t\t<data2>%04x</data2>\n", p2);
+						printf("\t\t\t\t<padding>%04x</padding>\n", p3);
+						printf("\t\t\t</pair>\n");
+
+					}
+				}
+				printf("\t\t</entry>\n");
+				isTriplet = 0;
+			}
+			printf("\t</monkey>\n");
+
+			if (somethingIsSet == 1)
+			{
+			tag_header tagHeader;
+			tag_entry tagEntry;
+			tag_entryinfo tagEntryInfo;
+			memcpy(&tagHeader, &data[brlanEntryOffset + be32(offsetToExtras)], sizeof(tag_header));
+			printf("\t<extratag type=\"%c%c%c%c\">\n", tagHeader.magic[0], tagHeader.magic[1], tagHeader.magic[2], tagHeader.magic[3]);
+			for(j=0;j<tagHeader.entry_count;j++)
+			{
+				memcpy(&tagEntry, &data[brlanEntryOffset + be32(offsetToExtras) + sizeof(tag_header) + (j*4)], 4);
+				memcpy(&tagEntryInfo, &data[brlanEntryOffset + be32(offsetToExtras) + be32(tagEntry.offset)], sizeof(tag_entryinfo));
+		
+				if(short_swap_bytes(tagEntryInfo.type) < 16)
+					printf("\t\t<entry type=\"%s\">\n", tag_types_list[short_swap_bytes(tagEntryInfo.type)]);
+				else
+					printf("\t\t<entry type=\"%u\">\n", short_swap_bytes(tagEntryInfo.type));
+				if ( tagEntryInfo.unk1 == short_swap_bytes(0x0200) ) isTriplet = 1;
+				int k;
+
+				for(k=0;k<short_swap_bytes(tagEntryInfo.coord_count);k++)
+				{
+				if ( isTriplet == 1 )
+				{
+					tag_data tagData;
+					memcpy(&tagData, &data[brlanEntryOffset + be32(offsetToExtras) + be32(tagEntry.offset)+ sizeof(tag_entryinfo) + (k*sizeof(tag_data))], sizeof(tag_data));
+					u32 p1 = be32(tagData.part1);
+					u32 p2 = be32(tagData.part2);
+					u32 p3 = be32(tagData.part3);
+					printf("\t\t\t<triplet>\n");
+					printf("\t\t\t\t<frame>%.12f</frame>\n", *(f32*)(&p1));
+					printf("\t\t\t\t<value>%.12f</value>\n", *(f32*)(&p2));
+					printf("\t\t\t\t<blend>%.12f</blend>\n", *(f32*)(&p3));
+					printf("\t\t\t</triplet>\n");
+			
+				} else {
+					tag_data2 tagData2;
+					memcpy(&tagData2, &data[brlanEntryOffset + be32(offsetToExtras) + be32(tagEntry.offset) + sizeof(tag_entryinfo)+ (k*sizeof(tag_data2))], sizeof(tag_data2));
+					u32 p1 = be32(tagData2.part1);
+					u16 p2 = short_swap_bytes(tagData2.part2);
+					u16 p3 = short_swap_bytes(tagData2.padding);
+					printf("\t\t\t<pair>\n");
+					printf("\t\t\t\t<data1>%.12f</data1>\n", *(f32*)(&p1));
+					printf("\t\t\t\t<data2>%04x</data2>\n", p2);
+					printf("\t\t\t\t<padding>%04x</padding>\n", p3);
+					printf("\t\t\t</pair>\n");
+
+				}
+			}
+			printf("\t\t</entry>\n");
+			isTriplet = 0;
+			}
+			printf("\t</extratag>\n");
+			}
+			somethingIsSet = 0;
+			somethingElseIsSet = 0;
+		} else {
 
 		BRLAN_ReadDataFromMemory(&tagHeader, data, sizeof(tag_header));
 		printf("\t<tag name=\"%s\" type=\"%c%c%c%c\" ", brlanEntry.name, tagHeader.magic[0], tagHeader.magic[1], tagHeader.magic[2], tagHeader.magic[3]);
@@ -313,6 +465,7 @@ void parse_brlan(char* filename)
 		printf("\t</extratag>\n");
 		}
 		somethingIsSet = 0;
+		}
 	}
 
 	printf("</xmlan>\n");
@@ -493,7 +646,14 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 	WriteBRLANEntry(entr, fp);
 	u32 fillerIntOffset = ftell(fp);
 	u32 fillerInt = be32(0x60);
-	if (entr->flags & 0x02000000)
+	u32 fillerInt2 = be32(0x60);
+	if ((entr->flags & ( 1 << 25 )) && (entr->flags & ( 1 << 24 )))
+	{
+		fillerInt2 = be32(0x60);
+		fwrite(&fillerInt, sizeof(u32), 1, fp);
+		fwrite(&fillerInt2, sizeof(u32), 1, fp);
+		BRLAN_fileoffset += 8;
+	} else if (entr->flags & 0x02000000)
 	{
 		fillerInt = be32(0x60);
 		fwrite(&fillerInt, sizeof(u32), 1, fp);
@@ -547,8 +707,19 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 	fseek(fp, oldpos, SEEK_SET);
 	u32 filesz = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
+	u32 monkeyOffset;
 	entr->anim_header_len = sizeof(brlan_entry);
-	if (entr->flags & 0x02000000)
+	if ((entr->flags & (1 << 25)) && (entr->flags & (1 << 24)))
+	{
+		entr->anim_header_len += 8;
+		u32 tempOffset = ftell(fp);
+		fillerInt = be32(filesz);
+		fseek(fp, fillerIntOffset, SEEK_SET);
+		fwrite(&fillerInt, sizeof(u32), 1, fp);		// MONKEY OFFSET
+		monkeyOffset = ftell(fp);
+		fwrite(&fillerInt, sizeof(u32), 1, fp);		// GO BACK FOR EXTRA OFFSET
+		fseek(fp, tempOffset, SEEK_SET);
+	} else if (entr->flags & 0x02000000)
 	{
 		entr->anim_header_len += 4;
 		u32 tempOffset = ftell(fp);
@@ -558,6 +729,177 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 		fseek(fp, tempOffset, SEEK_SET);
 	}
 	WriteBRLANEntry(entr, fp);
+
+	if ((entr->flags & ( 1 << 25 )) && (entr->flags & ( 1 << 24 )))
+	{
+		printf("MADE IT IN THE MONKEY\nOffset: %08x\n", ftell(fp));
+		mxml_node_t *monkeynode = NULL;
+		mxml_node_t *monkeysubnode = NULL;
+		mxml_node_t *monkeysubsubnode = NULL;
+		tag_header monkeyTagHeader;
+		tag_entry monkeyTagEntry[256];
+		tag_entryinfo monkeyTagEntryInfo[256];
+		tag_data *monkeyTagData[1024];
+		tag_data2 *monkeyTagData2[1024];
+		char tempChar[256];
+		if(entr->flags & 0x02000000)
+		{
+		monkeynode = mxmlFindElement(node, tree, "monkey", NULL, NULL, MXML_DESCEND);
+		if (monkeynode != NULL)
+		{
+			if(mxmlElementGetAttr(monkeynode, "type") != NULL)
+				strcpy(temp, mxmlElementGetAttr(monkeynode, "type"));
+			else{
+				printf("No type attribute found!\nSkipping this entry!\n");
+			}
+			memcpy(monkeyTagHeader.magic, temp, 4);
+			monkeyTagHeader.entry_count = 0x00;
+			monkeyTagHeader.pad1 = 0x0;
+			monkeyTagHeader.pad2 = 0x0;
+			monkeyTagHeader.pad3 = 0x0;
+			fseek(fp, oldpos, SEEK_SET);
+			fwrite(&monkeyTagHeader, sizeof(tag_header), 1, fp);
+	
+			mxml_node_t *monkeyentrynode;
+			for(monkeyentrynode = mxmlFindElement(monkeynode, monkeynode, "entry", NULL, NULL, MXML_DESCEND); monkeyentrynode != NULL; monkeyentrynode = mxmlFindElement(monkeyentrynode, monkeynode, "entry", NULL, NULL, MXML_DESCEND))
+			{
+				memset(temp, 0, 256);
+				memset(temp2, 0, 256);
+	 			if(mxmlElementGetAttr(monkeyentrynode, "type") != NULL)
+					strcpy(temp, mxmlElementGetAttr(monkeyentrynode, "type"));
+				else{
+					printf("No type attribute found!\nSkipping this entry!\n");
+					head->entry_count--;
+				}
+				for(i = 0; i < strlen(temp); i++)
+					temp2[i] = toupper(temp[i]);
+				for(i = 0; (i < 17) && (strcmp(temp3[i - 1], temp2) != 0); i++);
+				if(i == 17)
+					i = atoi(temp2);
+				else
+					i--;
+				monkeyTagEntryInfo[monkeyTagHeader.entry_count].type = short_swap_bytes(i);	
+				monkeyTagEntryInfo[monkeyTagHeader.entry_count].unk1 = short_swap_bytes(0x0200);
+				monkeyTagEntryInfo[monkeyTagHeader.entry_count].pad1 = 0x0000;
+				monkeyTagEntryInfo[monkeyTagHeader.entry_count].unk2 = be32(0x0000000C);
+				monkeyTagEntryInfo[monkeyTagHeader.entry_count].coord_count = 0x0;
+		
+				for(monkeysubnode = mxmlFindElement(monkeyentrynode, monkeyentrynode, "triplet", NULL, NULL, MXML_DESCEND); monkeysubnode != NULL; monkeysubnode = mxmlFindElement(monkeysubnode, monkeyentrynode, "triplet", NULL, NULL, MXML_DESCEND))
+				{
+					monkeyTagEntryInfo[monkeyTagHeader.entry_count].unk1 = short_swap_bytes(0x0200);
+					monkeyTagEntryInfo[monkeyTagHeader.entry_count].coord_count += 1;
+					u32 tC = monkeyTagEntryInfo[monkeyTagHeader.entry_count].coord_count;
+	
+					monkeyTagData[monkeyTagHeader.entry_count] = realloc(monkeyTagData[monkeyTagHeader.entry_count], sizeof(tag_data) * tC);		// S E R I O U S  H E L P  N E E D E D //
+					monkeysubsubnode = mxmlFindElement(monkeysubnode, monkeysubnode, "frame", NULL, NULL, MXML_DESCEND);
+					if (monkeysubsubnode != NULL)
+					{
+						get_value(monkeysubsubnode, tempChar, 256);
+						f32 f1 = atof(tempChar);
+						monkeyTagData[monkeyTagHeader.entry_count][tC-1].part1 = *(u32*)&f1;
+						monkeyTagData[monkeyTagHeader.entry_count][tC-1].part1 = int_swap_bytes(monkeyTagData[monkeyTagHeader.entry_count][tC-1].part1);
+					}
+					monkeysubsubnode = mxmlFindElement(monkeysubnode, monkeysubnode, "value", NULL, NULL, MXML_DESCEND);
+					if (monkeysubsubnode != NULL)
+					{
+						get_value(monkeysubsubnode, tempChar, 256);
+						f32 f2 = atof(tempChar);
+						monkeyTagData[monkeyTagHeader.entry_count][tC-1].part2 = *(u32*)&f2;
+						monkeyTagData[monkeyTagHeader.entry_count][tC-1].part2 = int_swap_bytes(monkeyTagData[monkeyTagHeader.entry_count][tC-1].part2);
+					}
+					monkeysubsubnode = mxmlFindElement(monkeysubnode, monkeysubnode, "blend", NULL, NULL, MXML_DESCEND);
+					if(monkeysubsubnode != NULL)
+					{
+						get_value(monkeysubsubnode, tempChar, 256);
+						f32 f3 = atof(tempChar);
+						monkeyTagData[monkeyTagHeader.entry_count][tC-1].part3 = *(u32*)&f3;
+						monkeyTagData[monkeyTagHeader.entry_count][tC-1].part3 = int_swap_bytes(monkeyTagData[monkeyTagHeader.entry_count][tC-1].part3);
+					}
+				}
+				for(monkeysubnode = mxmlFindElement(monkeyentrynode, monkeyentrynode, "pair", NULL, NULL, MXML_DESCEND); monkeysubnode != NULL; monkeysubnode = mxmlFindElement(monkeysubnode, monkeyentrynode, "pair", NULL, NULL, MXML_DESCEND))
+				{
+					monkeyTagEntryInfo[monkeyTagHeader.entry_count].unk1 = short_swap_bytes(0x0100);
+					monkeyTagEntryInfo[monkeyTagHeader.entry_count].coord_count +=1;
+					u32 tC = monkeyTagEntryInfo[monkeyTagHeader.entry_count].coord_count;
+	
+					monkeyTagData2[monkeyTagHeader.entry_count] = realloc(monkeyTagData2[monkeyTagHeader.entry_count], sizeof(tag_data2) * tC);
+					monkeysubsubnode = mxmlFindElement(monkeysubnode, monkeysubnode, "data1", NULL, NULL, MXML_DESCEND);
+					if (monkeysubsubnode != NULL)
+					{
+						get_value(monkeysubsubnode, tempChar, 256);
+						f32 f1 = atof(tempChar);
+						monkeyTagData2[monkeyTagHeader.entry_count][tC-1].part1 = *(u32*)&f1;
+						monkeyTagData2[monkeyTagHeader.entry_count][tC-1].part1 = int_swap_bytes(monkeyTagData2[monkeyTagHeader.entry_count][tC-1].part1);
+					}
+					monkeysubsubnode = mxmlFindElement(monkeysubnode, monkeysubnode, "data2", NULL, NULL, MXML_DESCEND);
+					if (monkeysubsubnode != NULL)
+					{
+						get_value(monkeysubsubnode, tempChar, 256);
+						monkeyTagData2[monkeyTagHeader.entry_count][tC-1].part2 = short_swap_bytes((short)strtoul(tempChar, NULL, 16));
+					}
+					monkeysubsubnode = mxmlFindElement(monkeysubnode, monkeysubnode, "padding", NULL, NULL, MXML_DESCEND);
+					if(monkeysubsubnode != NULL)
+					{
+						get_value(monkeysubsubnode, tempChar, 256);
+						monkeyTagData2[monkeyTagHeader.entry_count][tC-1].padding = short_swap_bytes((short)strtoul(tempChar, NULL, 16));
+					}
+				}
+				u32 eC = monkeyTagHeader.entry_count;
+				u32 cC = monkeyTagEntryInfo[eC].coord_count;
+				if (monkeyTagHeader.entry_count > 0)
+				{
+					cC = short_swap_bytes(monkeyTagEntryInfo[eC-1].coord_count);
+					printf("cC: %08x\n", cC);
+				}
+				monkeyTagEntry[monkeyTagHeader.entry_count].offset = sizeof(tag_header);
+				if (monkeyTagHeader.entry_count > 0)
+				{
+					if (monkeyTagEntryInfo[eC-1].unk1 == 0x2)
+					{
+						monkeyTagEntry[monkeyTagHeader.entry_count].offset = monkeyTagEntry[monkeyTagHeader.entry_count-1].offset + sizeof(tag_entryinfo) + (sizeof(tag_data) * cC);
+					}
+					if (monkeyTagEntryInfo[eC-1].unk1 == 0x1)
+					{
+						monkeyTagEntry[monkeyTagHeader.entry_count].offset = monkeyTagEntry[monkeyTagHeader.entry_count-1].offset + sizeof(tag_entryinfo) + (sizeof(tag_data2) * cC);				
+					}
+				}
+	
+				monkeyTagEntryInfo[eC].coord_count = short_swap_bytes(monkeyTagEntryInfo[eC].coord_count);
+				monkeyTagHeader.entry_count++;
+			}
+			fseek(fp, oldpos, SEEK_SET);
+			fwrite(&monkeyTagHeader, sizeof(tag_header), 1, fp);
+			int l; for (l=0;l<monkeyTagHeader.entry_count;l++)
+			{
+				monkeyTagEntry[l].offset += ( sizeof(tag_entry) * monkeyTagHeader.entry_count );
+				monkeyTagEntry[l].offset = int_swap_bytes(monkeyTagEntry[l].offset);
+			}
+			fwrite(&monkeyTagEntry, sizeof(tag_entry), monkeyTagHeader.entry_count, fp);
+	
+			for (l=0;l<monkeyTagHeader.entry_count;l++)
+			{
+				fwrite(&monkeyTagEntryInfo[l], sizeof(tag_entryinfo), 1, fp);
+				if(monkeyTagEntryInfo[l].unk1 == 0x2)
+				{
+					fwrite(monkeyTagData[l], sizeof(tag_data), short_swap_bytes(monkeyTagEntryInfo[l].coord_count), fp);
+				}
+				if(monkeyTagEntryInfo[l].unk1 == 0x1)
+				{
+					fwrite(monkeyTagData2[l], sizeof(tag_data2), short_swap_bytes(monkeyTagEntryInfo[l].coord_count), fp);
+				}
+			}
+			filesz = ftell(fp);
+		}
+		}
+		printf("filesz: %08x\tftell: %08x\n", filesz, ftell(fp));
+		oldpos = ftell(fp);
+		fillerInt = be32(filesz);
+		fseek(fp, monkeyOffset, SEEK_SET);
+		fwrite(&fillerInt, sizeof(u32), 1, fp);
+		fseek(fp, oldpos, SEEK_SET);
+		printf("ftell after: %08x\n", ftell(fp));
+
+	}
 
 	mxml_node_t *addonnode = NULL;
 	mxml_node_t *addonsubnode = NULL;
@@ -570,6 +912,7 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 	char tempChar[256];
 	if(entr->flags & 0x02000000)
 	{
+	printf("MADE IT IN THE NANOOK\nOffset: %08x\n", ftell(fp));
 	addonnode = mxmlFindElement(node, tree, "extratag", NULL, NULL, MXML_DESCEND);
 	if (addonnode != NULL)
 	{
