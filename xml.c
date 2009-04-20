@@ -44,7 +44,7 @@ get_value(mxml_node_t *node,		/* I - Node to get */
 		}
 		else if (current->type == MXML_INTEGER)
 		{
-			sprintf(tempbuf, "%f", current->value.integer);
+			sprintf(tempbuf, "%d", current->value.integer);
 			len = (int)strlen(tempbuf);
 			if (len > (int)(end - ptr))
 				len = (int)(end - ptr);
