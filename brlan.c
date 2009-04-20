@@ -35,6 +35,7 @@ char tag_types_list[15][24];
 static size_t BRLAN_fileoffset = 0;
 FILE* xmlanout;
 
+u8 somethingElseIsSet = 0;
 u8 somethingIsSet = 0;
 
 static void BRLAN_ReadDataFromMemoryX(void* destination, void* input, size_t size)
@@ -182,10 +183,23 @@ void parse_brlan(char* filename)
 		BRLAN_ReadDataFromMemory(&brlanEntry, data, sizeof(brlan_entry));
 
 		u32 offsetToExtras;
-		if((be32(brlanEntry.flags) & (1 << 25)) >= 1) {
+		u32 setOfOffsetsToOthers[2];
+		if(((be32(brlanEntry.flags) & (1 << 24)) >= 1 ) && ((be32(brlanEntry.flags) & (1<<25)) >=1)) {
+			somethingElseIsSet = 1;
+			BRLAN_ReadDataFromMemory(&setOfOffsetsToOthers[0], data, 4);
+			BRLAN_ReadDataFromMemory(&setOfOffsetsToOthers[1], data, 4);
+		}else if((be32(brlanEntry.flags) & (1 << 25)) >= 1) {
 			somethingIsSet = 1;
 			BRLAN_ReadDataFromMemory(&offsetToExtras, data, 4);
 		}
+
+//		if (somethingElseIsSet == 1)
+//		{
+//			BRLAN_ReadDataFromMemory(&tagHeader, data, sizeof(tag_header));
+//			printf("\t<tag name=\"%s\" type=\"%c%c%c%c\" ", brlanEntry.name, tagHeader.magic[0], tagHeader.magic[1], tagHeader.magic[2], tagHeader.magic[3]);
+//			printf("format=\"%08x\">\n", be32(brlanEntry.flags));
+			
+//		}
 
 		BRLAN_ReadDataFromMemory(&tagHeader, data, sizeof(tag_header));
 		printf("\t<tag name=\"%s\" type=\"%c%c%c%c\" ", brlanEntry.name, tagHeader.magic[0], tagHeader.magic[1], tagHeader.magic[2], tagHeader.magic[3]);
@@ -658,9 +672,23 @@ u32 create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *e
 			}
 			u32 eC = addonTagHeader.entry_count;
 			u32 cC = addonTagEntryInfo[eC].coord_count;
+			if (addonTagHeader.entry_count > 0)
+			{
+				cC = short_swap_bytes(addonTagEntryInfo[eC-1].coord_count);
+				printf("cC: %08x\n", cC);
+			}
 			addonTagEntry[addonTagHeader.entry_count].offset = sizeof(tag_header);
 			if (addonTagHeader.entry_count > 0)
-				addonTagEntry[addonTagHeader.entry_count].offset = addonTagEntry[addonTagHeader.entry_count-1].offset + sizeof(tag_entryinfo) + (sizeof(tag_data) * cC);
+			{
+				if (addonTagEntryInfo[eC-1].unk1 == 0x2)
+				{
+					addonTagEntry[addonTagHeader.entry_count].offset = addonTagEntry[addonTagHeader.entry_count-1].offset + sizeof(tag_entryinfo) + (sizeof(tag_data) * cC);
+				}
+				if (addonTagEntryInfo[eC-1].unk1 == 0x1)
+				{
+					addonTagEntry[addonTagHeader.entry_count].offset = addonTagEntry[addonTagHeader.entry_count-1].offset + sizeof(tag_entryinfo) + (sizeof(tag_data2) * cC);				
+				}
+			}
 
 			addonTagEntryInfo[eC].coord_count = short_swap_bytes(addonTagEntryInfo[eC].coord_count);
 			addonTagHeader.entry_count++;
