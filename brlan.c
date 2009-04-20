@@ -222,9 +222,9 @@ void parse_brlan(char* filename)
 						u32 p2 = be32(tagData.part2);
 						u32 p3 = be32(tagData.part3);
 						printf("\t\t\t<triplet>\n");
-						printf("\t\t\t\t<frame>%.12f</frame>\n", *(f32*)(&p1));
-						printf("\t\t\t\t<value>%.12f</value>\n", *(f32*)(&p2));
-						printf("\t\t\t\t<blend>%.12f</blend>\n", *(f32*)(&p3));
+						printf("\t\t\t\t<frame>%.15f</frame>\n", *(f32*)(&p1));
+						printf("\t\t\t\t<value>%.15f</value>\n", *(f32*)(&p2));
+						printf("\t\t\t\t<blend>%.15f</blend>\n", *(f32*)(&p3));
 						printf("\t\t\t</triplet>\n");
 			
 					} else {
@@ -234,7 +234,7 @@ void parse_brlan(char* filename)
 						u16 p2 = short_swap_bytes(tagData2.part2);
 						u16 p3 = short_swap_bytes(tagData2.padding);
 						printf("\t\t\t<pair>\n");
-						printf("\t\t\t\t<data1>%.12f</data1>\n", *(f32*)(&p1));
+						printf("\t\t\t\t<data1>%.15f</data1>\n", *(f32*)(&p1));
 						printf("\t\t\t\t<data2>%04x</data2>\n", p2);
 						printf("\t\t\t\t<padding>%04x</padding>\n", p3);
 						printf("\t\t\t</pair>\n");
@@ -272,9 +272,9 @@ void parse_brlan(char* filename)
 						u32 p2 = be32(tagData.part2);
 						u32 p3 = be32(tagData.part3);
 						printf("\t\t\t<triplet>\n");
-						printf("\t\t\t\t<frame>%.12f</frame>\n", *(f32*)(&p1));
-						printf("\t\t\t\t<value>%.12f</value>\n", *(f32*)(&p2));
-						printf("\t\t\t\t<blend>%.12f</blend>\n", *(f32*)(&p3));
+						printf("\t\t\t\t<frame>%.15f</frame>\n", *(f32*)(&p1));
+						printf("\t\t\t\t<value>%.15f</value>\n", *(f32*)(&p2));
+						printf("\t\t\t\t<blend>%.15f</blend>\n", *(f32*)(&p3));
 						printf("\t\t\t</triplet>\n");
 			
 					} else {
@@ -284,7 +284,7 @@ void parse_brlan(char* filename)
 						u16 p2 = short_swap_bytes(tagData2.part2);
 						u16 p3 = short_swap_bytes(tagData2.padding);
 						printf("\t\t\t<pair>\n");
-						printf("\t\t\t\t<data1>%.12f</data1>\n", *(f32*)(&p1));
+						printf("\t\t\t\t<data1>%.15f</data1>\n", *(f32*)(&p1));
 						printf("\t\t\t\t<data2>%04x</data2>\n", p2);
 						printf("\t\t\t\t<padding>%04x</padding>\n", p3);
 						printf("\t\t\t</pair>\n");
@@ -325,9 +325,9 @@ void parse_brlan(char* filename)
 					u32 p2 = be32(tagData.part2);
 					u32 p3 = be32(tagData.part3);
 					printf("\t\t\t<triplet>\n");
-					printf("\t\t\t\t<frame>%.12f</frame>\n", *(f32*)(&p1));
-					printf("\t\t\t\t<value>%.12f</value>\n", *(f32*)(&p2));
-					printf("\t\t\t\t<blend>%.12f</blend>\n", *(f32*)(&p3));
+					printf("\t\t\t\t<frame>%.15f</frame>\n", *(f32*)(&p1));
+					printf("\t\t\t\t<value>%.15f</value>\n", *(f32*)(&p2));
+					printf("\t\t\t\t<blend>%.15f</blend>\n", *(f32*)(&p3));
 					printf("\t\t\t</triplet>\n");
 			
 				} else {
@@ -337,7 +337,7 @@ void parse_brlan(char* filename)
 					u16 p2 = short_swap_bytes(tagData2.part2);
 					u16 p3 = short_swap_bytes(tagData2.padding);
 					printf("\t\t\t<pair>\n");
-					printf("\t\t\t\t<data1>%.12f</data1>\n", *(f32*)(&p1));
+					printf("\t\t\t\t<data1>%.15f</data1>\n", *(f32*)(&p1));
 					printf("\t\t\t\t<data2>%04x</data2>\n", p2);
 					printf("\t\t\t\t<padding>%04x</padding>\n", p3);
 					printf("\t\t\t</pair>\n");
@@ -388,9 +388,9 @@ void parse_brlan(char* filename)
 			u32 p2 = be32(tagData.part2);
 			u32 p3 = be32(tagData.part3);
 			printf("\t\t\t<triplet>\n");
-			printf("\t\t\t\t<frame>%.12f</frame>\n", *(f32*)(&p1));
-			printf("\t\t\t\t<value>%.12f</value>\n", *(f32*)(&p2));
-			printf("\t\t\t\t<blend>%.12f</blend>\n", *(f32*)(&p3));
+			printf("\t\t\t\t<frame>%.15f</frame>\n", *(f32*)(&p1));
+			printf("\t\t\t\t<value>%.15f</value>\n", *(f32*)(&p2));
+			printf("\t\t\t\t<blend>%.15f</blend>\n", *(f32*)(&p3));
 			printf("\t\t\t</triplet>\n");
 			
 		} else {
@@ -400,7 +400,7 @@ void parse_brlan(char* filename)
 			u16 p2 = short_swap_bytes(tagData2.part2);
 			u16 p3 = short_swap_bytes(tagData2.padding);
 			printf("\t\t\t<pair>\n");
-			printf("\t\t\t\t<data1>%.12f</data1>\n", *(f32*)(&p1));
+			printf("\t\t\t\t<data1>%.15f</data1>\n", *(f32*)(&p1));
 			printf("\t\t\t\t<data2>%04x</data2>\n", p2);
 			printf("\t\t\t\t<padding>%04x</padding>\n", p3);
 			printf("\t\t\t</pair>\n");
@@ -440,9 +440,9 @@ void parse_brlan(char* filename)
 			u32 p2 = be32(tagData.part2);
 			u32 p3 = be32(tagData.part3);
 			printf("\t\t\t<triplet>\n");
-			printf("\t\t\t\t<frame>%.12f</frame>\n", *(f32*)(&p1));
-			printf("\t\t\t\t<value>%.12f</value>\n", *(f32*)(&p2));
-			printf("\t\t\t\t<blend>%.12f</blend>\n", *(f32*)(&p3));
+			printf("\t\t\t\t<frame>%.15f</frame>\n", *(f32*)(&p1));
+			printf("\t\t\t\t<value>%.15f</value>\n", *(f32*)(&p2));
+			printf("\t\t\t\t<blend>%.15f</blend>\n", *(f32*)(&p3));
 			printf("\t\t\t</triplet>\n");
 			
 		} else {
@@ -452,7 +452,7 @@ void parse_brlan(char* filename)
 			u16 p2 = short_swap_bytes(tagData2.part2);
 			u16 p3 = short_swap_bytes(tagData2.padding);
 			printf("\t\t\t<pair>\n");
-			printf("\t\t\t\t<data1>%.12f</data1>\n", *(f32*)(&p1));
+			printf("\t\t\t\t<data1>%.15f</data1>\n", *(f32*)(&p1));
 			printf("\t\t\t\t<data2>%04x</data2>\n", p2);
 			printf("\t\t\t\t<padding>%04x</padding>\n", p3);
 			printf("\t\t\t</pair>\n");
