@@ -440,8 +440,8 @@ void PrintBRLYTEntry_pan1(brlyt_entry entry, u8* brlyt_file)
 	printf("		</flip>\n");
 	printf("		<rotate>%f</rotate>\n", float_swap_bytes(data.angle));
 	printf("		<zoom>\n");
-	printf("			<x>%f</x>\n", float_swap_bytes(data.xmag));
-	printf("			<y>%f</y>\n", float_swap_bytes(data.ymag));
+	printf("			<x>%.10f</x>\n", float_swap_bytes(data.xmag));
+	printf("			<y>%.10f</y>\n", float_swap_bytes(data.ymag));
 	printf("		</zoom>\n");
 	printf("		<size>\n");
 	printf("			<width>%f</width>\n", float_swap_bytes(data.width));
@@ -488,8 +488,8 @@ void PrintBRLYTEntry_wnd1(brlyt_entry entry, u8* brlyt_file)
 	printf("		</flip>\n");
 	printf("		<rotate>%f</rotate>\n", float_swap_bytes(data.angle));
 	printf("		<zoom>\n");
-	printf("			<x>%f</x>\n", float_swap_bytes(data.xmag));
-	printf("			<y>%f</y>\n", float_swap_bytes(data.ymag));
+	printf("			<x>%.10f</x>\n", float_swap_bytes(data.xmag));
+	printf("			<y>%.10f</y>\n", float_swap_bytes(data.ymag));
 	printf("		</zoom>\n");
 	printf("		<size>\n");
 	printf("			<width>%f</width>\n", float_swap_bytes(data.width));
@@ -540,8 +540,8 @@ void PrintBRLYTEntry_bnd1(brlyt_entry entry, u8* brlyt_file)
 	printf("		</flip>\n");
 	printf("		<rotate>%f</rotate>\n", float_swap_bytes(data.angle));
 	printf("		<zoom>\n");
-	printf("			<x>%f</x>\n", float_swap_bytes(data.xmag));
-	printf("			<y>%f</y>\n", float_swap_bytes(data.ymag));
+	printf("			<x>%.10f</x>\n", float_swap_bytes(data.xmag));
+	printf("			<y>%.10f</y>\n", float_swap_bytes(data.ymag));
 	printf("		</zoom>\n");
 	printf("		<size>\n");
 	printf("			<width>%f</width>\n", float_swap_bytes(data.width));
@@ -590,8 +590,8 @@ void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file)
 	printf("		</flip>\n");
 	printf("		<rotate>%f</rotate>\n", float_swap_bytes(data.angle));
 	printf("		<zoom>\n");
-	printf("			<x>%f</x>\n", float_swap_bytes(data.xmag));
-	printf("			<y>%f</y>\n", float_swap_bytes(data.ymag));
+	printf("			<x>%.10f</x>\n", float_swap_bytes(data.xmag));
+	printf("			<y>%.10f</y>\n", float_swap_bytes(data.ymag));
 	printf("		</zoom>\n");
 	printf("		<size>\n");
 	printf("			<width>%f</width>\n", float_swap_bytes(data.width));
@@ -671,8 +671,8 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file)
 	printf("		</flip>\n");
 	printf("		<rotate>%f</rotate>\n", float_swap_bytes(data.angle));
 	printf("		<zoom>\n");
-	printf("			<x>%f</x>\n", float_swap_bytes(data.xmag));
-	printf("			<y>%f</y>\n", float_swap_bytes(data.ymag));
+	printf("			<x>%.10f</x>\n", float_swap_bytes(data.xmag));
+	printf("			<y>%.10f</y>\n", float_swap_bytes(data.ymag));
 	printf("		</zoom>\n");
 	printf("		<size>\n");
 	printf("			<width>%f</width>\n", float_swap_bytes(data.width));
@@ -1473,7 +1473,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 			int i;
 			for(i=0;i<numEntries;i++) {
 				offsunks[(i*2)+0] = be32(offsunks[(i*2)+0] + (numEntries * 8));
-				offsunks[i*2+1] = 0;
+				offsunks[i*2+1] = 0;	// MIGHT NOT BE 0 ? //
 
 				fwrite(&offsunks[i*2], sizeof(u32), 1, fp);
 				fwrite(&offsunks[i*2+1], sizeof(u32), 1, fp);
@@ -2700,16 +2700,13 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 		if (subnode != NULL)
 		{
 			mxml_node_t *valnode;
-			int i;
-			for (i=0;i<4; i++)
+			int i=0;
+			for(valnode = mxmlFindElement(subnode, subnode, "vtx", NULL, NULL, MXML_DESCEND); valnode != NULL; valnode = mxmlFindElement(valnode, subnode, "vtx", NULL, NULL, MXML_DESCEND))
 			{
-				valnode = mxmlFindElement(subnode, subnode, "vtx", NULL, NULL, MXML_DESCEND);
-				if (valnode != NULL)
-				{
-					char tempCoord[256];
-					get_value(valnode, tempCoord, 256);
-					chunk2.vtx_colors[i] = be32(strtoul(&(tempCoord[2]), NULL, 16));
-				}
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk2.vtx_colors[i] = be32(strtoul(&(tempCoord[2]), NULL, 16));
+				i++;
 			}
 		}
 		u32 numberOfPicCoords = 0;
