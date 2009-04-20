@@ -12,23 +12,23 @@
 
 #include "types.h"
 
-#define mread		ReadMemory
-#define mwrite		WriteMemory
-#define mopen		OpenMemory
-#define mclose		CloseMemory
-#define mseek		SeekMemory
-#define mgetc		ReadMemoryChar
-#define mputc		WriteMemoryChar
-#define mtell		TellMemory
-#define msize		SizeMemory
-#define mgetm		GetMemory
+#define mread        ReadMemory
+#define mwrite        WriteMemory
+#define mopen        OpenMemory
+#define mclose        CloseMemory
+#define mseek        SeekMemory
+#define mgetc        ReadMemoryChar
+#define mputc        WriteMemoryChar
+#define mtell        TellMemory
+#define msize        SizeMemory
+#define mgetm        GetMemory
 
 typedef struct
 {
-	void*	memory;			// Pointer.
-	size_t	memorysize;		// Size.
-	size_t	position;		// Where we are.
-	char	mode;			// What mode opened (1 = read, 2 = write, 3 = both)
+    void*    memory;            // Pointer.
+    size_t    memorysize;        // Size.
+    size_t    position;        // Where we are.
+    char    mode;            // What mode opened (1 = read, 2 = write, 3 = both)
 } MEMORY;
 
 void ReadMemory(void* dst, size_t size, size_t count, MEMORY* src);

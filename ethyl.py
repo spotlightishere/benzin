@@ -43,11 +43,11 @@ formats = {
         ''',
     'window': '''
             float unk1  // 4c
-            float unk2	// 50
-            float unk3	// 54
-            float unk4	// 58
-            u32 unk5	// 5c - ???
-            u32 offs	// 60 - from start of pane
+            float unk2    // 50
+            float unk3    // 54
+            float unk4    // 58
+            u32 unk5    // 5c - ???
+            u32 offs    // 60 - from start of pane
             etc!
         ''',
     'window2': ''' // (r29)
@@ -60,7 +60,7 @@ formats = {
             u8 pad                   // 13
             etc! // followed by the texcoord array
         ''',
-        	
+            
     'group': '''
             char name[16]
             u16 numsubs
@@ -142,7 +142,7 @@ for (dname, definition) in formats.items():
         else:
             df.append((typ, name, default))
     formats[dname] = df, etc, etcn
-	
+    
 # Dumb pretty printer
 def my_repr(b, start=''):
     '''scrap this shit and implement new one eventually'''
@@ -179,10 +179,10 @@ def my_repr(b, start=''):
     else:
         rep = repr(b)
     return re.sub(re.compile('^', re.M), start, rep)
-	
+    
 def pr_dict(*args):
     print my_repr(*args)
-	
+    
 types = {
     'u8': 'B',
     'u16': 'H',
@@ -213,18 +213,18 @@ def nullterm(str_plus):
         return str_plus[:z]
     else:
         return str_plus
-		
+        
 def unnullterm(var, size):
     if len(var) > size:
         raise Exception('unnullterm: "%s" too long' % var)
     return var.ljust(size, '\0')
-	
+    
 def untv(name):
     #assert '\0' not in name
     lex = len(name) + 16
     lex -= lex % 16
     return name.ljust(lex, '\0')
-	
+    
 def parse_data(chunk, definition, prefix=None, start=0):
     df, etc, etcn = formats[definition]
     #print df, repr(definition)
@@ -271,12 +271,12 @@ def parse_data(chunk, definition, prefix=None, start=0):
         ret = ret['_']
 
     return (ret, pos) if etcn else ret
-	
+    
 def unparse_var(typ, var):
     if not types.has_key(typ):
         raise Exception('What\'s a %s?' % typ)
     return struct.pack('>' + types[typ], var)
-	
+    
 def unparse_data(vars, definition, prefix=None):
     df, etc, etcn = formats[definition]
     ret = ''
@@ -317,7 +317,7 @@ def unparse_data(vars, definition, prefix=None):
                 for v in var:
                     ret += unparse_var(typ, v)
     return ret
-	
+    
 def iff_to_chunks(z):
     pos = 0
     chunks = []
@@ -330,7 +330,7 @@ def iff_to_chunks(z):
         pos += length
         chunks.append((cc, data))
     return chunks
-	
+    
 def bit_extract(num, start, end=None):
     if end is None:
         end = start
@@ -338,14 +338,14 @@ def bit_extract(num, start, end=None):
     ret = (num & mask) >> (31 - end)
     
     return ret
-	
+    
 def bit_place(num, start, end=None):
     # Just for sanity
     if end is None:
         end = start
     assert num <= 2**(end - start)
     return num << (31 - end)
-	
+    
 def get_array(chunk, startpos, array_size, item_size, item_type=None):
     ar = []
     pos = startpos
@@ -354,7 +354,7 @@ def get_array(chunk, startpos, array_size, item_size, item_type=None):
         ar.append(get_opt(chunk, pos, True, item_size, item_type)[0])
         pos += item_size
     return ar, pos
-	
+    
 def get_opt(chunk, startpos, enabled, size, item_type=None):
     if not enabled:
         return None, startpos
@@ -390,6 +390,6 @@ def put_opt(var, flags, bit, size, item_type=None):
         else:
             raise Exception('unhandled')
         return ret, flags
-		
+        
 def i2f(int):
     return struct.unpack('>f', struct.pack('>I', int))[0]
