@@ -660,13 +660,13 @@ void write_brlan(char *infile, char* outfile)
     	timgnumber++;
 	}
     u32 imageoffsets[timgnumber];
-    u32 imagefileoffset = sizeof(brlan_header) + sizeof(brlan_pai1_header_type1) + (timgnumber * sizeof(u32));
-    memset(imageoffsets, imagefileoffset, timgnumber);
+	u32 imagefileoffset = ftell(fp);
+	for( i = 0; i < timgnumber; i++) imageoffsets[i] = imagefileoffset;
     WriteBRLANOffsets(imageoffsets, timgnumber, fp);
     
     for(node = mxmlFindElement(tree, tree, "timg", NULL, NULL, MXML_DESCEND); node != NULL; node = mxmlFindElement(node, tree, "timg", NULL, NULL, MXML_DESCEND)) {
         timgcount++;
-		imageoffsets[timgcount-1] += totaltimgize;
+		imageoffsets[timgcount-1] = ftell(fp) - imageoffsets[timgcount-1];
         if(mxmlElementGetAttr(node, "name") != NULL)
             strcpy(temp, mxmlElementGetAttr(node, "name"));
         else{
@@ -676,7 +676,12 @@ void write_brlan(char *infile, char* outfile)
 		fwrite(temp, strlen(temp) + 1, 1, fp);
         totaltimgize += strlen(temp) + 1;
     }
-    if ((totaltimgize % 4) != 0) totaltimgize += (4 - (totaltimgize % 4));
+    if ((totaltimgize % 4) != 0)
+    {
+    	u8 blank[3] = {0x0, 0x0, 0x0};
+    	fwrite(blank, (4 - (totaltimgize % 4)), 1, fp);
+    	totaltimgize += (4 - (totaltimgize % 4));
+    }
     u32 tempoOffset = ftell(fp);
     fseek(fp, imagefileoffset, SEEK_SET);
     WriteBRLANOffsets(imageoffsets, timgnumber, fp);
@@ -688,9 +693,8 @@ void write_brlan(char *infile, char* outfile)
 		panecount++;
 	}
 	u32 paneoffsets[panecount];
-	u32 tagoffset = sizeof(brlan_header) + sizeof(brlan_pai1_header_type1) + (timgcount * sizeof(u32)) + totaltimgize;
-	tagoffset = ftell(fp);
-	for(i = 0; i < panecount; i++) paneoffsets[i]=sizeof(brlan_header);
+	u32 tagoffset = ftell(fp);
+	for(i = 0; i < panecount; i++) paneoffsets[i] = 0x10;
 	WriteBRLANOffsets(paneoffsets, panecount, fp);
 	
 	for(node = mxmlFindElement(tree, tree, "pane", NULL, NULL, MXML_DESCEND); node != NULL; node = mxmlFindElement(node, tree, "pane", NULL, NULL, MXML_DESCEND))
