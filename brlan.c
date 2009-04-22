@@ -35,9 +35,6 @@ char tag_types_list[15][24];
 static size_t BRLAN_fileoffset = 0;
 FILE* xmlanout;
 
-u8 somethingElseIsSet = 0;
-u8 somethingIsSet = 0;
-
 static void BRLAN_ReadDataFromMemoryX(void* destination, void* input, size_t size)
 {
     u8* out = (u8*)destination;
