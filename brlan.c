@@ -230,7 +230,7 @@ void parse_brlan(char* filename)
         u32 brlanEntryOffset = BRLAN_fileoffset;
         BRLAN_ReadDataFromMemory(&brlanEntry, data, sizeof(brlan_entry));
 
-		printf("\t<pane name=\"%s\">\n", brlanEntry.name);
+		printf("\t<pane name=\"%s\" type=\"%u\">\n", brlanEntry.name, brlanEntry.is_material);
 
 		u32 entrylocations[brlanEntry.num_tags];
 		BRLAN_ReadDataFromMemory(entrylocations, data, brlanEntry.num_tags * sizeof(u32));
@@ -482,6 +482,13 @@ void create_tag_from_xml(mxml_node_t *tree, mxml_node_t *node, FILE* fp)
         strcpy(entr.name, mxmlElementGetAttr(node, "name"));
     else{
     }
+    if(mxmlElementGetAttr(node, "type") != NULL) {
+        strcpy(temp, mxmlElementGetAttr(node, "type"));
+        entr.is_material = (u8)atoi(temp);
+    } else {
+	}
+
+    
     
     tag_header head;
     mxml_node_t *tagnode;
