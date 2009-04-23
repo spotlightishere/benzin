@@ -495,8 +495,25 @@ void PrintBRLYTEntry_wnd1(brlyt_entry entry, u8* brlyt_file)
     printf("            <width>%f</width>\n", float_swap_bytes(data.width));
     printf("            <height>%f</height>\n", float_swap_bytes(data.height));
     printf("        </size>\n");
-    printf("    </tag>\n");
 #endif //OLD_BRLYT_OUTSTYLE
+
+    brlyt_wnd_addon wndy;
+    BRLYT_ReadDataFromMemory(&wndy, brlyt_file, sizeof(brlyt_wnd_addon)); 
+//    if((data.flag1 == 0x1) && (data.flag2 == 0x4))
+//    {
+    int i;
+    printf("        <addon>\n");
+    for(i=0;i<4;i++) printf("            <unk1>%08x</unk1>\n", be32(wndy.unk1[i]));
+    for(i=0;i<4;i++) printf("            <unk2>%02x</unk2>\n", wndy.unk2[i]);
+    printf("            <unk3>%08x</unk3>\n", be32(wndy.unk3));
+    printf("            <unk4>%08x</unk4>\n", be32(wndy.unk4));
+    for(i=0;i<4;i++) printf("            <unk5>%08x</unk5>\n", be32(wndy.unk5[i]));
+    for(i=0;i<6;i++) printf("            <unk6>%04x</unk6>\n", short_swap_bytes(wndy.unk6[i]));
+    for(i=0;i<6;i++) printf("            <unk7>%f</unk7>\n", float_swap_bytes(wndy.unk7[i]));
+    for(i=0;i<6;i++) printf("            <unk8>%04x</unk8>\n", short_swap_bytes(wndy.unk8[i]));
+    printf("        </addon>\n");
+//    }
+    printf("    </tag>\n");
 }
 
 void PrintBRLYTEntry_bnd1(brlyt_entry entry, u8* brlyt_file)
@@ -822,9 +839,9 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
             printf("\n");
 #else
             printf("            <ua2>\n");
-            printf("                <data>%f</data>\n", float_swap_bytes(data4.unk[0]));
-            printf("                <data>%f</data>\n", float_swap_bytes(data4.unk[1]));
-            printf("                <data>%f</data>\n", float_swap_bytes(data4.unk[2]));
+            printf("                <data>%.10f</data>\n", float_swap_bytes(data4.unk[0]));
+            printf("                <data>%.10f</data>\n", float_swap_bytes(data4.unk[1]));
+            printf("                <data>%.10f</data>\n", float_swap_bytes(data4.unk[2]));
             printf("                <data>%f</data>\n", float_swap_bytes(data4.unk[3]));
             printf("                                <data>%f</data>\n", float_swap_bytes(data4.unk[4]));
             printf("            </ua2>\n");
@@ -920,8 +937,8 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         printf("                <a>%08x</a>\n", be32(data4.a));
             printf("                <b>%08x</b>\n", be32(data4.b));
             printf("                <c>%f</c>\n", float_swap_bytes(data4.c));
-            printf("                <d>%08x</d>\n", be32(data4.d));
-            printf("                <e>%08x</e>\n", be32(data4.e));
+            printf("                <d>%f</d>\n", float_swap_bytes(data4.d));
+            printf("                <e>%f</e>\n", float_swap_bytes(data4.e));
             printf("            </ua7>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                 }
@@ -1690,8 +1707,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             matSize += sizeof(chunk);
 
             brlyt_texref_chunk chunkTexRef;
-            setnode = mxmlFindElement(subnode, subnode, "material", NULL, NULL, MXML_DESCEND);
-            if (setnode != NULL)
+            for(setnode = mxmlFindElement(subnode, subnode, "material", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "material", NULL, NULL, MXML_DESCEND))
             {
                 mxml_node_t *valnode;
                 char temp[256];
@@ -1720,8 +1736,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             }
 
             brlyt_ua2_chunk chunkUa2;
-            setnode = mxmlFindElement(subnode, subnode, "ua2", NULL, NULL, MXML_DESCEND);
-            if (setnode != NULL)
+            for(setnode = mxmlFindElement(subnode, subnode, "ua2", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "ua2", NULL, NULL, MXML_DESCEND))
             {
                 mxml_node_t *valnode;
                 int dataNumber = 0;
@@ -1739,8 +1754,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 matSize += sizeof(chunkUa2);
             }
             brlyt_4b_chunk chunkUa3;
-            setnode = mxmlFindElement(subnode, subnode, "ua3", NULL, NULL, MXML_DESCEND);
-            if (setnode != NULL)
+            for(setnode = mxmlFindElement(subnode, subnode, "ua3", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "ua3", NULL, NULL, MXML_DESCEND))
             {
                 mxml_node_t *valnode;
                 int dataNumber = 0;
@@ -1758,8 +1772,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 matSize += sizeof(chunkUa3);
             }
             brlyt_4b_chunk chunkUa4;
-            setnode = mxmlFindElement(subnode, subnode, "ua4", NULL, NULL, MXML_DESCEND);
-            if (setnode != NULL)
+            for(setnode = mxmlFindElement(subnode, subnode, "ua4", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "ua4", NULL, NULL, MXML_DESCEND))
             {
                 mxml_node_t *valnode;
                 int dataNumber = 0;
@@ -1777,8 +1790,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 matSize += sizeof(chunkUa4);
             }
             brlyt_4b_chunk chunkUa5;
-            setnode = mxmlFindElement(subnode, subnode, "ua5", NULL, NULL, MXML_DESCEND);
-            if (setnode != NULL)
+            for(setnode = mxmlFindElement(subnode, subnode, "ua5", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "ua5", NULL, NULL, MXML_DESCEND))
             {
                 mxml_node_t *valnode;
                 int dataNumber = 0;
@@ -1796,8 +1808,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 matSize += sizeof(chunkUa5);
             }
             brlyt_4b_chunk chunkUa6;
-            setnode = mxmlFindElement(subnode, subnode, "ua6", NULL, NULL, MXML_DESCEND);
-            if (setnode != NULL)
+            for(setnode = mxmlFindElement(subnode, subnode, "ua6", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "ua6", NULL, NULL, MXML_DESCEND))
             {
                 mxml_node_t *valnode;
                 int dataNumber = 0;
@@ -1815,8 +1826,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 matSize += sizeof(chunkUa6);
             }
             brlyt_ua7_chunk chunkUa7;
-            setnode = mxmlFindElement(subnode, subnode, "ua7", NULL, NULL, MXML_DESCEND);
-            if (setnode != NULL)
+            for(setnode = mxmlFindElement(subnode, subnode, "ua7", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "ua7", NULL, NULL, MXML_DESCEND))
             {
                 mxml_node_t *valnode;
                 valnode=mxmlFindElement(setnode, setnode, "a", NULL, NULL, MXML_DESCEND);
@@ -1849,7 +1859,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                         char tempCoord[256];
                         get_value(valnode, tempCoord, 256);
 
-                        chunkUa7.d = be32(strtoul(tempCoord, NULL, 16));
+                        chunkUa7.d = float_swap_bytes(atof(tempCoord));
                 }
                 valnode=mxmlFindElement(setnode, setnode, "e", NULL, NULL, MXML_DESCEND);
                 if ( valnode != NULL )
@@ -1857,15 +1867,14 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                         char tempCoord[256];
                         get_value(valnode, tempCoord, 256);
 
-                        chunkUa7.e = be32(strtoul(tempCoord, NULL, 16));
+                        chunkUa7.e = float_swap_bytes(atof(tempCoord));
                 }
                 fwrite(&chunkUa7, sizeof(chunkUa7), 1, fp);
                 *fileOffset = *fileOffset + sizeof(chunkUa7);
                 matSize += sizeof(chunkUa7);
             }
             brlyt_4b_chunk chunkUa8;
-            setnode = mxmlFindElement(subnode, subnode, "ua8", NULL, NULL, MXML_DESCEND);
-            if (setnode != NULL)
+            for(setnode = mxmlFindElement(subnode, subnode, "ua8", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "ua8", NULL, NULL, MXML_DESCEND))
             {
                 mxml_node_t *valnode;
                 int dataNumber = 0;
@@ -1902,8 +1911,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 matSize += sizeof(chunkUa9);
             }
             brlyt_4b_chunk chunkUaa;
-            setnode = mxmlFindElement(subnode, subnode, "uaa", NULL, NULL, MXML_DESCEND);
-            if (setnode != NULL)
+            for(setnode = mxmlFindElement(subnode, subnode, "uaa", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "uaa", NULL, NULL, MXML_DESCEND))
             {
                 mxml_node_t *valnode;
                 int dataNumber = 0;
@@ -1921,8 +1929,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 matSize += sizeof(chunkUaa);
             }
             brlyt_4b_chunk chunkUab;
-            setnode = mxmlFindElement(subnode, subnode, "uab", NULL, NULL, MXML_DESCEND);
-            if (setnode != NULL)
+            for(setnode = mxmlFindElement(subnode, subnode, "uab", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "uab", NULL, NULL, MXML_DESCEND))
             {
                 mxml_node_t *valnode;
                 int dataNumber = 0;
@@ -2335,6 +2342,86 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
         }
         fwrite(&chunk, sizeof(chunk), 1, fp);
         *fileOffset = *fileOffset + sizeof(chunk);
+
+        int i;
+        brlyt_wnd_addon wndy;
+        subnode = mxmlFindElement(node, node, "addon", NULL, NULL, MXML_DESCEND);
+        if (subnode != NULL)
+        {
+            i = 0;
+            mxml_node_t *subsubnode;
+            for(subsubnode = mxmlFindElement(subnode, subnode, "unk1", NULL, NULL, MXML_DESCEND); subsubnode != NULL; subsubnode = mxmlFindElement(subsubnode, subnode, "unk1", NULL, NULL, MXML_DESCEND))
+            {
+                char tempCoord[256];
+                get_value(subsubnode, tempCoord, 256);
+                wndy.unk1[i] = be32(strtoul(tempCoord, NULL, 16));
+                i++;
+            }
+            i = 0;
+            for(subsubnode = mxmlFindElement(subnode, subnode, "unk2", NULL, NULL, MXML_DESCEND); subsubnode != NULL; subsubnode = mxmlFindElement(subsubnode, subnode, "unk2", NULL, NULL, MXML_DESCEND))
+            {
+                
+                char tempCoord[256];
+                get_value(subsubnode, tempCoord, 256);
+                wndy.unk2[i] = (u8)(strtoul(tempCoord, NULL, 16));
+                i++;
+            }
+            subsubnode = mxmlFindElement(subnode, subnode, "unk3", NULL, NULL, MXML_DESCEND);
+            if(subsubnode != NULL)
+            {
+
+                char tempCoord[256];
+                get_value(subsubnode, tempCoord, 256);
+                wndy.unk3 = be32(strtoul(tempCoord, NULL, 16));
+            }
+            subsubnode = mxmlFindElement(subnode, subnode, "unk4", NULL, NULL, MXML_DESCEND);
+            if(subsubnode != NULL)
+            {
+
+                char tempCoord[256];
+                get_value(subsubnode, tempCoord, 256);
+                wndy.unk4 = be32(strtoul(tempCoord, NULL, 16));
+            }
+            i = 0;
+            for(subsubnode = mxmlFindElement(subnode, subnode, "unk5", NULL, NULL, MXML_DESCEND); subsubnode != NULL; subsubnode = mxmlFindElement(subsubnode, subnode, "unk5", NULL, NULL, MXML_DESCEND))
+            {
+                
+                char tempCoord[256];
+                memset(tempCoord, 0, 256);
+                get_value(subsubnode, tempCoord, 256);
+                wndy.unk5[i] = int_swap_bytes(strtoul(tempCoord, NULL, 16));
+                i++;
+            }
+            i = 0;
+            for(subsubnode = mxmlFindElement(subnode, subnode, "unk6", NULL, NULL, MXML_DESCEND); subsubnode != NULL; subsubnode = mxmlFindElement(subsubnode, subnode, "unk6", NULL, NULL, MXML_DESCEND))
+            {
+                
+                char tempCoord[256];
+                get_value(subsubnode, tempCoord, 256);
+                wndy.unk6[i] = short_swap_bytes(strtoul(tempCoord, NULL, 16));
+                i++;
+            }
+            i = 0; 
+            for(subsubnode = mxmlFindElement(subnode, subnode, "unk7", NULL, NULL, MXML_DESCEND); subsubnode != NULL; subsubnode = mxmlFindElement(subsubnode, subnode, "unk7", NULL, NULL, MXML_DESCEND))
+            {
+                
+                char tempCoord[256];
+                get_value(subsubnode, tempCoord, 256);
+                wndy.unk7[i] = float_swap_bytes(atof(tempCoord));
+                i++;
+            }
+            i = 0; 
+            for(subsubnode = mxmlFindElement(subnode, subnode, "unk8", NULL, NULL, MXML_DESCEND); subsubnode != NULL; subsubnode = mxmlFindElement(subsubnode, subnode, "unk8", NULL, NULL, MXML_DESCEND))
+            {
+                
+                char tempCoord[256];
+                get_value(subsubnode, tempCoord, 256);
+                wndy.unk8[i] = short_swap_bytes(strtoul(tempCoord, NULL, 16));
+                i++;
+            }
+        }
+        fwrite(&wndy, sizeof(brlyt_wnd_addon), 1, fp);
+        *fileOffset = *fileOffset + sizeof(brlyt_wnd_addon);
     }
     if ( memcmp(temp, txt1, sizeof(txt1)) == 0)
     {

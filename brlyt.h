@@ -79,6 +79,32 @@ typedef struct
     u8 padding;        // 0
 } brlyt_pic_chunk;
 
+typedef struct				//0001-0004
+{
+	u32 unk1[4];		// all 0x00000000
+	u8 unk2[4];		// 0x01 0x00 0x00 0x00
+	u32 unk3;		// 0x00000068
+	u32 unk4;		// 0x0000009c
+	u32 unk5[4];		// all 0xffffffff
+	u16 unk6[6];		// 0x00 0x0100 0x00 0x00 0x00 0x00
+	float unk7[6];		// 3f800000 0x00 0x00 3f800000 3f800000 3f800000
+	u16 unk8[4];		// 0x0000 0x0
+} brlyt_wnd_addon;
+
+/*
+typedef struct			// 0003-0004
+{
+	u32 unk1[4];		// all 0x00000000
+	u8 unk2[4];		// 0x01 0x00 0x00 0x00
+	u32 unk3;		// 0x00000068
+	u32 unk4;		// 0x0000009c
+	u32 unk5[4];		// all 0xffffffff
+	u16 unk6[6];		// 0x00 0x0100 0x00 0x00 0x00 0x00
+	float unk7[6];		// 3f800000 0x00 0x00 3f800000 3f800000 3f800000
+	u16 unk8[4];		// 0x0000 0x00a0 0x0001 0x0000
+}
+*/
+
 typedef struct
 {
     char a;
@@ -138,8 +164,8 @@ typedef struct
     u32 a;
     u32 b;
     float c;
-    u32 d;
-    u32 e;
+    float d;  // found to be floating point  * 04/22 *
+    float e;  // found to be floating point  * 04/22 *
 } brlyt_ua7_chunk;
 
 typedef struct
