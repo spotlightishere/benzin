@@ -16,6 +16,40 @@
 
 int main(int argc, char* argv[])
 {
+    
+u8 type;
+char *ext;
+
+if (strcmp(argv[1], "r") == 0 )
+{
+    ext = strrchr(argv[2], '.');
+}
+if (strcmp(argv[1], "w") == 0)
+{
+    ext = strrchr(argv[3], '.');
+}
+if(!ext)
+{
+    printf("no extension");
+    exit(1);
+}
+else
+{
+char* temp = ext;
+    if(strcmp(++ext, "brlyt") == 0)
+    {
+        type = 1;
+    }
+    ext = temp;
+    if(strcmp(++ext, "brlan") == 0)
+    {
+        type = 2;
+    } else {
+        printf("unknown file extension");
+        exit(1);
+    }
+}
+
     int brlanargread;
     int brlytargread;
     int brlanargmake;
@@ -28,27 +62,31 @@ int main(int argc, char* argv[])
     char helpstrread[256];
     sprintf(helpstrmake, "%s m", argv[0]);
     sprintf(helpstrread, "%s r", argv[0]);
-#ifdef USE_BRLAN
+if(type == 2)
+{
     brlanargread = currentarg;
     strcat(helpstrread, " <*.brlan>");
     brlanargmake = currentarg++;
     strcat(helpstrmake, " <*.xmlan>");
-#endif //USE_BRLAN
-#ifdef USE_BRLYT
+}
+if(type == 1)
+{
     brlytargread = currentarg;
     strcat(helpstrread, " <*.brlyt>");
     brlytargmake = currentarg++;
     strcat(helpstrmake, " <*.xmlyt>");
-#endif //USE_BRLYT
+}
     reqargs = currentarg;
-#ifdef USE_BRLAN
+if(type == 2)
+{
     brlanargdestmake = currentarg++;
     strcat(helpstrmake, " <out.brlan>");
-#endif //USE_BRLAN
-#ifdef USE_BRLYT
+}
+if(type == 1)
+{
     brlytargdestmake = currentarg++;
     strcat(helpstrmake, " <out.brlyt>");
-#endif //USE_BRLYT
+}
 
     printf(INFORMATION_TEXT);
     if(argc < reqargs) {
@@ -56,21 +94,25 @@ int main(int argc, char* argv[])
         exit(1);
     }
     if(argv[1][0] == 'r') {
-#ifdef USE_BRLAN
+if(type == 2)
+{
         parse_brlan(argv[brlanargread]);
-#endif //USE_BRLAN
-#ifdef USE_BRLYT
+}
+if(type == 1)
+{
         parse_brlyt(argv[brlytargread]);
-#endif //USE_BRLYT
+}
     }else if(argv[1][0] == 'm') {
-#ifdef USE_BRLAN
+if(type == 2)
+{
         dbgprintf("1:%d 2:%d f1:%s f2:%s\n", brlanargmake, brlanargdestmake, argv[brlanargmake], argv[brlanargdestmake]);
         make_brlan(argv[brlanargmake], argv[brlanargdestmake]);
-#endif //USE_BRLAN
-#ifdef USE_BRLYT
+}
+if(type == 1)
+{
         dbgprintf("1:%d 2:%d f1:%s f2:%s\n", brlytargmake, brlytargdestmake, argv[brlytargmake], argv[brlytargdestmake]);
         make_brlyt(argv[brlytargmake], argv[brlytargdestmake]);
-#endif //USE_BRLYT
+}
     }
     return 0;
 }
