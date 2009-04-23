@@ -91,19 +91,11 @@ typedef struct				//0001-0004
 	u16 unk8[4];		// 0x0000 0x0
 } brlyt_wnd_addon;
 
-/*
-typedef struct			// 0003-0004
+typedef struct			// 0003-0005
 {
-	u32 unk1[4];		// all 0x00000000
-	u8 unk2[4];		// 0x01 0x00 0x00 0x00
-	u32 unk3;		// 0x00000068
-	u32 unk4;		// 0x0000009c
-	u32 unk5[4];		// all 0xffffffff
-	u16 unk6[6];		// 0x00 0x0100 0x00 0x00 0x00 0x00
-	float unk7[6];		// 3f800000 0x00 0x00 3f800000 3f800000 3f800000
-	u16 unk8[4];		// 0x0000 0x00a0 0x0001 0x0000
-}
-*/
+	u32 unk1[2];		// 0xb4 0xb8
+	u16 unk2[8];		// 0x0012 0x0000 0x0013 0x0000 0x0014 0x0500 0x0015 0x0200
+} brlyt_wnd_addon2;
 
 typedef struct
 {

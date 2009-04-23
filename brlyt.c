@@ -513,6 +513,17 @@ void PrintBRLYTEntry_wnd1(brlyt_entry entry, u8* brlyt_file)
     for(i=0;i<6;i++) printf("            <unk8>%04x</unk8>\n", short_swap_bytes(wndy.unk8[i]));
     printf("        </addon>\n");
 //    }
+
+    if (data.flag2 == 0x5)
+    {
+        brlyt_wnd_addon2 wndy2;
+        BRLYT_ReadDataFromMemory(&wndy2, brlyt_file, sizeof(brlyt_wnd_addon2));
+        printf("        <addon2>\n");
+        for(i=0;i<2;i++) printf("            <unk1>%08x</unk1>\n", be32(wndy2.unk1[i]));
+        for(i=0;i<8;i++) printf("            <unk2>%04x</unk2>\n", short_swap_bytes(wndy2.unk2[i]));
+        printf("        </addon2>\n");
+    }
+
     printf("    </tag>\n");
 }
 
@@ -2422,6 +2433,30 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
         }
         fwrite(&wndy, sizeof(brlyt_wnd_addon), 1, fp);
         *fileOffset = *fileOffset + sizeof(brlyt_wnd_addon);
+        brlyt_wnd_addon2 wndy2;
+        subnode = mxmlFindElement(node, node, "addon2", NULL, NULL, MXML_DESCEND);
+        if(subnode != NULL)
+        {
+            i=0;
+            mxml_node_t *subsubnode;
+            for(subsubnode = mxmlFindElement(subnode, subnode, "unk1", NULL, NULL, MXML_DESCEND); subsubnode != NULL; subsubnode = mxmlFindElement(subsubnode, subnode, "unk1", NULL, NULL, MXML_DESCEND))
+            {
+                char tempCoord[256];
+                get_value(subsubnode, tempCoord, 256);
+                wndy2.unk1[i] = int_swap_bytes(strtoul(tempCoord, NULL, 16));
+                i++;
+            }
+            i = 0;
+            for(subsubnode = mxmlFindElement(subnode, subnode, "unk2", NULL, NULL, MXML_DESCEND); subsubnode != NULL; subsubnode = mxmlFindElement(subsubnode, subnode, "unk2", NULL, NULL, MXML_DESCEND))
+            {
+                char tempCoord[256];
+                get_value(subsubnode, tempCoord, 256);
+                wndy2.unk2[i] = short_swap_bytes(strtoul(tempCoord, NULL, 16));
+                i++;
+            }
+            fwrite(&wndy2, sizeof(brlyt_wnd_addon2), 1, fp);
+            *fileOffset = *fileOffset + sizeof(brlyt_wnd_addon2);
+        }
     }
     if ( memcmp(temp, txt1, sizeof(txt1)) == 0)
     {
