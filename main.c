@@ -17,7 +17,7 @@
 int main(int argc, char* argv[])
 {
     
-u8 type;
+u8 type = 3;
 char *ext;
 
 if (strcmp(argv[1], "r") == 0 )
@@ -44,7 +44,9 @@ char* temp = ext;
     if(strcmp(++ext, "brlan") == 0)
     {
         type = 2;
-    } else {
+    }
+    if(type > 2)
+    {
         printf("unknown file extension");
         exit(1);
     }
