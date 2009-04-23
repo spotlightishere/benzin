@@ -24,7 +24,7 @@ if (strcmp(argv[1], "r") == 0 )
 {
     ext = strrchr(argv[2], '.');
 }
-if (strcmp(argv[1], "w") == 0)
+if (strcmp(argv[1], "m") == 0)
 {
     ext = strrchr(argv[3], '.');
 }
