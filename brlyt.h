@@ -79,23 +79,62 @@ typedef struct
     u8 padding;        // 0
 } brlyt_pic_chunk;
 
-typedef struct				//0001-0004
+typedef struct
 {
-	u32 unk1[4];		// all 0x00000000
-	u8 unk2[4];		// 0x01 0x00 0x00 0x00
-	u32 unk3;		// 0x00000068
-	u32 unk4;		// 0x0000009c
-	u32 unk5[4];		// all 0xffffffff
-	u16 unk6[6];		// 0x00 0x0100 0x00 0x00 0x00 0x00
-	float unk7[6];		// 3f800000 0x00 0x00 3f800000 3f800000 3f800000
-	u16 unk8[4];		// 0x0000 0x0
-} brlyt_wnd_addon;
+	float unk1[4];		// all 0x00000000
+	u8 count;		// 0x01
+	u8 padding[3];		// 0x00 0x00 0x00
+	u32 offset1;		// 0x00000068   offset to 0xffffffff's
+	u32 offset2;		// 0x0000007c	offset to last 8bytes of wnd1
+} brlyt_wnd;
+
+typedef struct			// pointed at by offset1
+{
+	u32 unk1[4];		// all 0xffffffff
+} brlyt_wnd1;
+
+typedef struct
+{
+	u16 unk1[6];		// 0x0019 0x0000 0x0000 0x0080 0x001a 0x0000
+} brlyt_wnd2ish;
+
+typedef struct
+{
+	u16 unk1;		// 0x0000
+	u16 unk2;		// 0x0100
+} brlyt_wnd2;
+
+typedef struct
+{
+	float texcoords[8];	// 0x00 0x00 3f800000 0x00 0x00 3f800000 3f800000 3f800000
+} brlyt_wnd3;
+
+typedef struct			// pointed to by offset2
+{
+	u32 offset;		// offset to something
+} brlyt_wnd4;
+
+typedef struct
+{
+	u32 unk1;		// material number ??
+} brlyt_wnd4_mat;
 
 typedef struct			// 0003-0005
 {
 	u32 unk1[2];		// 0xb4 0xb8
 	u16 unk2[8];		// 0x0012 0x0000 0x0013 0x0000 0x0014 0x0500 0x0015 0x0200
 } brlyt_wnd_addon2;
+
+// !!	bytes 0-7 header
+// !!	bytes 8-b flags/alpha
+// !!	bytes c-23 name
+// !!	floats 24-4b
+// !	floats 4c-5b
+// !	byte 5c count
+// !	bytes 60-63 offset	// 4 8 and c are words  12 is a byte following that is tex coords
+// !	byte 64-67 offset
+//	<count> words that are an offset to a struct of (short, bytes) short is a mat offset
+
 
 typedef struct
 {

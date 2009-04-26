@@ -16,41 +16,59 @@
 
 int main(int argc, char* argv[])
 {
-    
-u8 type = 3;
-char *ext;
+    u8 len;
+    u8 type = 3;
+    char *ext;
 
-if (strcmp(argv[1], "r") == 0 )
-{
-    ext = strrchr(argv[2], '.');
-}
-if (strcmp(argv[1], "m") == 0)
-{
-    ext = strrchr(argv[3], '.');
-}
-if(!ext)
-{
-    printf("no extension");
-    exit(1);
-}
-else
-{
-char* temp = ext;
-    if(strcmp(++ext, "brlyt") == 0)
+    if (argc < 3)
     {
-        type = 1;
-    }
-    ext = temp;
-    if(strcmp(++ext, "brlan") == 0)
-    {
-        type = 2;
-    }
-    if(type > 2)
-    {
-        printf("unknown file extension");
+        printf("Please use ./benzin r brlytfilename.brlyt > xmlytfilename.xmlyt\n");
+        printf("                - OR - \n");
+        printf("Please use ./benzin m xmlytfilename.xmlyt brlytfilename.brlyt\n");
         exit(1);
     }
-}
+    if ((strcmp(argv[1], "r") == 0) || (strcmp(argv[1], "p") == 0))
+    {
+        ext = strrchr(argv[2], '.');
+    } else if ((strcmp(argv[1], "m") == 0) || (strcmp(argv[1], "w") == 0))
+    {
+        if(argc < 4)
+        {
+            printf("Arguments not setup correctly\n");
+            printf("Please  type ./benzin to get possible arguments\n");
+            exit(1);
+        }
+        ext = strrchr(argv[3], '.');
+    } else {
+        printf("Please use ./benzin r brlytfilename.brlyt\n");
+        printf("                - OR - \n");
+        printf("Please use ./benzin m xmlytfilename.xmlyt brlytfilename.brlyt\n");
+        exit(1);
+    }
+    if(!ext)
+    {
+        printf("No extension on file\n");
+        printf("To see possible arguments type ./benzin\n");
+        exit(1);
+    }
+    else
+    {
+        char* temp = ext;
+        if(strcmp(++ext, "brlyt") == 0)
+        {
+            type = 1;
+        }
+        ext = temp;
+        if(strcmp(++ext, "brlan") == 0)
+        {
+            type = 2;
+        }
+        if(type > 2)
+        {
+            printf("Unknown file extension\n");
+            exit(1);
+        }
+    }
 
     int brlanargread;
     int brlytargread;
