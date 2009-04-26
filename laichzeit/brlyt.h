@@ -274,6 +274,7 @@ BRLYT*	LaichLyt_Start(float width, float height);
 int	LaichLyt_StartPane (BRLYT* brlyt, char* name);
 int	LaichLyt_StartText (BRLYT* brlyt, char* name);
 int	LaichLyt_StartPic  (BRLYT* brlyt, char* name);
+int	LaichLyt_StartWnd  (BRLYT* brlyt, char* name);
 int	LaichLyt_StartMat  (BRLYT* brlyt);
 int	LaichLyt_StartGroup(BRLYT* brlyt, char* name);
 
@@ -289,7 +290,7 @@ void	LaichLyt_PaneSize(BRLYT* brlyt, int pane, \
 void	LaichLyt_PaneAlpha(BRLYT* brlyt, int pane, \
 			    u8 alpha, u8 alpha2);
 
-/* Panes exist in Text and Pic tags, so we gotta create those too!*/ 
+/* Panes exist in Text and Pic and Wnd tags, so we gotta create those too!*/ 
 void	LaichLyt_TextCoords(BRLYT* brlyt, int text, \
 			    float x, float y, float z);
 void	LaichLyt_TextRotation(BRLYT* brlyt, int text, \
@@ -310,6 +311,16 @@ void	LaichLyt_PicSize(BRLYT* brlyt, int pic, \
 			  float width, float height);
 void	LaichLyt_PicAlpha(BRLYT* brlyt, int pic, \
 			   u8 alpha, u8 alpha2);
+void	LaichLyt_WndCoords(BRLYT* brlyt, int wnd, \
+				float x, float y, float z);
+void	LaichLyt_WndRotation(BRLYT* brlyt, int wnd, \
+				float rot_x, float rot_y, float angle);
+void	LaichLyt_WndZoom(BRLYT* brlyt, int wnd, \
+				float xmag, float ymag);
+void	LaichLyt_WndSize(BRLYT* brlyt, int wnd, \
+				float width, float height);
+void	LaichLyt_WndAlpha(BRLYT* brlyt, int wnd, \
+				u8 alpha, u8 alpha2);
 
 /* Text stuff */ 
 void	LaichLyt_TextFont(BRLYT* brlyt, int text, \
@@ -325,6 +336,12 @@ void	LaichLyt_PicColors(BRLYT* brlyt, int pic, \
 void	LaichLyt_PicAddTexCoord(BRLYT* brlyt, int pic, \
 			   float coords[8]);
 			   
+/* Wnd stuff */
+void	LaichLyt_WndColors(BRLYT* brlyt, int wnd, \
+			   u32 color1, u32 color2, u32 color3, u32 color4);
+void	LaichLyt_WndAddTexCoord(BRLYT* brlyt, int wnd, \
+			   float coords[8]);
+
 /* Group stuff */
 void	LaichLyt_GroupAddSub(BRLYT* brlyt, int group, \
 				char* subname);
@@ -362,6 +379,7 @@ void	LaichLyt_MatAddStage10(BRLYT* brlyt, int mat, \
 
 void	LaichLyt_EndGroup(BRLYT* brlyt, int group);
 void	LaichLyt_EndMat  (BRLYT* brlyt, int mat  );
+void	LaichLyt_EndWnd	 (BRLYT* brlyt, int wnd  );
 void	LaichLyt_EndPic  (BRLYT* brlyt, int pic  );
 void	LaichLyt_EndText (BRLYT* brlyt, int text );
 void	LaichLyt_EndPane (BRLYT* brlyt, int pane );

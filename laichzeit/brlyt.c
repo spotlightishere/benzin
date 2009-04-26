@@ -131,6 +131,35 @@ int LaichLyt_StartPic(BRLYT* brlyt, char* name)
 	return AddEntryToBRLYT(brlyt, entry);
 }
 
+int LaichLyt_StartWnd(BRLYT* brlyt, char* name)
+{
+	LYTEntry entry;
+	entry.type = LYT_TYPE_WND;
+	entry.done			= 0;
+	entry.tag.wnd.pane.alpha	= 255;
+	entry.tag.wnd.pane.alpha2	= 0;
+	memset(entry.tag.wnd.pane.name, 0, 24);
+	strncpy(entry.tag.wnd.pane.name, name, 24);
+	entry.tag.wnd.pane.x		= 0;
+	entry.tag.wnd.pane.y		= 0;
+	entry.tag.wnd.pane.z		= 0;
+	entry.tag.wnd.pane.rot_x	= 0;
+	entry.tag.wnd.pane.rot_x	= 0;
+	entry.tag.wnd.pane.angle	= 0;
+	entry.tag.wnd.pane.xmag		= 0;
+	entry.tag.wnd.pane.ymag		= 0;
+	entry.tag.wnd.pane.width	= 0;
+	entry.tag.wnd.pane.height	= 0;
+	entry.tag.wnd.pane.done		= 0;
+	entry.tag.wnd.colors[0]		= RGBA8(0, 0, 0, 255);
+	entry.tag.wnd.colors[1]		= RGBA8(0, 0, 0, 255);
+	entry.tag.wnd.colors[2]		= RGBA8(0, 0, 0, 255);
+	entry.tag.wnd.colors[3]		= RGBA8(0, 0, 0, 255);
+	entry.tag.wnd.count		= 0;
+	entry.tag.wnd.texcoords		= NULL;
+	entry.tag.wnd.done		= 0;
+	return AddEntryToBRLYT(brlyt, entry);
+
 int LaichLyt_StartMat(BRLYT* brlyt)
 {
 	LYTEntry entry;
@@ -321,6 +350,36 @@ void LaichLyt_PicAlpha(BRLYT* brlyt, int pic, \
 			      alpha, alpha2);
 }
 
+void LaichLyt_WndCoords(BRLYT* brlyt, int wnd, \
+			 float x, float y, float z)
+{
+	LaichLyt_IntPaneCoords(&(brlyt->entries[wnd].tag.wnd.pane), \
+			       x, y, z);
+}
+void LaichLyt_WndRotation(BRLYT* brlyt, int wnd, \
+			   float rot_x, float rot_y, float angle)
+{
+	LaichLyt_IntPaneRotation(&(brlyt->entries[wnd].tag.wnd.pane), \
+				 rot_x, rot_y, angle);
+}
+void LaichLyt_WndZoom(BRLYT* brlyt, int wnd, \
+		       float xmag, float ymag)
+{
+	LaichLyt_IntPaneZoom(&(brlyt->entries[wnd].tag.wnd.pane), \
+			     xmag, ymag);
+}
+void LaichLyt_WndSize(BRLYT* brlyt, int wnd, \
+		       float width, float height)
+{
+	LaichLyt_IntPaneSize(&(brlyt->entries[wnd].tag.wnd.pane), \
+			     width, height);
+}
+void LaichLyt_WndAlpha(BRLYT* brlyt, int wnd, \
+			u8 alpha, u8 alpha2)
+{
+	LaichLyt_IntPaneAlpha(&(brlyt->entries[wnd].tag.wnd.pane), \
+			      alpha, alpha2);
+}
 
 void LaichLyt_TextFont(BRLYT* brlyt, int text, \
 			  LYTFont font)
@@ -363,6 +422,29 @@ void LaichLyt_PicAddTexCoord(BRLYT* brlyt, int pic, \
 	AddTexCoordToPic(brlyt, pic, coord);
 }
 
+void LaichLyt_WndColors(BRLYT* brlyt, int wnd, \
+			   u32 color1, u32 color2, u32 color3, u32 color4)
+{
+	brlyt->entries[wnd].tag.wnd.colors[0]	= color1;
+	brlyt->entries[wnd].tag.wnd.colors[1]	= color2;
+	brlyt->entries[wnd].tag.wnd.colors[2]	= color3;
+	brlyt->entries[wnd].tag.wnd.colors[3]	= color4;
+}
+
+void LaichLyt_WndAddTexCoord(BRLYT* brlyt, int wnd, \
+				float coords[8])
+{
+	LYTTexCoord coord;
+	int i;
+	for(i = 0; i < 8; i++)
+		coord.coords[i]	= coords[i];
+	AddTexCoordToWnd(brlyt, wnd, coord);
+}
+
+
+void LaichLyt_GroupAddSub(BRLYT* brlyt, int group, \
+			     char* subname)
+{
 
 void LaichLyt_GroupAddSub(BRLYT* brlyt, int group, \
 			     char* subname)
@@ -400,6 +482,11 @@ static void LaichLyt_EndEntry(BRLYT* brlyt, int tag)
 			brlyt->entries[tag].tag.pic.done = 1;
 			brlyt->entries[tag].tag.pic.pane.done = 1;
 			break;
+
+		case LYT_TYPE_WND:
+			brlyt->entries[tag].tag.wnd.done = 1;
+			brlyt->entries[tag].tag.wnd.pane.done = 1;
+			break;
 			
 		default:	// lolwut
 			return;
@@ -415,6 +502,11 @@ void LaichLyt_EndGroup(BRLYT* brlyt, int group)
 void LaichLyt_EndMat(BRLYT* brlyt, int mat)
 {
 	LaichLyt_EndEntry(brlyt, mat);
+}
+
+void LaichLyt_EndWnd(BRLYT* brlyt, int wnd)
+{
+	LaichLyt_endEntry(brlyt, wnd);
 }
 
 void LaichLyt_EndPic(BRLYT* brlyt, int pic)
