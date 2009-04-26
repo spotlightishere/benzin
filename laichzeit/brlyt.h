@@ -44,8 +44,9 @@ typedef enum
 	LYT_TYPE_PANE	= 0,		// Panes.
 	LYT_TYPE_TEXT	= 1,		// Text.
 	LYT_TYPE_PIC	= 2,		// Pictures.
-	LYT_TYPE_MAT	= 3,		// Materials.
-	LYT_TYPE_GROUP	= 4		// Groups.
+	LYT_TYPE_WND	= 3,		// Window.
+	LYT_TYPE_MAT	= 4,		// Materials.
+	LYT_TYPE_GROUP	= 5		// Groups.
 } LYTType;
 
 typedef struct
@@ -90,6 +91,15 @@ typedef struct
 	LYTTexCoord*	texcoords;	// Texture coordinates.
 	int		done;		// Is it done? (Safety measure)
 } LYTPic;
+
+typedef struct
+{
+	LYTPane		pane;		// The Pane.
+	u32		colors[4];	// Vertex Colors.
+	u8		count;		// Number of Something.
+	LYTTexCoord	texcoords;	// Texture coordinates.
+	int		done;		// Is it done? (Safety measure)
+} LYTWindow;
 
 typedef struct
 {
@@ -237,11 +247,12 @@ typedef struct
 
 typedef union
 {
-	LYTPane  pane;			// Pane.
-	LYTText  text;			// Text.
-	LYTPic	 pic;			// Picture.
-	LYTMat	 mat;			// Material.
-	LYTGroup grp;			// Group.
+	LYTPane    pane;		// Pane.
+	LYTText    text;		// Text.
+	LYTPic	   pic;			// Picture.
+	LYTWindow  window;		// Window.
+	LYTMat	   mat;			// Material.
+	LYTGroup   grp;			// Group.
 } LYTTag;
 
 typedef struct
