@@ -113,7 +113,7 @@ if(type == 1)
         printf("Invalid arguments. Use like:\n\t%s\n\t\tor:\n\t%s\n", helpstrread, helpstrmake);
         exit(1);
     }
-    if(argv[1][0] == 'r') {
+    if((argv[1][0] == 'r') || (argv[1][0] == 'p')) {
 if(type == 2)
 {
         parse_brlan(argv[brlanargread]);
@@ -122,7 +122,7 @@ if(type == 1)
 {
         parse_brlyt(argv[brlytargread]);
 }
-    }else if(argv[1][0] == 'm') {
+    }else if((argv[1][0] == 'm') || (argv[1][0] == 'w')) {
 if(type == 2)
 {
         dbgprintf("1:%d 2:%d f1:%s f2:%s\n", brlanargmake, brlanargdestmake, argv[brlanargmake], argv[brlanargdestmake]);

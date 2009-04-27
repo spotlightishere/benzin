@@ -387,8 +387,8 @@ void PrintBRLYTEntry_pan1(brlyt_entry entry, u8* brlyt_file)
         printf("                height: %f\n", float_swap_bytes(data.height));
 #else
     printf("type=\"%c%c%c%c\" name=\"%s\">\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3], data.name);
-    printf("        <flags>%08x-%08x</flags>\n", data.flag1, data.flag2);
-    printf("        <alpha>%08x-%08x</alpha>\n", data.alpha, data.alpha2);
+    printf("        <flags>%02x-%02x</flags>\n", data.flag1, data.flag2);
+    printf("        <alpha>%02x-%02x</alpha>\n", data.alpha, data.alpha2);
     printf("        <coords>\n");
     printf("            <x>%.16f</x>\n", float_swap_bytes(data.x));
     printf("            <y>%.16f</y>\n", float_swap_bytes(data.y));
@@ -435,8 +435,8 @@ void PrintBRLYTEntry_wnd1(brlyt_entry entry, u8* brlyt_file)
         printf("                height: %f\n", float_swap_bytes(data.height));
 #else
     printf("type=\"%c%c%c%c\" name=\"%s\">\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3], data.name);
-    printf("        <flags>%08x-%08x</flags>\n", data.flag1, data.flag2);
-    printf("        <alpha>%08x-%08x</alpha>\n", data.alpha, data.alpha2);
+    printf("        <flags>%02x-%02x</flags>\n", data.flag1, data.flag2);
+    printf("        <alpha>%02x-%02x</alpha>\n", data.alpha, data.alpha2);
     printf("        <coords>\n");
     printf("            <x>%.12f</x>\n", float_swap_bytes(data.x));
     printf("            <y>%.12f</y>\n", float_swap_bytes(data.y));
@@ -538,8 +538,8 @@ void PrintBRLYTEntry_bnd1(brlyt_entry entry, u8* brlyt_file)
         printf("                height: %f\n", float_swap_bytes(data.height));
 #else
     printf("type=\"%c%c%c%c\" name=\"%s\">\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3], data.name);
-    printf("        <flags>%08x-%08x</flags>\n", data.flag1, data.flag2);
-    printf("        <alpha>%08x-%08x</alpha>\n", data.alpha, data.alpha2);
+    printf("        <flags>%02x-%02x</flags>\n", data.flag1, data.flag2);
+    printf("        <alpha>%02x-%02x</alpha>\n", data.alpha, data.alpha2);
     printf("        <coords>\n");
     printf("            <x>%.25f</x>\n", float_swap_bytes(data.x));
     printf("            <y>%.25f</y>\n", float_swap_bytes(data.y));
@@ -588,8 +588,8 @@ void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file)
     printf("                height: %f\n", float_swap_bytes(data.height));
 #else
     printf("type=\"%c%c%c%c\" name=\"%s\">\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3], data.name);
-    printf("        <flags>%08x-%08x</flags>\n", data.flag1, data.flag2);
-    printf("        <alpha>%08x-%08x</alpha>\n", data.alpha, data.alpha2);
+    printf("        <flags>%02x-%02x</flags>\n", data.flag1, data.flag2);
+    printf("        <alpha>%02x-%02x</alpha>\n", data.alpha, data.alpha2);
     printf("        <coords>\n");
     printf("            <x>%.20f</x>\n", float_swap_bytes(data.x));
     printf("            <y>%.20f</y>\n", float_swap_bytes(data.y));
@@ -669,16 +669,16 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file)
         printf("                height: %f\n", float_swap_bytes(data.height));
 #else
     printf("type=\"%c%c%c%c\" name=\"%s\">\n", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3], data.name);
-    printf("        <flags>%08x-%08x</flags>\n", data.flag1, data.flag2);
-    printf("        <alpha>%08x-%08x</alpha>\n", data.alpha, data.alpha2);
+    printf("        <flags>%02x-%02x</flags>\n", data.flag1, data.flag2);
+    printf("        <alpha>%02x-%02x</alpha>\n", data.alpha, data.alpha2);
     printf("        <coords>\n");
     printf("            <x>%.16f</x>\n", float_swap_bytes(data.x));
     printf("            <y>%.16f</y>\n", float_swap_bytes(data.y));
     printf("            <z>%.16f</z>\n", float_swap_bytes(data.z));
     printf("        </coords>\n");
     printf("        <flip>\n");
-    printf("            <x>%f</x>\n", float_swap_bytes(data.flip_x));
-    printf("            <y>%f</y>\n", float_swap_bytes(data.flip_y));
+    printf("            <x>%.10f</x>\n", float_swap_bytes(data.flip_x));
+    printf("            <y>%.10f</y>\n", float_swap_bytes(data.flip_y));
     printf("        </flip>\n");
     printf("        <rotate>%f</rotate>\n", float_swap_bytes(data.angle));
     printf("        <zoom>\n");
@@ -686,8 +686,8 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file)
     printf("            <y>%.10f</y>\n", float_swap_bytes(data.ymag));
     printf("        </zoom>\n");
     printf("        <size>\n");
-    printf("            <width>%f</width>\n", float_swap_bytes(data.width));
-    printf("            <height>%f</height>\n", float_swap_bytes(data.height));
+    printf("            <width>%.10f</width>\n", float_swap_bytes(data.width));
+    printf("            <height>%.10f</height>\n", float_swap_bytes(data.height));
     printf("        </size>\n");
 #endif //OLD_BRLYT_OUTSTYLE
     brlyt_text_chunk data2;
@@ -766,22 +766,22 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 #else
         printf("        <entries name=\"%s\">\n", data3.name);
         printf("            <colors>\n");
-        printf("                <tev>%#x</tev>\n", short_swap_bytes(data3.tev_color[0]));
-        printf("                <tev>%#x</tev>\n", short_swap_bytes(data3.tev_color[1]));
-        printf("                <tev>%#x</tev>\n", short_swap_bytes(data3.tev_color[2]));
-        printf("                <tev>%#x</tev>\n", short_swap_bytes(data3.tev_color[3]));
-        printf("                <unk>%#x</unk>\n", short_swap_bytes(data3.unk_color[0]));
-        printf("                <unk>%#x</unk>\n", short_swap_bytes(data3.unk_color[1]));
-        printf("                <unk>%#x</unk>\n", short_swap_bytes(data3.unk_color[2]));
-        printf("                <unk>%#x</unk>\n", short_swap_bytes(data3.unk_color[3]));
-        printf("                <unk2>%#x</unk2>\n", short_swap_bytes(data3.unk_color_2[0]));
-        printf("                <unk2>%#x</unk2>\n", short_swap_bytes(data3.unk_color_2[1]));
-        printf("                <unk2>%#x</unk2>\n", short_swap_bytes(data3.unk_color_2[2]));
-        printf("                <unk2>%#x</unk2>\n", short_swap_bytes(data3.unk_color_2[3]));
-        printf("                <tev_k>%#x</tev_k>\n", be32(data3.tev_kcolor[0]));
-        printf("                <tev_k>%#x</tev_k>\n", be32(data3.tev_kcolor[1]));
-        printf("                <tev_k>%#x</tev_k>\n", be32(data3.tev_kcolor[2]));
-        printf("                <tev_k>%#x</tev_k>\n", be32(data3.tev_kcolor[3]));
+        printf("                <tev>%d</tev>\n", short_swap_bytes(data3.tev_color[0]));
+        printf("                <tev>%d</tev>\n", short_swap_bytes(data3.tev_color[1]));
+        printf("                <tev>%d</tev>\n", short_swap_bytes(data3.tev_color[2]));
+        printf("                <tev>%d</tev>\n", short_swap_bytes(data3.tev_color[3]));
+        printf("                <unk>%d</unk>\n", short_swap_bytes(data3.unk_color[0]));
+        printf("                <unk>%d</unk>\n", short_swap_bytes(data3.unk_color[1]));
+        printf("                <unk>%d</unk>\n", short_swap_bytes(data3.unk_color[2]));
+        printf("                <unk>%d</unk>\n", short_swap_bytes(data3.unk_color[3]));
+        printf("                <unk2>%d</unk2>\n", short_swap_bytes(data3.unk_color_2[0]));
+        printf("                <unk2>%d</unk2>\n", short_swap_bytes(data3.unk_color_2[1]));
+        printf("                <unk2>%d</unk2>\n", short_swap_bytes(data3.unk_color_2[2]));
+        printf("                <unk2>%d</unk2>\n", short_swap_bytes(data3.unk_color_2[3]));
+        printf("                <tev_k>%#08x</tev_k>\n", be32(data3.tev_kcolor[0]));
+        printf("                <tev_k>%#08x</tev_k>\n", be32(data3.tev_kcolor[1]));
+        printf("                <tev_k>%#08x</tev_k>\n", be32(data3.tev_kcolor[2]));
+        printf("                <tev_k>%#08x</tev_k>\n", be32(data3.tev_kcolor[3]));
         printf("            </colors>\n");
         printf("            <flags>%08x</flags>\n", be32(data3.flags));
 #endif //OLD_BRLYT_OUTSTYLE
@@ -802,14 +802,14 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
             BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_texref_chunk));
             int tplOffset = short_swap_bytes(data4.tex_offs);
 #ifdef OLD_BRLYT_OUTSTYLE
-            printf("                texoffs: %08x\n", be16(data4.tex_offs));
+            printf("                texoffs: %04x\n", be16(data4.tex_offs));
             printf("                wrap_s: %08x\n", data4.wrap_s);
             printf("                wrap_t: %08x\n", data4.wrap_t);
             printf("                name: %s\n", getTexture(tplOffset));
 #else
             printf("            <material name=\"%s\">\n", getTexture(tplOffset));
-            printf("                <wrap_s>%08x</wrap_s>\n", data4.wrap_s);
-            printf("                <wrap_t>%08x</wrap_t>\n", data4.wrap_t);
+            printf("                <wrap_s>%02x</wrap_s>\n", data4.wrap_s);
+            printf("                <wrap_t>%02x</wrap_t>\n", data4.wrap_t);
             printf("            </material>\n");
 #endif //OLD_BRLYT_OUTSTYLE
         }
@@ -831,7 +831,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
             printf("                <data>%.10f</data>\n", float_swap_bytes(data4.unk[1]));
             printf("                <data>%.10f</data>\n", float_swap_bytes(data4.unk[2]));
             printf("                <data>%.10f</data>\n", float_swap_bytes(data4.unk[3]));
-            printf("                <data>%f</data>\n", float_swap_bytes(data4.unk[4]));
+            printf("                <data>%.10f</data>\n", float_swap_bytes(data4.unk[4]));
             printf("            </ua2>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                 }
@@ -845,10 +845,10 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         printf("                ua3: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
 #else
             printf("            <ua3>\n");
-            printf("                <data>%08x</data>\n", data4.unk[0]);
-            printf("                <data>%08x</data>\n", data4.unk[1]);
-            printf("                <data>%08x</data>\n", data4.unk[2]);
-            printf("                <data>%08x</data>\n", data4.unk[3]);
+            printf("                <data>%02x</data>\n", data4.unk[0]);
+            printf("                <data>%02x</data>\n", data4.unk[1]);
+            printf("                <data>%02x</data>\n", data4.unk[2]);
+            printf("                <data>%02x</data>\n", data4.unk[3]);
             printf("            </ua3>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                 }
@@ -868,10 +868,10 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         printf("                ua4: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
 #else
             printf("            <ua4>\n");
-            printf("                <data>%08x</data>\n", data4.unk[0]);
-            printf("                <data>%08x</data>\n", data4.unk[1]);
-            printf("                <data>%08x</data>\n", data4.unk[2]);
-            printf("                <data>%08x</data>\n", data4.unk[3]);
+            printf("                <data>%02x</data>\n", data4.unk[0]);
+            printf("                <data>%02x</data>\n", data4.unk[1]);
+            printf("                <data>%02x</data>\n", data4.unk[2]);
+            printf("                <data>%02x</data>\n", data4.unk[3]);
             printf("            </ua4>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                 }
@@ -885,10 +885,10 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         printf("                ua5: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
 #else
             printf("            <ua5>\n");
-            printf("                <data>%08x</data>\n", data4.unk[0]);
-            printf("                <data>%08x</data>\n", data4.unk[1]);
-            printf("                <data>%08x</data>\n", data4.unk[2]);
-            printf("                <data>%08x</data>\n", data4.unk[3]);
+            printf("                <data>%02x</data>\n", data4.unk[0]);
+            printf("                <data>%02x</data>\n", data4.unk[1]);
+            printf("                <data>%02x</data>\n", data4.unk[2]);
+            printf("                <data>%02x</data>\n", data4.unk[3]);
             printf("            </ua5>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                 }
@@ -902,10 +902,10 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         printf("                ua6: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
 #else
             printf("            <ua6>\n");
-            printf("                <data>%08x</data>\n", data4.unk[0]);
-            printf("                <data>%08x</data>\n", data4.unk[1]);
-            printf("                <data>%08x</data>\n", data4.unk[2]);
-            printf("                <data>%08x</data>\n", data4.unk[3]);
+            printf("                <data>%02x</data>\n", data4.unk[0]);
+            printf("                <data>%02x</data>\n", data4.unk[1]);
+            printf("                <data>%02x</data>\n", data4.unk[2]);
+            printf("                <data>%02x</data>\n", data4.unk[3]);
             printf("            </ua6>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                 }
@@ -922,7 +922,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
             printf("                ua7 e: %08x\n", be32(data4.e));
 #else
             printf("            <ua7>\n");
-                        printf("                <a>%08x</a>\n", be32(data4.a));
+            printf("                <a>%08x</a>\n", be32(data4.a));
             printf("                <b>%08x</b>\n", be32(data4.b));
             printf("                <c>%f</c>\n", float_swap_bytes(data4.c));
             printf("                <d>%f</d>\n", float_swap_bytes(data4.d));
@@ -940,10 +940,10 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         printf("                ua8: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
 #else
             printf("            <ua8>\n");
-            printf("                <data>%08x</data>\n", data4.unk[0]);
-            printf("                <data>%08x</data>\n", data4.unk[1]);
-            printf("                <data>%08x</data>\n", data4.unk[2]);
-            printf("                <data>%08x</data>\n", data4.unk[3]);
+            printf("                <data>%02x</data>\n", data4.unk[0]);
+            printf("                <data>%02x</data>\n", data4.unk[1]);
+            printf("                <data>%02x</data>\n", data4.unk[2]);
+            printf("                <data>%02x</data>\n", data4.unk[3]);
             printf("            </ua8>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                 }
@@ -957,22 +957,22 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         printf("                ua8: %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3], data4.unk[4], data4.unk[5], data4.unk[6], data4.unk[7], data4.unk[8], data4.unk[9], data4.unk[10], data4.unk[11], data4.unk[12], data4.unk[13], data4.unk[14], data4.unk[15]);
 #else
             printf("            <ua9>\n");
-            printf("                <data>%08x</data>\n", data4.unk[0]);
-            printf("                <data>%08x</data>\n", data4.unk[1]);
-            printf("                <data>%08x</data>\n", data4.unk[2]);
-            printf("                <data>%08x</data>\n", data4.unk[3]);
-            printf("                <data>%08x</data>\n", data4.unk[4]);
-            printf("                <data>%08x</data>\n", data4.unk[5]);
-            printf("                <data>%08x</data>\n", data4.unk[6]);
-            printf("                <data>%08x</data>\n", data4.unk[7]);
-            printf("                <data>%08x</data>\n", data4.unk[8]);
-            printf("                <data>%08x</data>\n", data4.unk[9]);
-            printf("                <data>%08x</data>\n", data4.unk[10]);
-            printf("                <data>%08x</data>\n", data4.unk[11]);
-            printf("                <data>%08x</data>\n", data4.unk[12]);
-            printf("                <data>%08x</data>\n", data4.unk[13]);
-            printf("                <data>%08x</data>\n", data4.unk[14]);
-            printf("                <data>%08x</data>\n", data4.unk[15]);
+            printf("                <data>%02x</data>\n", data4.unk[0]);
+            printf("                <data>%02x</data>\n", data4.unk[1]);
+            printf("                <data>%02x</data>\n", data4.unk[2]);
+            printf("                <data>%02x</data>\n", data4.unk[3]);
+            printf("                <data>%02x</data>\n", data4.unk[4]);
+            printf("                <data>%02x</data>\n", data4.unk[5]);
+            printf("                <data>%02x</data>\n", data4.unk[6]);
+            printf("                <data>%02x</data>\n", data4.unk[7]);
+            printf("                <data>%02x</data>\n", data4.unk[8]);
+            printf("                <data>%02x</data>\n", data4.unk[9]);
+            printf("                <data>%02x</data>\n", data4.unk[10]);
+            printf("                <data>%02x</data>\n", data4.unk[11]);
+            printf("                <data>%02x</data>\n", data4.unk[12]);
+            printf("                <data>%02x</data>\n", data4.unk[13]);
+            printf("                <data>%02x</data>\n", data4.unk[14]);
+            printf("                <data>%02x</data>\n", data4.unk[15]);
             printf("            </ua9>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                 }
@@ -986,25 +986,14 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         printf("                uaa: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
 #else
             printf("            <uaa>\n");
-            printf("                <data>%08x</data>\n", data4.unk[0]);
-            printf("                <data>%08x</data>\n", data4.unk[1]);
-            printf("                <data>%08x</data>\n", data4.unk[2]);
-            printf("                <data>%08x</data>\n", data4.unk[3]);
+            printf("                <data>%02x</data>\n", data4.unk[0]);
+            printf("                <data>%02x</data>\n", data4.unk[1]);
+            printf("                <data>%02x</data>\n", data4.unk[2]);
+            printf("                <data>%02x</data>\n", data4.unk[3]);
             printf("            </uaa>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                 }
-/*                if(flaggs == 0x00800000)	?? sometimes true ??
-                {
-                    brlyt_4b_chunk data4;
-                    BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
-                    printf("            <uaa>\n");
-                    printf("                <data>%08x</data>\n", data4.unk[0]);
-                    printf("                <data>%08x</data>\n", data4.unk[1]);
-                    printf("                <data>%08x</data>\n", data4.unk[2]);
-                    printf("                <data>%08x</data>\n", data4.unk[3]);
-                    printf("            </uaa>\n");
-                }
-*/
+
         //# 4 * flags[7]
                 n = 0;
                 for (n;n<bit_extract(flaggs, 7,7);n++)
@@ -1015,10 +1004,10 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
                         printf("                uab: %08x, %08x, %08x, %08x\n", data4.unk[0], data4.unk[1], data4.unk[2], data4.unk[3]);
 #else
             printf("            <uab>\n");
-            printf("                <data>%08x</data>\n", data4.unk[0]);
-            printf("                <data>%08x</data>\n", data4.unk[1]);
-            printf("                <data>%08x</data>\n", data4.unk[2]);
-            printf("                <data>%08x</data>\n", data4.unk[3]);
+            printf("                <data>%02x</data>\n", data4.unk[0]);
+            printf("                <data>%02x</data>\n", data4.unk[1]);
+            printf("                <data>%02x</data>\n", data4.unk[2]);
+            printf("                <data>%02x</data>\n", data4.unk[3]);
             printf("            </uab>\n");
 #endif //OLD_BRLYT_OUTSTYLE
                 }
@@ -1465,13 +1454,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 printf("No name attribute found!\nQuitting!\n");
                 exit(1);
             }
-            char zeroed[24];
-            int j;
-            for (j=0; j<24; j++)
-            {
-                zeroed[j] = 0;
-            }
-            memcpy(chunk.name, zeroed, 20 * sizeof(char));
+            memset(chunk.name, 0, 20);
             strcpy(chunk.name, temp);
 
             materials = realloc(materials, lengthOfMaterials + strlen(chunk.name) + 1);
@@ -1490,8 +1473,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                     char tempCoord[256];
                     get_value(valnode, tempCoord, 256);
                         
-                    chunk.tev_color[colorNumber] = strtoul(tempCoord, NULL, 16);
-
+                    chunk.tev_color[colorNumber] = strtol(tempCoord, NULL, 10);
                     chunk.tev_color[colorNumber] = short_swap_bytes(chunk.tev_color[colorNumber]);
 
                     colorNumber+=1;
@@ -1502,8 +1484,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                     char tempCoord[256];
                     get_value(valnode, tempCoord, 256);
                     
-                    chunk.unk_color[colorNumber] = strtoul(tempCoord, NULL, 16);
-
+                    chunk.unk_color[colorNumber] = strtol(tempCoord, NULL, 10);
                     chunk.unk_color[colorNumber] = short_swap_bytes(chunk.unk_color[colorNumber]);
 
                     colorNumber+=1;
@@ -1514,8 +1495,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                     char tempCoord[256];
                     get_value(valnode, tempCoord, 256);
                         
-                    chunk.unk_color_2[colorNumber] = strtoul(tempCoord, NULL, 16);
-
+                    chunk.unk_color_2[colorNumber] = strtol(tempCoord, NULL, 10);
                     chunk.unk_color_2[colorNumber] = short_swap_bytes(chunk.unk_color_2[colorNumber]);
 
                     colorNumber+=1;
@@ -1525,7 +1505,6 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 {
                     char tempCoord[256];
                     get_value(valnode, tempCoord, 256);
-                        
                     chunk.tev_kcolor[colorNumber] = be32(strtoul(tempCoord, NULL, 16));
                     colorNumber+=1;
                 }
@@ -1580,9 +1559,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 {
                     char tempCoord[256];
                     get_value(valnode, tempCoord, 256);
-
                     chunkUa2.unk[dataNumber] = float_swap_bytes(atof(tempCoord));
-                    
                     dataNumber+=1;
                 }
                 fwrite(&chunkUa2, sizeof(chunkUa2), 1, fp);
@@ -1598,9 +1575,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 {
                     char tempCoord[256];
                     get_value(valnode, tempCoord, 256);
-
                     chunkUa3.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
-
                     dataNumber+=1;
                 }
                 fwrite(&chunkUa3, sizeof(chunkUa3), 1, fp);
@@ -1616,9 +1591,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 {
                         char tempCoord[256];
                         get_value(valnode, tempCoord, 256);
-
                         chunkUa4.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
-
                         dataNumber+=1;
                 }
                 fwrite(&chunkUa4, sizeof(chunkUa4), 1, fp);
@@ -1634,9 +1607,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 {
                         char tempCoord[256];
                         get_value(valnode, tempCoord, 256);
-
                         chunkUa5.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
-
                         dataNumber+=1;
                 }
                 fwrite(&chunkUa5, sizeof(chunkUa5), 1, fp);
@@ -1652,9 +1623,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 {
                         char tempCoord[256];
                         get_value(valnode, tempCoord, 256);
-
                         chunkUa6.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
-
                         dataNumber+=1;
                 }
                 fwrite(&chunkUa6, sizeof(chunkUa6), 1, fp);
@@ -1670,7 +1639,6 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 {
                         char tempCoord[256];
                         get_value(valnode, tempCoord, 256);
-
                         chunkUa7.a = be32(strtoul(tempCoord, NULL, 16));
                 }
                 valnode=mxmlFindElement(setnode, setnode, "b", NULL, NULL, MXML_DESCEND);
@@ -1678,7 +1646,6 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 {
                         char tempCoord[256];
                         get_value(valnode, tempCoord, 256);
-
                         chunkUa7.b = be32(strtoul(tempCoord, NULL, 16));
                 }
                 valnode=mxmlFindElement(setnode, setnode, "c", NULL, NULL, MXML_DESCEND);
@@ -1686,7 +1653,6 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 {
                         char tempCoord[256];
                         get_value(valnode, tempCoord, 256);
-
                         chunkUa7.c = float_swap_bytes(atof(tempCoord));
                 }
                 valnode=mxmlFindElement(setnode, setnode, "d", NULL, NULL, MXML_DESCEND);
@@ -1694,7 +1660,6 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 {
                         char tempCoord[256];
                         get_value(valnode, tempCoord, 256);
-
                         chunkUa7.d = float_swap_bytes(atof(tempCoord));
                 }
                 valnode=mxmlFindElement(setnode, setnode, "e", NULL, NULL, MXML_DESCEND);
@@ -1702,7 +1667,6 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 {
                         char tempCoord[256];
                         get_value(valnode, tempCoord, 256);
-
                         chunkUa7.e = float_swap_bytes(atof(tempCoord));
                 }
                 fwrite(&chunkUa7, sizeof(chunkUa7), 1, fp);
@@ -1718,9 +1682,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 {
                         char tempCoord[256];
                         get_value(valnode, tempCoord, 256);
-
                         chunkUa8.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
-
                         dataNumber+=1;
                 }
                 fwrite(&chunkUa8, sizeof(chunkUa8), 1, fp);
@@ -1736,9 +1698,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 {
                         char tempCoord[256];
                         get_value(valnode, tempCoord, 256);
-
                         chunkUa9.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
-
                         dataNumber+=1;
                 }
                 fwrite(&chunkUa9, sizeof(chunkUa9), 1, fp);
@@ -1754,9 +1714,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 {
                         char tempCoord[256];
                         get_value(valnode, tempCoord, 256);
-
                         chunkUaa.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
-
                         dataNumber+=1;
                 }
                 fwrite(&chunkUaa, sizeof(chunkUaa), 1, fp);
@@ -1772,9 +1730,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 {
                         char tempCoord[256];
                         get_value(valnode, tempCoord, 256);
-
                         chunkUab.unk[dataNumber] = strtoul(tempCoord, NULL, 16);
-
                         dataNumber+=1;
                 }
                 fwrite(&chunkUab, sizeof(chunkUab), 1, fp);
@@ -1788,7 +1744,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 fseek(fp, offsetsOffset+(numberOfEntries * sizeof(int)), SEEK_SET);
                 fwrite(&offsets[numberOfEntries], sizeof(int), 1, fp);
                 fseek(fp, materialOffset, SEEK_SET);
-                 initialOffset += matSize;
+                initialOffset += matSize;
                 matSize = 0;
             }
         }
@@ -1804,13 +1760,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             printf("No name attribute found!\nQuitting!\n");
             exit(1);
         }
-        char zeroed[24];
-        int j;
-        for (j=0; j<24; j++)
-        {
-            zeroed[j] = 0;
-        }
-        memcpy(chunk.name, zeroed, 24 * sizeof(char));
+        memset(chunk.name, 0, 24);
         strcpy(chunk.name, temp);
 
         mxml_node_t *subnode = mxmlFindElement(node, node, "coords", NULL, NULL, MXML_DESCEND);
@@ -1903,7 +1853,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             char tempCoord[256];
             get_value(subnode, tempCoord, 256);
             chunk.flag1 = strtol(tempCoord, NULL, 16);
-            chunk.flag2 = strtol(&(tempCoord[9]), NULL, 16);
+            chunk.flag2 = strtol(&(tempCoord[3]), NULL, 16);
         }
         subnode = mxmlFindElement(node, node, "alpha", NULL, NULL, MXML_DESCEND);
         if (subnode != NULL)
@@ -1911,7 +1861,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             char tempCoord[256];
             get_value(subnode, tempCoord, 256);
             chunk.alpha = strtol(tempCoord, NULL, 16);
-            chunk.alpha2 = strtol(&(tempCoord[9]), NULL, 16);
+            chunk.alpha2 = strtol(&(tempCoord[3]), NULL, 16);
         }
         subnode = mxmlFindElement(node, node, "rotate", NULL, NULL, MXML_DESCEND);
         if (subnode != NULL)
@@ -1933,13 +1883,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             printf("No name attribute found!\nQuitting!\n");
             exit(1);
         }
-        char zeroed[24];
-        int j;
-        for (j=0; j<24; j++)
-        {
-            zeroed[j] = 0;
-        }
-        memcpy(chunk.name, zeroed, 24 * sizeof(char));
+        memset(chunk.name, 0, 24 * sizeof(char));
         strcpy(chunk.name, temp);
 
         mxml_node_t *subnode = mxmlFindElement(node, node, "coords", NULL, NULL, MXML_DESCEND);
@@ -2032,7 +1976,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             char tempCoord[256];
             get_value(subnode, tempCoord, 256);
             chunk.flag1 = strtol(tempCoord, NULL, 16);
-            chunk.flag2 = strtol(&(tempCoord[9]), NULL, 16);
+            chunk.flag2 = strtol(&(tempCoord[3]), NULL, 16);
         }
         subnode = mxmlFindElement(node, node, "alpha", NULL, NULL, MXML_DESCEND);
         if (subnode != NULL)
@@ -2040,7 +1984,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             char tempCoord[256];
             get_value(subnode, tempCoord, 256);
             chunk.alpha = strtol(tempCoord, NULL, 16);
-            chunk.alpha2 = strtol(&(tempCoord[9]), NULL, 16);
+            chunk.alpha2 = strtol(&(tempCoord[3]), NULL, 16);
         }
         subnode = mxmlFindElement(node, node, "rotate", NULL, NULL, MXML_DESCEND);
         if (subnode != NULL)
@@ -2062,10 +2006,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             printf("No name attribute found!\nQuitting!\n");
             exit(1);
         }
-        char zeroed[24];
-        int j;
-        for (j=0; j<24; j++) zeroed[j] = 0;
-        memcpy(chunk.name, zeroed, 24 * sizeof(char));
+        memset(chunk.name, 0, 24 * sizeof(char));
         strcpy(chunk.name, temp);
 
         mxml_node_t *subnode = mxmlFindElement(node, node, "coords", NULL, NULL, MXML_DESCEND);
@@ -2158,7 +2099,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             char tempCoord[256];
             get_value(subnode, tempCoord, 256);
             chunk.flag1 = strtol(tempCoord, NULL, 16);
-            chunk.flag2 = strtol(&(tempCoord[9]), NULL, 16);
+            chunk.flag2 = strtol(&(tempCoord[3]), NULL, 16);
         }
         subnode = mxmlFindElement(node, node, "alpha", NULL, NULL, MXML_DESCEND);
         if (subnode != NULL)
@@ -2166,7 +2107,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             char tempCoord[256];
             get_value(subnode, tempCoord, 256);
             chunk.alpha = strtol(tempCoord, NULL, 16);
-            chunk.alpha2 = strtol(&(tempCoord[9]), NULL, 16);
+            chunk.alpha2 = strtol(&(tempCoord[3]), NULL, 16);
         }
         subnode = mxmlFindElement(node, node, "rotate", NULL, NULL, MXML_DESCEND);
         if (subnode != NULL)
@@ -2283,8 +2224,6 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 
         brlyt_wnd4 wndy4;
         for(subnode = mxmlFindElement(node, node, "wnd4", NULL, NULL, MXML_DESCEND); subnode != NULL; subnode = mxmlFindElement(subnode, node, "wnd4", NULL, NULL, MXML_DESCEND))
-//        subnode = mxmlFindElement(node, node, "wnd4", NULL, NULL, MXML_DESCEND);
-//	if (subnode != NULL)
         {
             i=0;
             mxml_node_t *subsubnode;
@@ -2301,8 +2240,6 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
         }
         brlyt_wnd4_mat wndy4mat;
         for(subnode = mxmlFindElement(node, node, "wnd4mat", NULL, NULL, MXML_DESCEND); subnode != NULL; subnode = mxmlFindElement(subnode, node, "wnd4mat", NULL, NULL, MXML_DESCEND))
-//	subnode = mxmlFindElement(node, node, "wnd4mat", NULL, NULL, MXML_DESCEND);
-//        if (subnode != NULL)
         {
             i=0;
             mxml_node_t *subsubnode;
@@ -2329,10 +2266,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             printf("No name attribute found!\nQuitting!\n");
             exit(1);
         }
-        char zeroed[24];
-        int j;
-        for (j=0; j<24; j++) zeroed[j] = 0;
-        memcpy(chunk.name, zeroed, 24 * sizeof(char));
+        memset(chunk.name, 0, 24 * sizeof(char));
         strcpy(chunk.name, temp);
         chunk2.mat_off = short_swap_bytes(findMatOffset(temp));
 
@@ -2426,7 +2360,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             char tempCoord[256];
             get_value(subnode, tempCoord, 256);
             chunk.flag1 = strtol(tempCoord, NULL, 16);
-            chunk.flag2 = strtol(&(tempCoord[9]), NULL, 16);
+            chunk.flag2 = strtol(&(tempCoord[3]), NULL, 16);
         }
         subnode = mxmlFindElement(node, node, "alpha", NULL, NULL, MXML_DESCEND);
         if (subnode != NULL)
@@ -2434,7 +2368,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             char tempCoord[256];
             get_value(subnode, tempCoord, 256);
             chunk.alpha = strtol(tempCoord, NULL, 16);
-            chunk.alpha2 = strtol(&(tempCoord[9]), NULL, 16);
+            chunk.alpha2 = strtol(&(tempCoord[3]), NULL, 16);
         }
         subnode = mxmlFindElement(node, node, "rotate", NULL, NULL, MXML_DESCEND);
         if (subnode != NULL)
@@ -2559,10 +2493,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             printf("No name attribute found!\nQuitting!\n");
             exit(1);
         }
-        char zeroed[24];
-        int j;
-        for (j=0; j<24; j++) zeroed[j] = 0;
-        memcpy(chunk.name, zeroed, 24 * sizeof(char));
+        memset(chunk.name, 0, 24 * sizeof(char));
         strcpy(chunk.name, temp);
 
         mxml_node_t *subnode = mxmlFindElement(node, node, "coords", NULL, NULL, MXML_DESCEND);
@@ -2655,7 +2586,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             char tempCoord[256];
             get_value(subnode, tempCoord, 256);
             chunk.flag1 = strtol(tempCoord, NULL, 16);
-            chunk.flag2 = strtol(&(tempCoord[9]), NULL, 16);
+            chunk.flag2 = strtol(&(tempCoord[3]), NULL, 16);
         }
         subnode = mxmlFindElement(node, node, "alpha", NULL, NULL, MXML_DESCEND);
         if (subnode != NULL)
@@ -2663,7 +2594,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             char tempCoord[256];
             get_value(subnode, tempCoord, 256);
             chunk.alpha = strtol(tempCoord, NULL, 16);
-            chunk.alpha2 = strtol(&(tempCoord[9]), NULL, 16);
+            chunk.alpha2 = strtol(&(tempCoord[3]), NULL, 16);
         }
         subnode = mxmlFindElement(node, node, "rotate", NULL, NULL, MXML_DESCEND);
         if (subnode != NULL)
@@ -2715,8 +2646,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 {
                         
                         char tempCoord[256];
-                        int j;
-                        for (j=0;j<256;j++) tempCoord[j]=0;
+                        int j; for (j=0;j<256;j++) tempCoord[j]=0;
                         get_value(valnode, tempCoord, 256);
                         float tempCoordGotten = atof(tempCoord);
                         float coordGotten = float_swap_bytes(tempCoordGotten);
@@ -2748,8 +2678,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             printf("No name attribute found!\nQuitting!\n");
             exit(1);
         }
-        int j;char zeroed[16]; for (j=0;j<16;j++) zeroed[j]=0;
-        memcpy(chunk.name, zeroed, 16 * sizeof(char));
+        memset(chunk.name, 0, 16 * sizeof(char));
         strcpy(chunk.name, temp);
         int numSubs = 0;
         char *subs;
@@ -2851,15 +2780,15 @@ void write_brlyt(char *infile, char *outfile)
     u16 blobcount = 0;
     u32 bloboffset;
     brlyt_header rlythead;
-        rlythead.magic[0] = 'R';
-        rlythead.magic[1] = 'L';
-        rlythead.magic[2] = 'Y';
-        rlythead.magic[3] = 'T';
-        rlythead.unk1 = 0xFEFF0008;
-        rlythead.filesize = 0;
-        rlythead.lyt_offset = sizeof(brlyt_header);
-        rlythead.unk2 = 1;
-        WriteBRLYTHeader(rlythead, fp);
+    rlythead.magic[0] = 'R';
+    rlythead.magic[1] = 'L';
+    rlythead.magic[2] = 'Y';
+    rlythead.magic[3] = 'T';
+    rlythead.unk1 = 0xFEFF0008;
+    rlythead.filesize = 0;
+    rlythead.lyt_offset = sizeof(brlyt_header);
+    rlythead.unk2 = 1;
+    WriteBRLYTHeader(rlythead, fp);
     char temp[256];
 
     fileOffset += sizeof(brlyt_header);
@@ -2920,6 +2849,4 @@ void make_brlyt(char* infile, char* outfile)
     free(textures);
     printf("\x1b[34mParsing XMLYT @ \x1b[0m%s complete.\n", infile);
 }
-
-
 
