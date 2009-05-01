@@ -25,6 +25,6 @@ First off, let's make sure we have all the above.
 15) Now add the following to the END of the `LIBS = ' line (make sure to put a space): `$(MXMLOBJS)'
 16) Now go back to the Cygwin window. Type in `cd /benzin/'.
 17) Type `make'
-18) A file called benzin.exe should have been created. That is Benzin all ready for use. You must either use it in the Cygwin window, or you must copy the cygwin1.dll file from C:\cygwin to wherever you put benzin.exe, and then run it in a command prompt.
+18) A file called benzin.exe should have been created. That is Benzin all ready for use. You must either use it in the Cygwin window, or you must copy the cygwin1.dll file from C:\cygwin\bin to wherever you put benzin.exe, and then run it in a command prompt.
 19) ????
 20) PROFIT!!!!
