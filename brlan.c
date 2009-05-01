@@ -31,6 +31,7 @@
 fourcc tag_FourCCs[] = { "RLPA", "RLTS", "RLVI", "RLVC", "RLMC", "RLTP" };
 
 char tag_types_list[15][24];
+char tag_types_rlmc_list[15][24];
 
 static size_t BRLAN_fileoffset = 0;
 FILE* xmlanout;
@@ -86,22 +87,29 @@ static int FourCCInList(fourcc cc)
 
 void BRLAN_CreateXMLTag(tag_header tagHeader, void* data, u32 offset)
 {
-	BRLAN_fileoffset = offset;
+    BRLAN_fileoffset = offset;
     BRLAN_ReadDataFromMemory(&tagHeader, data, sizeof(tag_header));
 
     printf("\t\t<tag type=\"%c%c%c%c\">\n", tagHeader.magic[0], tagHeader.magic[1], tagHeader.magic[2], tagHeader.magic[3]);
 
-	tag_entryinfo tagEntryInfo;
-	u32 tagentrylocations[tagHeader.entry_count];
-	BRLAN_ReadDataFromMemory(&tagentrylocations, data, tagHeader.entry_count * sizeof(u32));
+    tag_entryinfo tagEntryInfo;
+    u32 tagentrylocations[tagHeader.entry_count];
+    BRLAN_ReadDataFromMemory(&tagentrylocations, data, tagHeader.entry_count * sizeof(u32));
     u32 i, j;
     for ( i = 0; i < tagHeader.entry_count; i++)
     {
-    	BRLAN_fileoffset = offset + be32(tagentrylocations[i]);
-    	BRLAN_ReadDataFromMemory(&tagEntryInfo, data, sizeof(tag_entryinfo));
+        BRLAN_fileoffset = offset + be32(tagentrylocations[i]);
+        BRLAN_ReadDataFromMemory(&tagEntryInfo, data, sizeof(tag_entryinfo));
         if(short_swap_bytes(tagEntryInfo.type) < 16)
-            printf("\t\t\t<entry type=\"%s\">\n", tag_types_list[short_swap_bytes(tagEntryInfo.type)]);
-        else
+	{
+            char type_rlmc[4] = {'R', 'L', 'M', 'C'};
+            if(memcmp(tagHeader.magic, type_rlmc, 4) == 0)
+            {
+                printf("\t\t\t<entry type=\"%s\">\n", tag_types_rlmc_list[short_swap_bytes(tagEntryInfo.type)]);
+            } else {
+                printf("\t\t\t<entry type=\"%s\">\n", tag_types_list[short_swap_bytes(tagEntryInfo.type)]);
+            }
+        } else
             printf("\t\t\t<entry type=\"%u\">\n", short_swap_bytes(tagEntryInfo.type));
 
         for( j = 0; j < short_swap_bytes(tagEntryInfo.coord_count); j++)
@@ -153,7 +161,10 @@ void parse_brlan(char* filename)
 
     int i, j;
     for(i = 0; i < 16; i++)
+    {
         memset(tag_types_list[i], 0, 24);
+        memset(tag_types_rlmc_list[i], 0, 24);
+    }
     strcpy(tag_types_list[0], "X Translation");
     strcpy(tag_types_list[1], "Y Translation");
     strcpy(tag_types_list[2], "Z Translation");
@@ -170,6 +181,23 @@ void parse_brlan(char* filename)
     strcpy(tag_types_list[13], "0x0D");
     strcpy(tag_types_list[14], "0x0E");
     strcpy(tag_types_list[15], "0x0F");
+
+    strcpy(tag_types_rlmc_list[0], "0x00");
+    strcpy(tag_types_rlmc_list[1], "0x01");
+    strcpy(tag_types_rlmc_list[2], "0x02");
+    strcpy(tag_types_rlmc_list[3], "0x03");
+    strcpy(tag_types_rlmc_list[4], "Tev R");
+    strcpy(tag_types_rlmc_list[5], "Tev G");
+    strcpy(tag_types_rlmc_list[6], "Tev B");
+    strcpy(tag_types_rlmc_list[7], "Tev A");
+    strcpy(tag_types_rlmc_list[8], "Unk R");
+    strcpy(tag_types_rlmc_list[9], "Unk G");
+    strcpy(tag_types_rlmc_list[10], "Unk B");
+    strcpy(tag_types_rlmc_list[11], "Unk A");
+    strcpy(tag_types_rlmc_list[12], "0x0C");
+    strcpy(tag_types_rlmc_list[13], "0x0D");
+    strcpy(tag_types_rlmc_list[14], "0x0E");
+    strcpy(tag_types_rlmc_list[15], "0x0F");
 
     BRLAN_fileoffset = 0;
     brlan_header header;
@@ -230,16 +258,16 @@ void parse_brlan(char* filename)
         u32 brlanEntryOffset = BRLAN_fileoffset;
         BRLAN_ReadDataFromMemory(&brlanEntry, data, sizeof(brlan_entry));
 
-		printf("\t<pane name=\"%s\" type=\"%u\">\n", brlanEntry.name, brlanEntry.is_material);
+        printf("\t<pane name=\"%s\" type=\"%u\">\n", brlanEntry.name, brlanEntry.is_material);
 
-		u32 entrylocations[brlanEntry.num_tags];
-		BRLAN_ReadDataFromMemory(entrylocations, data, brlanEntry.num_tags * sizeof(u32));
-		for ( j = 0; j < brlanEntry.num_tags; j++)
-		{
-			BRLAN_CreateXMLTag(tagHeader, data, brlanEntryOffset + be32(entrylocations[j]));
-		}
- 		printf("\t</pane>\n");
- 	}
+        u32 entrylocations[brlanEntry.num_tags];
+        BRLAN_ReadDataFromMemory(entrylocations, data, brlanEntry.num_tags * sizeof(u32));
+        for ( j = 0; j < brlanEntry.num_tags; j++)
+        {
+            BRLAN_CreateXMLTag(tagHeader, data, brlanEntryOffset + be32(entrylocations[j]));
+        }
+         printf("\t</pane>\n");
+     }
     printf("</xmlan>\n");
     fclose(fp);
 }
@@ -261,10 +289,10 @@ void WriteBRLANTagEntries(tag_entry* entry, u8 count, FILE* fp)
 
 void WriteBRLANOffsets(u32* offsets, u32 number, FILE* fp)
 {
-	u32 tempoffsets[number];
-	int i;
-	for(i=0;i<number;i++) tempoffsets[i] = be32(offsets[i]);
-	fwrite(tempoffsets, number * sizeof(u32), 1, fp);
+    u32 tempoffsets[number];
+    int i;
+    for(i=0;i<number;i++) tempoffsets[i] = be32(offsets[i]);
+    fwrite(tempoffsets, number * sizeof(u32), 1, fp);
 }
 
 void WriteBRLANTagEntryinfos(tag_entryinfo entryinfo, FILE* fp)
@@ -316,11 +344,24 @@ void create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *
     char temp3[16][24];
     int i, x;
 
+    char tag_type[5];
+    if(mxmlElementGetAttr(node, "type") != NULL)
+        strcpy(tag_type, mxmlElementGetAttr(node, "type"));
+    tag_type[4] = 0x0;
+    char rlmc_type[5] = {'R', 'L', 'M', 'C', 0x0};
+
     for(i = 0; i < 16; i++)
         memset(temp3[i], 0, 24);
     for(x = 0; x < 16; x++)
         for(i = 0; i < strlen(tag_types_list[x]); i++)
-            temp3[x][i] = toupper(tag_types_list[x][i]);
+        {
+            if(strcmp(tag_type, rlmc_type) == 0)
+            {
+                temp3[x][i] = toupper(tag_types_list[x][i]);
+            } else {
+                temp3[x][i] = toupper(tag_types_rlmc_list[x][i]);
+            }
+        }
     head->entry_count = 0;
     subnode = node;
     for (x = 0, subnode = mxmlFindElement(subnode, node, "entry", NULL, NULL, MXML_DESCEND); subnode != NULL; subnode = mxmlFindElement(subnode, node, "entry", NULL, NULL, MXML_DESCEND), x++) {
@@ -418,7 +459,7 @@ void create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *
         }
     }
 
-	head->pad1 = 0x0; head->pad2 = 0x0; head->pad3 = 0x0;
+    head->pad1 = 0x0; head->pad2 = 0x0; head->pad3 = 0x0;
     WriteBRLANTagHeader(head, fp);
     u32 entryloc = ftell(fp);
     u32 animLen;
@@ -486,17 +527,17 @@ void create_tag_from_xml(mxml_node_t *tree, mxml_node_t *node, FILE* fp)
         strcpy(temp, mxmlElementGetAttr(node, "type"));
         entr.is_material = (u8)atoi(temp);
     } else {
-	}
+    }
 
     
     
     tag_header head;
     mxml_node_t *tagnode;
     for(tagnode = mxmlFindElement(node, node, "tag", NULL, NULL, MXML_DESCEND); tagnode != NULL; tagnode = mxmlFindElement(tagnode, node, "tag", NULL, NULL, MXML_DESCEND))
-	{
-		entr.num_tags++;
-	}
-	u32 brlanentryoffset = ftell(fp);
+    {
+        entr.num_tags++;
+    }
+    u32 brlanentryoffset = ftell(fp);
     WriteBRLANEntry(&entr, fp);
     
     u32 entrylocations[entr.num_tags];
@@ -505,22 +546,22 @@ void create_tag_from_xml(mxml_node_t *tree, mxml_node_t *node, FILE* fp)
     
     entr.num_tags = 0x0;
     for(tagnode = mxmlFindElement(node, node, "tag", NULL, NULL, MXML_DESCEND); tagnode != NULL; tagnode = mxmlFindElement(tagnode, node, "tag", NULL, NULL, MXML_DESCEND))
-	{
-		entrylocations[entr.num_tags] = ftell(fp) - entrylocations[entr.num_tags];
-		if(mxmlElementGetAttr(tagnode, "type") != NULL)
-			strcpy(temp, mxmlElementGetAttr(tagnode, "type"));
-		else {
-			printf("No type attribute found!\nQuitting!\n");
-			exit(1);
-		}
+    {
+        entrylocations[entr.num_tags] = ftell(fp) - entrylocations[entr.num_tags];
+        if(mxmlElementGetAttr(tagnode, "type") != NULL)
+            strcpy(temp, mxmlElementGetAttr(tagnode, "type"));
+        else {
+            printf("No type attribute found!\nQuitting!\n");
+            exit(1);
+        }
         for ( i = 0; i < 4; i++) head.magic[i] = temp[i];
-	    create_entries_from_xml(node, tagnode, &entr, &head, fp);	
-		entr.num_tags++;
-	}
+        create_entries_from_xml(node, tagnode, &entr, &head, fp);    
+        entr.num_tags++;
+    }
     u32 tempOffset = ftell(fp);
-	fseek(fp, brlanentryoffset + sizeof(brlan_entry), SEEK_SET);
-	WriteBRLANOffsets(entrylocations, entr.num_tags, fp);
-	fseek(fp, tempOffset, SEEK_SET);
+    fseek(fp, brlanentryoffset + sizeof(brlan_entry), SEEK_SET);
+    WriteBRLANOffsets(entrylocations, entr.num_tags, fp);
+    fseek(fp, tempOffset, SEEK_SET);
 }
 
 void WriteBRLANHeader(brlan_header rlanhead, FILE* fp)
@@ -657,57 +698,57 @@ void write_brlan(char *infile, char* outfile)
     u32 timgnumber = 0x0;
     for(node = mxmlFindElement(tree, tree, "timg", NULL, NULL, MXML_DESCEND); node != NULL; node = mxmlFindElement(node, tree, "timg", NULL, NULL, MXML_DESCEND))
     {
-    	timgnumber++;
-	}
+        timgnumber++;
+    }
     u32 imageoffsets[timgnumber];
-	u32 imagefileoffset = ftell(fp);
-	for( i = 0; i < timgnumber; i++) imageoffsets[i] = imagefileoffset;
+    u32 imagefileoffset = ftell(fp);
+    for( i = 0; i < timgnumber; i++) imageoffsets[i] = imagefileoffset;
     WriteBRLANOffsets(imageoffsets, timgnumber, fp);
     
     for(node = mxmlFindElement(tree, tree, "timg", NULL, NULL, MXML_DESCEND); node != NULL; node = mxmlFindElement(node, tree, "timg", NULL, NULL, MXML_DESCEND)) {
         timgcount++;
-		imageoffsets[timgcount-1] = ftell(fp) - imageoffsets[timgcount-1];
+        imageoffsets[timgcount-1] = ftell(fp) - imageoffsets[timgcount-1];
         if(mxmlElementGetAttr(node, "name") != NULL)
             strcpy(temp, mxmlElementGetAttr(node, "name"));
         else{
             printf("No name attribute found!\n");
             exit(1);
         }
-		fwrite(temp, strlen(temp) + 1, 1, fp);
+        fwrite(temp, strlen(temp) + 1, 1, fp);
         totaltimgize += strlen(temp) + 1;
     }
     if ((totaltimgize % 4) != 0)
     {
-    	u8 blank[3] = {0x0, 0x0, 0x0};
-    	fwrite(blank, (4 - (totaltimgize % 4)), 1, fp);
-    	totaltimgize += (4 - (totaltimgize % 4));
+        u8 blank[3] = {0x0, 0x0, 0x0};
+        fwrite(blank, (4 - (totaltimgize % 4)), 1, fp);
+        totaltimgize += (4 - (totaltimgize % 4));
     }
     u32 tempoOffset = ftell(fp);
     fseek(fp, imagefileoffset, SEEK_SET);
     WriteBRLANOffsets(imageoffsets, timgnumber, fp);
     fseek(fp, tempoOffset, SEEK_SET);
 
-	u32 panecount = 0x0;
-	for(node = mxmlFindElement(tree, tree, "pane", NULL, NULL, MXML_DESCEND); node != NULL; node = mxmlFindElement(node, tree, "pane", NULL, NULL, MXML_DESCEND))
-	{
-		panecount++;
-	}
-	u32 paneoffsets[panecount];
-	u32 tagoffset = ftell(fp);
-	for(i = 0; i < panecount; i++) paneoffsets[i] = 0x10;
-	WriteBRLANOffsets(paneoffsets, panecount, fp);
-	
-	for(node = mxmlFindElement(tree, tree, "pane", NULL, NULL, MXML_DESCEND); node != NULL; node = mxmlFindElement(node, tree, "pane", NULL, NULL, MXML_DESCEND))
-	{
-		blobcount++;
-		paneoffsets[blobcount-1] = ftell(fp) - paneoffsets[blobcount-1];
-		create_tag_from_xml(tree, node, fp);
+    u32 panecount = 0x0;
+    for(node = mxmlFindElement(tree, tree, "pane", NULL, NULL, MXML_DESCEND); node != NULL; node = mxmlFindElement(node, tree, "pane", NULL, NULL, MXML_DESCEND))
+    {
+        panecount++;
+    }
+    u32 paneoffsets[panecount];
+    u32 tagoffset = ftell(fp);
+    for(i = 0; i < panecount; i++) paneoffsets[i] = 0x10;
+    WriteBRLANOffsets(paneoffsets, panecount, fp);
+    
+    for(node = mxmlFindElement(tree, tree, "pane", NULL, NULL, MXML_DESCEND); node != NULL; node = mxmlFindElement(node, tree, "pane", NULL, NULL, MXML_DESCEND))
+    {
+        blobcount++;
+        paneoffsets[blobcount-1] = ftell(fp) - paneoffsets[blobcount-1];
+        create_tag_from_xml(tree, node, fp);
         totaltagsize = ftell(fp) - tagoffset;
-	}
-	u32 fileSize = ftell(fp);
-	fseek(fp, tagoffset, SEEK_SET);
-	WriteBRLANOffsets(paneoffsets, blobcount, fp);
-	
+    }
+    u32 fileSize = ftell(fp);
+    fseek(fp, tagoffset, SEEK_SET);
+    WriteBRLANOffsets(paneoffsets, blobcount, fp);
+    
 
     paihead.num_timgs = timgcount;
     paihead.entry_offset = sizeof(brlan_pai1_header_type1) + totaltimgize + (4*paihead.num_timgs);
