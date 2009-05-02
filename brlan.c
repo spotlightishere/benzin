@@ -186,14 +186,14 @@ void parse_brlan(char* filename)
     strcpy(tag_types_rlmc_list[1], "0x01");
     strcpy(tag_types_rlmc_list[2], "0x02");
     strcpy(tag_types_rlmc_list[3], "0x03");
-    strcpy(tag_types_rlmc_list[4], "Tev R");
-    strcpy(tag_types_rlmc_list[5], "Tev G");
-    strcpy(tag_types_rlmc_list[6], "Tev B");
-    strcpy(tag_types_rlmc_list[7], "Tev A");
-    strcpy(tag_types_rlmc_list[8], "Unk R");
-    strcpy(tag_types_rlmc_list[9], "Unk G");
-    strcpy(tag_types_rlmc_list[10], "Unk B");
-    strcpy(tag_types_rlmc_list[11], "Unk A");
+    strcpy(tag_types_rlmc_list[4], "Blackcolor R");
+    strcpy(tag_types_rlmc_list[5], "Blackcolor G");
+    strcpy(tag_types_rlmc_list[6], "Blackcolor B");
+    strcpy(tag_types_rlmc_list[7], "Blackcolor A");
+    strcpy(tag_types_rlmc_list[8], "Whitecolor R");
+    strcpy(tag_types_rlmc_list[9], "Whitecolor G");
+    strcpy(tag_types_rlmc_list[10], "Whitecolor B");
+    strcpy(tag_types_rlmc_list[11], "Whitecolor A");
     strcpy(tag_types_rlmc_list[12], "0x0C");
     strcpy(tag_types_rlmc_list[13], "0x0D");
     strcpy(tag_types_rlmc_list[14], "0x0E");
@@ -344,22 +344,25 @@ void create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *
     char temp3[16][24];
     int i, x;
 
-    char tag_type[5];
+    char tag_type[256];
     if(mxmlElementGetAttr(node, "type") != NULL)
         strcpy(tag_type, mxmlElementGetAttr(node, "type"));
-    tag_type[4] = 0x0;
-    char rlmc_type[5] = {'R', 'L', 'M', 'C', 0x0};
+
+    char rlmc_type[5] = {'R', 'L', 'M', 'C'};
 
     for(i = 0; i < 16; i++)
         memset(temp3[i], 0, 24);
     for(x = 0; x < 16; x++)
-        for(i = 0; i < strlen(tag_types_list[x]); i++)
+        if(memcmp(tag_type, rlmc_type, 4) == 0)
         {
-            if(strcmp(tag_type, rlmc_type) == 0)
+            for(i = 0; i < strlen(tag_types_rlmc_list[x]); i++)
+            {
+                temp3[x][i] = toupper(tag_types_rlmc_list[x][i]);
+            }
+         } else {
+            for(i = 0; i < strlen(tag_types_list[x]); i++)
             {
                 temp3[x][i] = toupper(tag_types_list[x][i]);
-            } else {
-                temp3[x][i] = toupper(tag_types_rlmc_list[x][i]);
             }
         }
     head->entry_count = 0;
@@ -599,7 +602,10 @@ void write_brlan(char *infile, char* outfile)
 {
     int i;
     for(i = 0; i < 16; i++)
+    {
         memset(tag_types_list[i], 0, 24);
+        memset(tag_types_rlmc_list[i], 0, 24);
+    }
     strcpy(tag_types_list[0], "X Translation");
     strcpy(tag_types_list[1], "Y Translation");
     strcpy(tag_types_list[2], "Z Translation");
@@ -616,6 +622,24 @@ void write_brlan(char *infile, char* outfile)
     strcpy(tag_types_list[13], "0x0D");
     strcpy(tag_types_list[14], "0x0E");
     strcpy(tag_types_list[15], "0x0F");
+
+    strcpy(tag_types_rlmc_list[0], "0x00");
+    strcpy(tag_types_rlmc_list[1], "0x01");
+    strcpy(tag_types_rlmc_list[2], "0x02");
+    strcpy(tag_types_rlmc_list[3], "0x03");
+    strcpy(tag_types_rlmc_list[4], "Blackcolor R");
+    strcpy(tag_types_rlmc_list[5], "Blackcolor G");
+    strcpy(tag_types_rlmc_list[6], "Blackcolor B");
+    strcpy(tag_types_rlmc_list[7], "Blackcolor A");
+    strcpy(tag_types_rlmc_list[8], "Whitecolor R");
+    strcpy(tag_types_rlmc_list[9], "Whitecolor G");
+    strcpy(tag_types_rlmc_list[10], "Whitecolor B");
+    strcpy(tag_types_rlmc_list[11], "Whitecolor A");
+    strcpy(tag_types_rlmc_list[12], "0x0C");
+    strcpy(tag_types_rlmc_list[13], "0x0D");
+    strcpy(tag_types_rlmc_list[14], "0x0E");
+    strcpy(tag_types_rlmc_list[15], "0x0F");
+
     FILE* fpx = fopen(infile, "r");
     if(fpx == NULL) {
         printf("xmlan couldn't be opened!\n");
