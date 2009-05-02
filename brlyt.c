@@ -757,8 +757,8 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 #ifdef OLD_BRLYT_OUTSTYLE
         printf("                offset: %08x\n", be32(offset));
         printf("                name: %s\n", data3.name);
-        printf("                tev_color: %#x,%#x,%#x,%#x\n", be16(data3.tev_color[0]), be16(data3.tev_color[1]), be16(data3.tev_color[2]), be16(data3.tev_color[3]));
-        printf("                unk_color: %#x,%#x,%#x,%#x\n", be16(data3.unk_color[0]), be16(data3.unk_color[1]), be16(data3.unk_color[2]), be16(data3.unk_color[3]));
+        printf("                black_color: %#x,%#x,%#x,%#x\n", be16(data3.black_color[0]), be16(data3.black_color[1]), be16(data3.black_color[2]), be16(data3.black_color[3]));
+        printf("                white_color: %#x,%#x,%#x,%#x\n", be16(data3.white_color[0]), be16(data3.white_color[1]), be16(data3.white_color[2]), be16(data3.white_color[3]));
         printf("                unk_color_2: %#x,%#x,%#x,%#x\n", be16(data3.unk_color_2[0]), be16(data3.unk_color_2[1]), be16(data3.unk_color_2[2]), be16(data3.unk_color_2[3]));
         printf("                tev_kcolor: %#x,%#x,%#x,%#x\n", be32(data3.tev_kcolor[0]), be32(data3.tev_kcolor[1]), be32(data3.tev_kcolor[2]), be32(data3.tev_kcolor[3]));
         printf("                flags: %08x\n", be32(data3.flags));
@@ -766,14 +766,14 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file)
 #else
         printf("        <entries name=\"%s\">\n", data3.name);
         printf("            <colors>\n");
-        printf("                <tev>%d</tev>\n", short_swap_bytes(data3.tev_color[0]));
-        printf("                <tev>%d</tev>\n", short_swap_bytes(data3.tev_color[1]));
-        printf("                <tev>%d</tev>\n", short_swap_bytes(data3.tev_color[2]));
-        printf("                <tev>%d</tev>\n", short_swap_bytes(data3.tev_color[3]));
-        printf("                <unk>%d</unk>\n", short_swap_bytes(data3.unk_color[0]));
-        printf("                <unk>%d</unk>\n", short_swap_bytes(data3.unk_color[1]));
-        printf("                <unk>%d</unk>\n", short_swap_bytes(data3.unk_color[2]));
-        printf("                <unk>%d</unk>\n", short_swap_bytes(data3.unk_color[3]));
+        printf("                <black_color>%d</black_color>\n", short_swap_bytes(data3.black_color[0]));
+        printf("                <black_color>%d</black_color>\n", short_swap_bytes(data3.black_color[1]));
+        printf("                <black_color>%d</black_color>\n", short_swap_bytes(data3.black_color[2]));
+        printf("                <black_color>%d</black_color>\n", short_swap_bytes(data3.black_color[3]));
+        printf("                <white_color>%d</white_color>\n", short_swap_bytes(data3.white_color[0]));
+        printf("                <white_color>%d</white_color>\n", short_swap_bytes(data3.white_color[1]));
+        printf("                <white_color>%d</white_color>\n", short_swap_bytes(data3.white_color[2]));
+        printf("                <white_color>%d</white_color>\n", short_swap_bytes(data3.white_color[3]));
         printf("                <unk2>%d</unk2>\n", short_swap_bytes(data3.unk_color_2[0]));
         printf("                <unk2>%d</unk2>\n", short_swap_bytes(data3.unk_color_2[1]));
         printf("                <unk2>%d</unk2>\n", short_swap_bytes(data3.unk_color_2[2]));
@@ -1468,24 +1468,24 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             {
                 mxml_node_t *valnode;
                 int colorNumber = 0;
-                for (valnode=mxmlFindElement(setnode, setnode, "tev", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "tev", NULL, NULL, MXML_DESCEND) )
+                for (valnode=mxmlFindElement(setnode, setnode, "black_color", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "black_color", NULL, NULL, MXML_DESCEND) )
                 {
                     char tempCoord[256];
                     get_value(valnode, tempCoord, 256);
                         
-                    chunk.tev_color[colorNumber] = strtol(tempCoord, NULL, 10);
-                    chunk.tev_color[colorNumber] = short_swap_bytes(chunk.tev_color[colorNumber]);
+                    chunk.black_color[colorNumber] = strtol(tempCoord, NULL, 10);
+                    chunk.black_color[colorNumber] = short_swap_bytes(chunk.black_color[colorNumber]);
 
                     colorNumber+=1;
                 }
                 colorNumber = 0;
-                for (valnode=mxmlFindElement(setnode, setnode, "unk", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "unk", NULL, NULL, MXML_DESCEND) )
+                for (valnode=mxmlFindElement(setnode, setnode, "white_color", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "white_color", NULL, NULL, MXML_DESCEND) )
                 {
                     char tempCoord[256];
                     get_value(valnode, tempCoord, 256);
                     
-                    chunk.unk_color[colorNumber] = strtol(tempCoord, NULL, 10);
-                    chunk.unk_color[colorNumber] = short_swap_bytes(chunk.unk_color[colorNumber]);
+                    chunk.white_color[colorNumber] = strtol(tempCoord, NULL, 10);
+                    chunk.white_color[colorNumber] = short_swap_bytes(chunk.white_color[colorNumber]);
 
                     colorNumber+=1;
                 }
@@ -2458,12 +2458,13 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             unsigned char tempCoord[1024];
             get_value(subnode, tempCoord, 1024);
             memcpy(tempy, tempCoord, short_swap_bytes(chunk2.len2)*2);
-            int w; for (w=0;w<short_swap_bytes(chunk2.len2);w++)
+            u32 w; for (w=0;w<short_swap_bytes(chunk2.len2);w++)
             {
                 u8 temp[3];
                 temp[0] = tempy[w*2+0];
                 temp[1] = tempy[w*2+1];
                 temp[2] = 0x0;
+                //printf("w: %d, temp: %s\n", w, temp);
                 texty[w] = (u8)strtoul(temp, NULL, 16);
             }
         }

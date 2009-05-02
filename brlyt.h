@@ -160,8 +160,8 @@ typedef struct
 typedef struct
 {
     char name[20];
-    s16 tev_color[4];
-    s16 unk_color[4];
+    s16 black_color[4];
+    s16 white_color[4];
     s16 unk_color_2[4];
     u32 tev_kcolor[4];
     u32 flags;
@@ -180,10 +180,10 @@ typedef struct
     u8 wrap_t;
 } brlyt_texref_chunk;
 
-typedef struct
-{
-    float unk[5];
-} brlyt_ua2_chunk;
+typedef struct		// useful for texture offset and wrapping
+{			// 1st number is x offset; 2nd number is y offset
+    float unk[5];	// 3rd number is currently unknown
+} brlyt_ua2_chunk;	// 4th number is number of horiz. spans; 5th is number of vert. span
 
 typedef struct
 {
