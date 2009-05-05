@@ -158,8 +158,12 @@ const char *whitespace_cb(mxml_node_t *node, int where)
             return ("\n\t\t\t\t");
         }
     }
-    else if (!strcmp(name, "flags") ||
-             !strcmp(name, "ua2") ||
+    else if (!strcmp(name, "flags"))
+    {
+        if ((where == MXML_WS_BEFORE_OPEN))
+            return ("\n\t\t\t");
+    }
+    else if (!strcmp(name, "ua2") ||
              !strcmp(name, "ua3") ||
              !strcmp(name, "ua4") ||
              !strcmp(name, "ua5") ||
