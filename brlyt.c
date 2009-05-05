@@ -532,7 +532,7 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_text_chunk));
     unsigned char texty[short_swap_bytes(data2.len2)];
     memcpy(texty, &brlyt_file[BRLYT_fileoffset], short_swap_bytes(data2.len2));
-    length = mxmlNewElement(tag, "length"); mxmlNewTextf(length, 0, "%04x-%-04x", short_swap_bytes(data2.len2), short_swap_bytes(data2.len2));
+    length = mxmlNewElement(tag, "length"); mxmlNewTextf(length, 0, "%04x-%04x", short_swap_bytes(data2.len2), short_swap_bytes(data2.len2));
     font = mxmlNewElement(tag, "font"); mxmlElementSetAttrf(font, 0, "%d", short_swap_bytes(data2.font_idx));
     xsize = mxmlNewElement(font, "xsize"); mxmlNewTextf(xsize, 0, "%f", float_swap_bytes(data2.font_size_x));
     ysize = mxmlNewElement(font, "ysize"); mxmlNewTextf(ysize, 0, "%f", float_swap_bytes(data2.font_size_y));
@@ -560,7 +560,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
         BRLYT_ReadDataFromMemory(&data3, brlyt_file, sizeof(brlyt_material_chunk));
 
         unsigned int flaggs = be32(data3.flags);
-        entries = mxmlNewElement(tag, "entries"); mxmlElementSetAttrf(entries, "%s", data3.name);
+        entries = mxmlNewElement(tag, "entries"); mxmlElementSetAttrf(entries, 0,  "%s", data3.name);
         colors = mxmlNewElement(entries, "colors");
         int i; for (i=0;i<4;i++)
         {
@@ -811,7 +811,7 @@ void PrintBRLYTEntries(brlyt_entry *entries, int entrycnt, u8* brlyt_file, mxml_
     }
 }
 
-void parse_brlyt(char *filename)
+void parse_brlyt(char *filename, char *filenameout)
 {
     materials = (char*)malloc(12);
     numberOfMaterials = 0;
@@ -885,7 +885,7 @@ void parse_brlyt(char *filename)
     }
 
     FILE *xmlFile;
-    xmlFile = fopen("testy.xmlyt", "w");
+    xmlFile = fopen(filenameout, "w");
     mxml_node_t *xml;
     mxml_node_t *xmlyt;
     xml = mxmlNewXML("1.0");

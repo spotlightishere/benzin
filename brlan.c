@@ -169,7 +169,7 @@ void BRLAN_CreateXMLTag(tag_header tagHeader, void* data, u32 offset, mxml_node_
     printf("\t\t</tag>\n");
 }
 
-void parse_brlan(char* filename)
+void parse_brlan(char* filename, char *filenameout)
 {
     FILE* fp = fopen(filename, "rb");
     if(fp == NULL) {
@@ -300,7 +300,7 @@ void parse_brlan(char* filename)
     }
 
     FILE *xmlFile;
-    xmlFile = fopen("testy.xmlan", "w");
+    xmlFile = fopen(filenameout, "w");
     mxml_node_t *xml;
     mxml_node_t *xmlan;
     xml = mxmlNewXML("1.0");

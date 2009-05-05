@@ -116,11 +116,11 @@ if(type == 1)
     if((argv[1][0] == 'r') || (argv[1][0] == 'p')) {
 if(type == 2)
 {
-        parse_brlan(argv[brlanargread]);
+        parse_brlan(argv[brlanargread], argv[3]);
 }
 if(type == 1)
 {
-        parse_brlyt(argv[brlytargread]);
+        parse_brlyt(argv[brlytargread], argv[3]);
 }
     }else if((argv[1][0] == 'm') || (argv[1][0] == 'w')) {
 if(type == 2)

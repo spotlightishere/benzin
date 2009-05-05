@@ -207,7 +207,7 @@ typedef struct
 void swapBytes(unsigned char* char1, unsigned char* char2);
 int bitExtraction(unsigned int num, unsigned int start, unsigned int end);
 
-void parse_brlyt(char *filename);
+void parse_brlyt(char *filename, char *filenameout);
 void make_brlyt(char* infile, char* outfile);
 
 #endif //BRLYT_H_

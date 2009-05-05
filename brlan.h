@@ -105,7 +105,7 @@ typedef struct
 } tag_data2;
 
 
-void parse_brlan(char* filename);
+void parse_brlan(char* filename, char *filenameout);
 void make_brlan(char* infile, char* outfile);
 
 #endif //BRLAN_H_
