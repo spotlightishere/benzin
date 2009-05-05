@@ -36,6 +36,59 @@ char tag_types_rlmc_list[15][24];
 static size_t BRLAN_fileoffset = 0;
 FILE* xmlanout;
 
+const char *whitespace_cb(mxml_node_t *node, int where)
+{
+    const char *name;
+    name = node->value.element.name;
+
+    if (!strcmp(name, "xmlan"))
+    {
+	if ((where == MXML_WS_BEFORE_OPEN) || (where == MXML_WS_BEFORE_CLOSE))
+            return("\n");
+    }
+    if (!strcmp(name, "timg"))
+    {
+	if (where == MXML_WS_BEFORE_OPEN)
+            return("\n");
+    }
+    else if (!strcmp(name, "pane")) 
+    {
+        if ((where == MXML_WS_BEFORE_OPEN) || (where == MXML_WS_BEFORE_CLOSE))
+            return ("\n\t");
+    }
+    else if (!strcmp(name, "tag")) 
+    {
+        if ((where == MXML_WS_BEFORE_OPEN) || (where == MXML_WS_BEFORE_CLOSE))
+            return ("\n\t\t");
+    }
+    else if (!strcmp(name, "entry"))
+    {
+	if ((where == MXML_WS_BEFORE_OPEN) || (where == MXML_WS_BEFORE_CLOSE))
+            return ("\n\t\t\t");
+    }
+    else if (!strcmp(name, "triplet") ||
+             !strcmp(name, "pair"))
+    {
+	if ((where == MXML_WS_BEFORE_OPEN) || (where == MXML_WS_BEFORE_CLOSE))
+	  return ("\n\t\t\t\t");
+    }
+    else if (!strcmp(name, "frame") ||
+             !strcmp(name, "value") ||
+             !strcmp(name, "blend") ||
+             !strcmp(name, "data1") ||
+             !strcmp(name, "data2") ||
+             !strcmp(name, "padding"))
+    {
+	if (where == MXML_WS_BEFORE_OPEN)
+	  return ("\n\t\t\t\t\t");
+    }
+
+    /*
+     * Return NULL for no added whitespace...
+     */
+    return (NULL);
+}
+
 static void BRLAN_ReadDataFromMemoryX(void* destination, void* input, size_t size)
 {
     u8* out = (u8*)destination;
@@ -246,58 +299,6 @@ void parse_brlan(char* filename, char *filenameout)
 
     CreateGlobal_pai1(&pai1_header, pai1_header1, pai1_header2, pai1_header_type);
 
-    const char *whitespace_cb(mxml_node_t *node, int where)
-    {
-      const char *name;
-      name = node->value.element.name;
-
-      if (!strcmp(name, "xmlan"))
-      {
-	if ((where == MXML_WS_BEFORE_OPEN) || (where == MXML_WS_BEFORE_CLOSE))
-            return("\n");
-      }
-      if (!strcmp(name, "timg"))
-      {
-	if (where == MXML_WS_BEFORE_OPEN)
-            return("\n");
-      }
-      else if (!strcmp(name, "pane")) 
-      {
-        if ((where == MXML_WS_BEFORE_OPEN) || (where == MXML_WS_BEFORE_CLOSE))
-            return ("\n\t");
-      }
-      else if (!strcmp(name, "tag")) 
-      {
-        if ((where == MXML_WS_BEFORE_OPEN) || (where == MXML_WS_BEFORE_CLOSE))
-            return ("\n\t\t");
-      }
-      else if (!strcmp(name, "entry"))
-      {
-	if ((where == MXML_WS_BEFORE_OPEN) || (where == MXML_WS_BEFORE_CLOSE))
-            return ("\n\t\t\t");
-      }
-      else if (!strcmp(name, "triplet") ||
-               !strcmp(name, "pair"))
-      {
-	if ((where == MXML_WS_BEFORE_OPEN) || (where == MXML_WS_BEFORE_CLOSE))
-	  return ("\n\t\t\t\t");
-      }
-      else if (!strcmp(name, "frame") ||
-               !strcmp(name, "value") ||
-               !strcmp(name, "blend") ||
-               !strcmp(name, "data1") ||
-               !strcmp(name, "data2") ||
-               !strcmp(name, "padding"))
-      {
-	if (where == MXML_WS_BEFORE_OPEN)
-	  return ("\n\t\t\t\t\t");
-      }
-
-     /*
-      * Return NULL for no added whitespace...
-      */
-      return (NULL);
-    }
 
     FILE *xmlFile;
     xmlFile = fopen(filenameout, "w");
