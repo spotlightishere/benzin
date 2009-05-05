@@ -879,16 +879,28 @@ void parse_brlyt(char *filename, char *filenameout)
             return ("\n\t\t");
       }
       else if (!strcmp(name, "data") ||
-               !strcmp(name, "name") ||
-               !strcmp(name, "colors") ||
-               !strcmp(name, "black_color") ||
-               !strcmp(name, "white_color") ||
+               !strcmp(name, "name"))
+      {
+        if ((where == MXML_WS_BEFORE_OPEN))
+            return ("\n\t\t\t");
+      }
+      else if (!strcmp(name, "colors") ||
                !strcmp(name, "wrap_t") ||
                !strcmp(name, "wrap_s") ||
                !strcmp(name, "material"))
       {
         if ((where == MXML_WS_BEFORE_OPEN) || (where == MXML_WS_BEFORE_CLOSE))
-            return ("\n\n\t");
+            return ("\n\t\t\t");
+      }
+      else if (!strcmp(name, "black_color") ||
+               !strcmp(name, "white_color") ||
+               !strcmp(name, "unk2") ||
+               !strcmp(name, "tev_k"))
+      {
+        if ((where == MXML_WS_BEFORE_OPEN))
+        {
+            return ("\n\t\t\t\t");
+        }
       }
       else if (!strcmp(name, "flags") ||
                !strcmp(name, "ua2") ||
@@ -903,7 +915,7 @@ void parse_brlyt(char *filename, char *filenameout)
                !strcmp(name, "uab"))
       {
         if ((where == MXML_WS_BEFORE_OPEN) || (where == MXML_WS_BEFORE_CLOSE))
-            return ("\n\n\t");
+            return ("\n\t\t\t");
       }
      /*
       * Return NULL for no added whitespace...
