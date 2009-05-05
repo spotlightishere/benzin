@@ -92,7 +92,6 @@ void BRLAN_CreateXMLTag(tag_header tagHeader, void* data, u32 offset, mxml_node_
 
     mxml_node_t *tag;
     tag = mxmlNewElement(pane, "tag"); mxmlElementSetAttrf(tag, "type", "%c%c%c%c", tagHeader.magic[0], tagHeader.magic[1], tagHeader.magic[2], tagHeader.magic[3]);
-    printf("\t\t<tag type=\"%c%c%c%c\">\n", tagHeader.magic[0], tagHeader.magic[1], tagHeader.magic[2], tagHeader.magic[3]);
 
     tag_entryinfo tagEntryInfo;
     u32 tagentrylocations[tagHeader.entry_count];
@@ -109,14 +108,11 @@ void BRLAN_CreateXMLTag(tag_header tagHeader, void* data, u32 offset, mxml_node_
             if(memcmp(tagHeader.magic, type_rlmc, 4) == 0)
             {
                 entry = mxmlNewElement(tag, "entry"); mxmlElementSetAttrf(entry, "type", "%s", tag_types_rlmc_list[short_swap_bytes(tagEntryInfo.type)]);
-                printf("\t\t\t<entry type=\"%s\">\n", tag_types_rlmc_list[short_swap_bytes(tagEntryInfo.type)]);
             } else {
                 entry = mxmlNewElement(tag, "entry"); mxmlElementSetAttrf(entry, "type", "%s", tag_types_list[short_swap_bytes(tagEntryInfo.type)]);
-                printf("\t\t\t<entry type=\"%s\">\n", tag_types_list[short_swap_bytes(tagEntryInfo.type)]);
             }
         } else {
             entry = mxmlNewElement(tag, "entry"); mxmlElementSetAttrf(entry, "type", "%u", short_swap_bytes(tagEntryInfo.type));
-            printf("\t\t\t<entry type=\"%u\">\n", short_swap_bytes(tagEntryInfo.type));
         }
 
         for( j = 0; j < short_swap_bytes(tagEntryInfo.coord_count); j++)
@@ -134,13 +130,9 @@ void BRLAN_CreateXMLTag(tag_header tagHeader, void* data, u32 offset, mxml_node_
                 u32 p2 = be32(tagData.part2);
                 u32 p3 = be32(tagData.part3);
                 triplet = mxmlNewElement(entry, "triplet");
-                printf("\t\t\t\t<triplet>\n");
                 frame = mxmlNewElement(triplet, "frame"); mxmlNewTextf(frame, 0, "%.15f", *(f32*)(&p1));
-                printf("\t\t\t\t\t<frame>%.15f</frame>\n", *(f32*)(&p1));
                 value = mxmlNewElement(triplet, "value"); mxmlNewTextf(value, 0, "%.15f", *(f32*)(&p2));
-                printf("\t\t\t\t\t<value>%.15f</value>\n", *(f32*)(&p2));
                 blend = mxmlNewElement(triplet, "blend"); mxmlNewTextf(blend, 0, "%.15f", *(f32*)(&p3));
-                printf("\t\t\t\t\t<blend>%.15f</blend>\n", *(f32*)(&p3));
                 printf("\t\t\t\t</triplet>\n");
             } else {
                 tag_data2 tagData2;
@@ -154,19 +146,12 @@ void BRLAN_CreateXMLTag(tag_header tagHeader, void* data, u32 offset, mxml_node_
                 u16 p2 = short_swap_bytes(tagData2.part2);
                 u16 p3 = short_swap_bytes(tagData2.padding);
                 pair = mxmlNewElement(entry, "pair");
-                printf("\t\t\t\t<pair>\n");
                 data1 = mxmlNewElement(pair, "data1"); mxmlNewTextf(data1, 0, "%.15f", *(f32*)(&p1));
-                printf("\t\t\t\t\t<data1>%.15f</data1>\n", *(f32*)(&p1));
                 data2 = mxmlNewElement(pair, "data2"); mxmlNewTextf(data2, 0, "%.15f", *(f32*)(&p2));
-                printf("\t\t\t\t\t<data2>%04x</data2>\n", p2);
                 padding = mxmlNewElement(pair, "padding"); mxmlNewTextf(padding, 0, "%04x", p3);
-                printf("\t\t\t\t\t<padding>%04x</padding>\n", p3);
-                printf("\t\t\t\t</pair>\n");
             }
         }
-        printf("\t\t\t</entry>\n");
     }
-    printf("\t\t</tag>\n");
 }
 
 void parse_brlan(char* filename, char *filenameout)
@@ -256,9 +241,6 @@ void parse_brlan(char* filename, char *filenameout)
     mxmlElementSetAttrf(xmlan, "framesize", "%lu", (long unsigned int)short_swap_bytes(pai1_header.framesize));
     mxmlElementSetAttrf(xmlan, "flags", "%02x", pai1_header.flags);
 
-    printf("<?xml version=\"1.0\"?>\n" \
-           "<xmlan framesize=\"%lu\" flags=\"%02x\">\n", (long unsigned int)short_swap_bytes(pai1_header.framesize), pai1_header.flags);
-
     int timgs = short_swap_bytes(pai1_header.num_timgs);
 
     BRLAN_fileoffset = short_swap_bytes(header.pai1_offset) + sizeof(brlan_pai1_header_type1);
@@ -275,7 +257,6 @@ void parse_brlan(char* filename, char *filenameout)
         int z = tableoff + be32(curr_timg_off);
         for( j = 0; data[z] != 0; timgname[j++] = data[z], z++);
         {
-            printf("\t<timg name=\"%s\" />\n", timgname);
             timg = mxmlNewElement(xmlan, "timg");
             mxmlElementSetAttrf(timg, "name", "%s", timgname);
         }
@@ -298,7 +279,6 @@ void parse_brlan(char* filename, char *filenameout)
 
         mxml_node_t *pane;
         pane = mxmlNewElement(xmlan, "pane"); mxmlElementSetAttrf(pane, "name", "%s", brlanEntry.name); mxmlElementSetAttrf(pane, "type", "%u", brlanEntry.is_material);
-        printf("\t<pane name=\"%s\" type=\"%u\">\n", brlanEntry.name, brlanEntry.is_material);
 
         u32 entrylocations[brlanEntry.num_tags];
         BRLAN_ReadDataFromMemory(entrylocations, data, brlanEntry.num_tags * sizeof(u32));
@@ -306,9 +286,7 @@ void parse_brlan(char* filename, char *filenameout)
         {
             BRLAN_CreateXMLTag(tagHeader, data, brlanEntryOffset + be32(entrylocations[j]), pane);
         }
-         printf("\t</pane>\n");
      }
-    printf("</xmlan>\n");
     mxmlSaveFile(xml, xmlFile, whitespace_cb);
     fclose(xmlFile);
     fclose(fp);
