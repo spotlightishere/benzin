@@ -878,6 +878,33 @@ void parse_brlyt(char *filename, char *filenameout)
         if ((where == MXML_WS_BEFORE_OPEN) || (where == MXML_WS_BEFORE_CLOSE))
             return ("\n\t\t");
       }
+      else if (!strcmp(name, "data") ||
+               !strcmp(name, "name") ||
+               !strcmp(name, "colors") ||
+               !strcmp(name, "black_color") ||
+               !strcmp(name, "white_color") ||
+               !strcmp(name, "wrap_t") ||
+               !strcmp(name, "wrap_s") ||
+               !strcmp(name, "material"))
+      {
+        if ((where == MXML_WS_BEFORE_OPEN) || (where == MXML_WS_BEFORE_CLOSE))
+            return ("\n\n\t");
+      }
+      else if (!strcmp(name, "flags") ||
+               !strcmp(name, "ua2") ||
+               !strcmp(name, "ua3") ||
+               !strcmp(name, "ua4") ||
+               !strcmp(name, "ua5") ||
+               !strcmp(name, "ua6") ||
+               !strcmp(name, "ua7") ||
+               !strcmp(name, "ua8") ||
+               !strcmp(name, "ua9") ||
+               !strcmp(name, "uaa") ||
+               !strcmp(name, "uab"))
+      {
+        if ((where == MXML_WS_BEFORE_OPEN) || (where == MXML_WS_BEFORE_CLOSE))
+            return ("\n\n\t");
+      }
      /*
       * Return NULL for no added whitespace...
       */
