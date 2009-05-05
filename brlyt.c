@@ -582,7 +582,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
             tev_k = mxmlNewElement(colors, "tev_k");
             mxmlNewTextf(tev_k, 0, "%#08x", be32(data3.tev_kcolor[i]));
         }
-        flags = mxmlNewElement(tag, "flags"); mxmlNewTextf(flags, 0, "%08x", be32(data3.flags));
+        flags = mxmlNewElement(entries, "flags"); mxmlNewTextf(flags, 0, "%08x", be32(data3.flags));
 
         int oldsize = 1+strlen(data3.name);
         int newSize = lengthOfMaterials+strlen(data3.name)+1;

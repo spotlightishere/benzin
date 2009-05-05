@@ -130,11 +130,15 @@ const char *whitespace_cb(mxml_node_t *node, int where)
         if ((where == MXML_WS_BEFORE_OPEN) || (where == MXML_WS_BEFORE_CLOSE))
             return ("\n\t\t");
     }
-    else if (!strcmp(name, "data") ||
-             !strcmp(name, "name"))
+    else if (!strcmp(name, "name"))
     {
         if ((where == MXML_WS_BEFORE_OPEN))
             return ("\n\t\t\t");
+    }
+    else if (!strcmp(name, "data"))
+    {
+        if ((where == MXML_WS_BEFORE_OPEN))
+            return ("\n\t\t\t\t");
     }
     else if (!strcmp(name, "colors") ||
              !strcmp(name, "wrap_t") ||
