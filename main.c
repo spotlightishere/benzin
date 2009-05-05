@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 
     if (argc < 3)
     {
-        printf("Please use ./benzin r brlytfilename.brlyt > xmlytfilename.xmlyt\n");
+        printf("Please use ./benzin r brlytfilename.brlyt xmlytfilename.xmlyt\n");
         printf("                - OR - \n");
         printf("Please use ./benzin m xmlytfilename.xmlyt brlytfilename.brlyt\n");
         exit(1);
