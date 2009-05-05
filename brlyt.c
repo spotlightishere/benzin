@@ -560,7 +560,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
         BRLYT_ReadDataFromMemory(&data3, brlyt_file, sizeof(brlyt_material_chunk));
 
         unsigned int flaggs = be32(data3.flags);
-        entries = mxmlNewElement(tag, "entries"); mxmlElementSetAttrf(entries, 0,  "%s", data3.name);
+        entries = mxmlNewElement(tag, "entries"); mxmlElementSetAttrf(entries, "name",  "%s", data3.name);
         colors = mxmlNewElement(entries, "colors");
         int i; for (i=0;i<4;i++)
         {
@@ -598,7 +598,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
             brlyt_texref_chunk data4;
             BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_texref_chunk));
             int tplOffset = short_swap_bytes(data4.tex_offs);
-            material = mxmlNewElement(tag, "material"); mxmlElementSetAttrf(material, "name", "%s", getTexture(tplOffset));
+            material = mxmlNewElement(entries, "material"); mxmlElementSetAttrf(material, "name", "%s", getTexture(tplOffset));
             wrap_s = mxmlNewElement(material, "wrap_s"); mxmlNewTextf(wrap_s, 0, "%02x", data4.wrap_s);
             wrap_t = mxmlNewElement(material, "wrap_t"); mxmlNewTextf(wrap_t, 0, "%02x", data4.wrap_t);
         }
@@ -610,7 +610,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 {
                         brlyt_ua2_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_ua2_chunk));
-                        ua2 = mxmlNewElement(tag, "ua2");
+                        ua2 = mxmlNewElement(entries, "ua2");
                         int j; for (j=0;j<5;j++)
                         {
                             dataa = mxmlNewElement(ua2, "data"); mxmlNewTextf(dataa, 0, "%.10f", float_swap_bytes(data4.unk[j]));
@@ -624,7 +624,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 {
                         brlyt_4b_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
-                        ua3 = mxmlNewElement(tag, "ua3");
+                        ua3 = mxmlNewElement(entries, "ua3");
                         int j; for (j=0;j<4;j++)
                         {
                             dataa = mxmlNewElement(ua3, "data"); mxmlNewTextf(dataa, 0, "%02x", data4.unk[j]);
@@ -643,7 +643,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 {
                         brlyt_4b_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
-                        ua4 = mxmlNewElement(tag, "ua4");
+                        ua4 = mxmlNewElement(entries, "ua4");
                         int j; for (j=0;j<4;j++)
                         {
                             dataa = mxmlNewElement(ua4, "data"); mxmlNewTextf(dataa, 0, "%02x", data4.unk[j]);
@@ -657,7 +657,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 {
                         brlyt_4b_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
-                        ua5 = mxmlNewElement(tag, "ua5");
+                        ua5 = mxmlNewElement(entries, "ua5");
                         int j; for (j=0;j<4;j++)
                         {
                             dataa = mxmlNewElement(ua5, "data"); mxmlNewTextf(dataa, 0, "%02x", data4.unk[j]);
@@ -671,7 +671,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 {
                         brlyt_4b_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
-                        ua6 = mxmlNewElement(tag, "ua6");
+                        ua6 = mxmlNewElement(entries, "ua6");
                         int j; for (j=0;j<4;j++)
                         {
                             dataa = mxmlNewElement(ua6, "data"); mxmlNewTextf(dataa, 0, "%02x", data4.unk[j]);
@@ -684,7 +684,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 {
                         brlyt_ua7_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_ua7_chunk));
-                        ua7 = mxmlNewElement(tag, "ua7");
+                        ua7 = mxmlNewElement(entries, "ua7");
                         a = mxmlNewElement(ua7, "a"); mxmlNewTextf(a, 0, "%08x", be32(data4.a));
                         b = mxmlNewElement(ua7, "b"); mxmlNewTextf(b, 0, "%08x", be32(data4.b));
                         c = mxmlNewElement(ua7, "c"); mxmlNewTextf(c, 0, "%f", float_swap_bytes(data4.c));
@@ -699,7 +699,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 {
                         brlyt_4b_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
-                        ua8 = mxmlNewElement(tag, "ua8");
+                        ua8 = mxmlNewElement(entries, "ua8");
                         int j; for (j=0;j<4;j++)
                         {
                             dataa = mxmlNewElement(ua8, "data"); mxmlNewTextf(dataa, 0, "%02x", data4.unk[j]);
@@ -713,7 +713,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 {
                         brlyt_10b_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_10b_chunk));
-                        ua9 = mxmlNewElement(tag, "ua9");
+                        ua9 = mxmlNewElement(entries, "ua9");
                         int j; for (j=0;j<16;j++)
                         {
                             dataa = mxmlNewElement(ua9, "data");
@@ -728,7 +728,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 {
                         brlyt_4b_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
-                        uaa = mxmlNewElement(tag, "uaa");
+                        uaa = mxmlNewElement(entries, "uaa");
                         int j; for (j=0;j<4;j++)
                         {
                             dataa = mxmlNewElement(uaa, "data"); mxmlNewTextf(dataa, 0, "%02x", data4.unk[j]);
@@ -742,7 +742,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 {
                         brlyt_4b_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
-                        uab = mxmlNewElement(tag, "uab");
+                        uab = mxmlNewElement(entries, "uab");
                         int j; for (j=0;j<4;j++)
                         {
                             dataa = mxmlNewElement(uab, "data"); mxmlNewTextf(dataa, 0, "%02x", data4.unk[j]);
