@@ -81,7 +81,7 @@ const char *whitespace_cb(mxml_node_t *node, int where)
     }
     if (where == 3 || where == 1){
        sprintf(xmlbuff, "");
-    }else if((node->prev && where == 0 || node->parent) && !(where == 2 && strncmp(name, "ua", 2) && strcmp(name, "flip") && strcmp(name, "zoom") && strcmp(name, "coords") && strcmp(name, "entries") && strcmp(name, "xmlyt") && (strcmp(name, "tag") && strcmp(name, "size") && strcmp(name, "material") && strcmp(name, "colors"))) ){
+    }else if((node->prev && where == 0 || node->parent) && !(where == 2 && strncmp(name, "ua", 2) && strcmp(name, "flip") && strcmp(name, "zoom") && strcmp(name, "coords") && strcmp(name, "entries") && strcmp(name, "xmlyt") && strcmp(name, "xmlan") && strcmp(name, "entries") && strcmp(name, "triplet") && strcmp(name, "entry") && strcmp(name, "pane") && (strcmp(name, "tag") && strcmp(name, "size") && strcmp(name, "material") && strcmp(name, "colors"))) ){
         sprintf(xmlbuff, "\n%*s",  (depth-1)*4, "");
     }else{
         sprintf(xmlbuff, "");

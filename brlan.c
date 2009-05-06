@@ -133,7 +133,6 @@ void BRLAN_CreateXMLTag(tag_header tagHeader, void* data, u32 offset, mxml_node_
                 frame = mxmlNewElement(triplet, "frame"); mxmlNewTextf(frame, 0, "%.15f", *(f32*)(&p1));
                 value = mxmlNewElement(triplet, "value"); mxmlNewTextf(value, 0, "%.15f", *(f32*)(&p2));
                 blend = mxmlNewElement(triplet, "blend"); mxmlNewTextf(blend, 0, "%.15f", *(f32*)(&p3));
-                printf("\t\t\t\t</triplet>\n");
             } else {
                 tag_data2 tagData2;
                 BRLAN_ReadDataFromMemory(&tagData2, data, sizeof(tag_data2));
