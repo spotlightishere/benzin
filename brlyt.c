@@ -223,13 +223,13 @@ void PrintBRLYTEntry_grp1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     BRLYT_fileoffset = entry.data_location;
     BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_group_chunk));
     mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
-    subs = mxmlNewElement(tag, "subs");
 
     int offset;
     offset = 20;
     int n = 0;
     for (n;n<short_swap_bytes(data.numsubs);n++)
     {
+	subs = mxmlNewElement(tag, "subs");
         char subb[16];
         BRLYT_ReadDataFromMemory(sub, brlyt_file, sizeof(sub));
         sub = mxmlNewElement(subs, "sub"); mxmlNewTextf(sub, 0, "%s", subb);
