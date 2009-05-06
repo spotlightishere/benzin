@@ -4,6 +4,8 @@
 #include "types.h"
 #include "xml.h"
 
+char xmlbuff[4096];
+
 char *                    /* O - Buffer */
 get_value(mxml_node_t *node,        /* I - Node to get */
          void        *buffer,        /* I - Buffer */
@@ -67,6 +69,26 @@ get_value(mxml_node_t *node,        /* I - Node to get */
     return buffer;
 }
 
+const char *whitespace_cb(mxml_node_t *node, int where)
+{
+    /* code by Matt_P */
+    const char *name = node->value.element.name;
+    mxml_node_t * temp = node;
+    int depth = 0;
+    while(temp){
+        depth++;
+        temp = temp->parent;
+    }
+    if (where == 3 || where == 1){
+       sprintf(xmlbuff, "");
+    }else if((node->prev && where == 0 || node->parent) && !(where == 2 && strncmp(name, "ua", 2) && strcmp(name, "flip") && strcmp(name, "zoom") && strcmp(name, "coords") && strcmp(name, "entries") && strcmp(name, "xmlyt") && (strcmp(name, "tag") && strcmp(name, "size") && strcmp(name, "material") && strcmp(name, "colors"))) ){
+        sprintf(xmlbuff, "\n%*s",  (depth-1)*4, "");
+    }else{
+        sprintf(xmlbuff, "");
+    }
+    return (xmlbuff);
+}
+/*
 const char *whitespace_cb(mxml_node_t *node, int where)
 {
     const char *name;
@@ -177,9 +199,9 @@ const char *whitespace_cb(mxml_node_t *node, int where)
         if ((where == MXML_WS_BEFORE_OPEN) || (where == MXML_WS_BEFORE_CLOSE))
             return ("\n\t\t\t");
     }
-    /*
+   / /
      * Return NULL for no added whitespace...
-     */
+   /  /
     return (NULL);
 }
-
+*/
