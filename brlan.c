@@ -146,7 +146,7 @@ void BRLAN_CreateXMLTag(tag_header tagHeader, void* data, u32 offset, mxml_node_
                 u16 p3 = short_swap_bytes(tagData2.padding);
                 pair = mxmlNewElement(entry, "pair");
                 data1 = mxmlNewElement(pair, "data1"); mxmlNewTextf(data1, 0, "%.15f", *(f32*)(&p1));
-                data2 = mxmlNewElement(pair, "data2"); mxmlNewTextf(data2, 0, "%.15f", *(f32*)(&p2));
+                data2 = mxmlNewElement(pair, "data2"); mxmlNewTextf(data2, 0, "%04x", p2);
                 padding = mxmlNewElement(pair, "padding"); mxmlNewTextf(padding, 0, "%04x", p3);
             }
         }
