@@ -225,14 +225,15 @@ void PrintBRLYTEntry_grp1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
     mxmlElementSetAttrf(tag, "name", "%s", data.name);
 
+    if (short_swap_bytes(data.numsubs) > 0) subs = mxmlNewElement(tag, "subs");
+
     int offset;
     offset = 20;
     int n = 0;
     for (n;n<short_swap_bytes(data.numsubs);n++)
     {
-	subs = mxmlNewElement(tag, "subs");
         char subb[16];
-        BRLYT_ReadDataFromMemory(sub, brlyt_file, sizeof(sub));
+        BRLYT_ReadDataFromMemory(subb, brlyt_file, sizeof(subb));
         sub = mxmlNewElement(subs, "sub"); mxmlNewTextf(sub, 0, "%s", subb);
         offset += 16;
     }
@@ -324,13 +325,13 @@ void PrintBRLYTEntry_pan1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     flags1 = mxmlNewElement(tag, "flags"); mxmlNewTextf(flags1, 0, "%02x-%02x", data.flag1, data.flag2);
     alpha1 = mxmlNewElement(tag, "alpha"); mxmlNewTextf(alpha1, 0, "%02x-%02x", data.alpha, data.alpha2);
     coords = mxmlNewElement(tag, "coords");
-    x = mxmlNewElement(coords, "x"); mxmlNewTextf(x, 0, "%.16f", float_swap_bytes(data.x));
-    y = mxmlNewElement(coords, "y"); mxmlNewTextf(y, 0, "%.16f", float_swap_bytes(data.y));
-    z = mxmlNewElement(coords, "z"); mxmlNewTextf(z, 0, "%.16f", float_swap_bytes(data.z));
+    x = mxmlNewElement(coords, "x"); mxmlNewTextf(x, 0, "%.20f", float_swap_bytes(data.x));
+    y = mxmlNewElement(coords, "y"); mxmlNewTextf(y, 0, "%.20f", float_swap_bytes(data.y));
+    z = mxmlNewElement(coords, "z"); mxmlNewTextf(z, 0, "%.20f", float_swap_bytes(data.z));
     flip = mxmlNewElement(tag, "flip");
-    x = mxmlNewElement(flip, "x"); mxmlNewTextf(x, 0, "%f", float_swap_bytes(data.flip_x));
-    y = mxmlNewElement(flip, "y"); mxmlNewTextf(y, 0, "%f", float_swap_bytes(data.flip_y));
-    rotate = mxmlNewElement(tag, "rotate"); mxmlNewTextf(rotate, 0, "%f", float_swap_bytes(data.angle));
+    x = mxmlNewElement(flip, "x"); mxmlNewTextf(x, 0, "%.20f", float_swap_bytes(data.flip_x));
+    y = mxmlNewElement(flip, "y"); mxmlNewTextf(y, 0, "%.20f", float_swap_bytes(data.flip_y));
+    rotate = mxmlNewElement(tag, "rotate"); mxmlNewTextf(rotate, 0, "%.20f", float_swap_bytes(data.angle));
     zoom = mxmlNewElement(tag, "zoom");
     x = mxmlNewElement(zoom, "x"); mxmlNewTextf(x, 0, "%.10f", float_swap_bytes(data.xmag));
     y = mxmlNewElement(zoom, "y"); mxmlNewTextf(y, 0, "%.10f", float_swap_bytes(data.ymag));
@@ -353,9 +354,9 @@ void PrintBRLYTEntry_wnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     flags1 = mxmlNewElement(tag, "flags"); mxmlNewTextf(flags1, 0, "%02x-%02x", data.flag1, data.flag2);
     alpha1 = mxmlNewElement(tag, "alpha"); mxmlNewTextf(alpha1, 0, "%02x-%02x", data.alpha, data.alpha2);
     coords = mxmlNewElement(tag, "coords");
-    x = mxmlNewElement(coords, "x"); mxmlNewTextf(x, 0, "%.16f", float_swap_bytes(data.x));
-    y = mxmlNewElement(coords, "y"); mxmlNewTextf(y, 0, "%.16f", float_swap_bytes(data.y));
-    z = mxmlNewElement(coords, "z"); mxmlNewTextf(z, 0, "%.16f", float_swap_bytes(data.z));
+    x = mxmlNewElement(coords, "x"); mxmlNewTextf(x, 0, "%.20f", float_swap_bytes(data.x));
+    y = mxmlNewElement(coords, "y"); mxmlNewTextf(y, 0, "%.20f", float_swap_bytes(data.y));
+    z = mxmlNewElement(coords, "z"); mxmlNewTextf(z, 0, "%.20f", float_swap_bytes(data.z));
     flip = mxmlNewElement(tag, "flip");
     x = mxmlNewElement(flip, "x"); mxmlNewTextf(x, 0, "%f", float_swap_bytes(data.flip_x));
     y = mxmlNewElement(flip, "y"); mxmlNewTextf(y, 0, "%f", float_swap_bytes(data.flip_y));
@@ -441,9 +442,9 @@ void PrintBRLYTEntry_bnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     flags1 = mxmlNewElement(tag, "flags"); mxmlNewTextf(flags1, 0, "%02x-%02x", data.flag1, data.flag2);
     alpha1 = mxmlNewElement(tag, "alpha"); mxmlNewTextf(alpha1, 0, "%02x-%02x", data.alpha, data.alpha2);
     coords = mxmlNewElement(tag, "coords");
-    x = mxmlNewElement(coords, "x"); mxmlNewTextf(x, 0, "%.16f", float_swap_bytes(data.x));
-    y = mxmlNewElement(coords, "y"); mxmlNewTextf(y, 0, "%.16f", float_swap_bytes(data.y));
-    z = mxmlNewElement(coords, "z"); mxmlNewTextf(z, 0, "%.16f", float_swap_bytes(data.z));
+    x = mxmlNewElement(coords, "x"); mxmlNewTextf(x, 0, "%.25f", float_swap_bytes(data.x));
+    y = mxmlNewElement(coords, "y"); mxmlNewTextf(y, 0, "%.25f", float_swap_bytes(data.y));
+    z = mxmlNewElement(coords, "z"); mxmlNewTextf(z, 0, "%.25f", float_swap_bytes(data.z));
     flip = mxmlNewElement(tag, "flip");
     x = mxmlNewElement(flip, "x"); mxmlNewTextf(x, 0, "%f", float_swap_bytes(data.flip_x));
     y = mxmlNewElement(flip, "y"); mxmlNewTextf(y, 0, "%f", float_swap_bytes(data.flip_y));
@@ -472,9 +473,9 @@ void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     flags1 = mxmlNewElement(tag, "flags"); mxmlNewTextf(flags1, 0, "%02x-%02x", data.flag1, data.flag2);
     alpha1 = mxmlNewElement(tag, "alpha"); mxmlNewTextf(alpha1, 0, "%02x-%02x", data.alpha, data.alpha2);
     coords = mxmlNewElement(tag, "coords");
-    x = mxmlNewElement(coords, "x"); mxmlNewTextf(x, 0, "%.16f", float_swap_bytes(data.x));
-    y = mxmlNewElement(coords, "y"); mxmlNewTextf(y, 0, "%.16f", float_swap_bytes(data.y));
-    z = mxmlNewElement(coords, "z"); mxmlNewTextf(z, 0, "%.16f", float_swap_bytes(data.z));
+    x = mxmlNewElement(coords, "x"); mxmlNewTextf(x, 0, "%.20f", float_swap_bytes(data.x));
+    y = mxmlNewElement(coords, "y"); mxmlNewTextf(y, 0, "%.20f", float_swap_bytes(data.y));
+    z = mxmlNewElement(coords, "z"); mxmlNewTextf(z, 0, "%.20f", float_swap_bytes(data.z));
     flip = mxmlNewElement(tag, "flip");
     x = mxmlNewElement(flip, "x"); mxmlNewTextf(x, 0, "%f", float_swap_bytes(data.flip_x));
     y = mxmlNewElement(flip, "y"); mxmlNewTextf(y, 0, "%f", float_swap_bytes(data.flip_y));
@@ -531,8 +532,8 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     x = mxmlNewElement(zoom, "x"); mxmlNewTextf(x, 0, "%.10f", float_swap_bytes(data.xmag));
     y = mxmlNewElement(zoom, "y"); mxmlNewTextf(y, 0, "%.10f", float_swap_bytes(data.ymag));
     size = mxmlNewElement(tag, "size");
-    width = mxmlNewElement(size, "width"); mxmlNewTextf(width, 0, "%f", float_swap_bytes(data.width));
-    height = mxmlNewElement(size, "height"); mxmlNewTextf(height, 0, "%f", float_swap_bytes(data.height));
+    width = mxmlNewElement(size, "width"); mxmlNewTextf(width, 0, "%.20f", float_swap_bytes(data.width));
+    height = mxmlNewElement(size, "height"); mxmlNewTextf(height, 0, "%.20f", float_swap_bytes(data.height));
     mxml_node_t *length, *font, *xsize, *ysize, *charsize, *linesize, *unkk, *color, *text;
     brlyt_text_chunk data2;
     BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_text_chunk));
@@ -2136,8 +2137,8 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
         subnode = mxmlFindElement(node, node, "text", NULL, NULL, MXML_DESCEND);
         if (subnode != NULL)
         {
-            unsigned char tempCoord[2024];
-            get_value(subnode, tempCoord, 2024);
+            unsigned char tempCoord[8184];
+            get_value(subnode, tempCoord, 8184);
             memcpy(tempy, tempCoord, short_swap_bytes(chunk2.len2)*2);
             u32 w; for (w=0;w<short_swap_bytes(chunk2.len2);w++)
             {
