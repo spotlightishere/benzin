@@ -873,6 +873,7 @@ void parse_brlyt(char *filename, char *filenameout)
     mxml_node_t *xmlyt;
     xml = mxmlNewXML("1.0");
     xmlyt = mxmlNewElement(xml, "xmlyt");
+    mxmlElementSetAttrf(xmlyt, "version", "%d.%d.%d%s", BENZIN_VERSION_MAJOR, BENZIN_VERSION_MINOR, BENZIN_VERSION_BUILD, BENZIN_VERSION_OTHER);
     PrintBRLYTEntries(entries, entrycount, brlyt_file, xmlyt);
     mxmlSaveFile(xml, xmlFile, whitespace_cb);
     fclose(xmlFile);
@@ -2135,8 +2136,8 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
         subnode = mxmlFindElement(node, node, "text", NULL, NULL, MXML_DESCEND);
         if (subnode != NULL)
         {
-            unsigned char tempCoord[1024];
-            get_value(subnode, tempCoord, 1024);
+            unsigned char tempCoord[2024];
+            get_value(subnode, tempCoord, 2024);
             memcpy(tempy, tempCoord, short_swap_bytes(chunk2.len2)*2);
             u32 w; for (w=0;w<short_swap_bytes(chunk2.len2);w++)
             {

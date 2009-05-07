@@ -237,6 +237,7 @@ void parse_brlan(char* filename, char *filenameout)
     mxml_node_t *xmlan;
     xml = mxmlNewXML("1.0");
     xmlan = mxmlNewElement(xml, "xmlan");
+    mxmlElementSetAttrf(xmlan, "version", "%d.%d.%d%s", BENZIN_VERSION_MAJOR, BENZIN_VERSION_MINOR, BENZIN_VERSION_BUILD, BENZIN_VERSION_OTHER);
     mxmlElementSetAttrf(xmlan, "framesize", "%lu", (long unsigned int)short_swap_bytes(pai1_header.framesize));
     mxmlElementSetAttrf(xmlan, "flags", "%02x", pai1_header.flags);
 
