@@ -106,9 +106,12 @@ void BRLAN_CreateXMLTag(tag_header tagHeader, void* data, u32 offset, mxml_node_
         if(short_swap_bytes(tagEntryInfo.type) < 16)
 	{
             char type_rlmc[4] = {'R', 'L', 'M', 'C'};
+            char type_rlvc[4] = {'R', 'L', 'V', 'C'};
             if(memcmp(tagHeader.magic, type_rlmc, 4) == 0)
             {
                 entry = mxmlNewElement(tag, "entry"); mxmlElementSetAttrf(entry, "type", "%s", tag_types_rlmc_list[short_swap_bytes(tagEntryInfo.type)]);
+            } else if (memcmp(tagHeader.magic, type_rlvc, 4) == 0) {
+                entry = mxmlNewElement(tag, "entry"); mxmlElementSetAttrf(entry, "type", "%s", tag_types_rlvc_list[short_swap_bytes(tagEntryInfo.type)]);
             } else {
                 entry = mxmlNewElement(tag, "entry"); mxmlElementSetAttrf(entry, "type", "%s", tag_types_list[short_swap_bytes(tagEntryInfo.type)]);
             }

@@ -2302,7 +2302,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
         }
 
         brlyt_pic_chunk chunk2;
-        subnode = mxmlFindElement(node, node, "tpl", NULL, NULL, MXML_DESCEND);
+        subnode = mxmlFindElement(node, node, "material", NULL, NULL, MXML_DESCEND);
         if (subnode != NULL)
         {
             char temp[256];
