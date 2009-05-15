@@ -32,6 +32,7 @@ fourcc tag_FourCCs[] = { "RLPA", "RLTS", "RLVI", "RLVC", "RLMC", "RLTP" };
 
 char tag_types_list[15][24];
 char tag_types_rlmc_list[15][24];
+char tag_types_rlvc_list[15][24];
 
 static size_t BRLAN_fileoffset = 0;
 FILE* xmlanout;
@@ -171,12 +172,13 @@ void parse_brlan(char* filename, char *filenameout)
     {
         memset(tag_types_list[i], 0, 24);
         memset(tag_types_rlmc_list[i], 0, 24);
+	memset(tag_types_rlvc_list[i], 0, 24);
     }
     strcpy(tag_types_list[0], "X Translation");
     strcpy(tag_types_list[1], "Y Translation");
     strcpy(tag_types_list[2], "Z Translation");
-    strcpy(tag_types_list[3], "0x03");
-    strcpy(tag_types_list[4], "0x04");
+    strcpy(tag_types_list[3], "X Flip");
+    strcpy(tag_types_list[4], "Y Flip");
     strcpy(tag_types_list[5], "Angle");
     strcpy(tag_types_list[6], "X Zoom");
     strcpy(tag_types_list[7], "Y Zoom");
@@ -205,6 +207,23 @@ void parse_brlan(char* filename, char *filenameout)
     strcpy(tag_types_rlmc_list[13], "0x0D");
     strcpy(tag_types_rlmc_list[14], "0x0E");
     strcpy(tag_types_rlmc_list[15], "0x0F");
+
+    strcpy(tag_types_rlvc_list[0], "Top Left R");
+    strcpy(tag_types_rlvc_list[1], "Top Left G");
+    strcpy(tag_types_rlvc_list[2], "Top Left B");
+    strcpy(tag_types_rlvc_list[3], "Top Left A");
+    strcpy(tag_types_rlvc_list[4], "Top Right R");
+    strcpy(tag_types_rlvc_list[5], "Top Right G");
+    strcpy(tag_types_rlvc_list[6], "Top Right B");
+    strcpy(tag_types_rlvc_list[7], "Top Right A");
+    strcpy(tag_types_rlvc_list[8], "Bottom Left R");
+    strcpy(tag_types_rlvc_list[9], "Bottom Left G");
+    strcpy(tag_types_rlvc_list[10], "Bottom Left B");
+    strcpy(tag_types_rlvc_list[11], "Bottom Left A");
+    strcpy(tag_types_rlvc_list[12], "Bottom Right R");
+    strcpy(tag_types_rlvc_list[13], "Bottom Right G");
+    strcpy(tag_types_rlvc_list[14], "Bottom Right B");
+    strcpy(tag_types_rlvc_list[15], "Bottom Right A");
 
     BRLAN_fileoffset = 0;
     brlan_header header;
@@ -369,6 +388,7 @@ void create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *
         strcpy(tag_type, mxmlElementGetAttr(node, "type"));
 
     char rlmc_type[5] = {'R', 'L', 'M', 'C'};
+    char rlvc_type[5] = {'R', 'L', 'V', 'C'};
 
     for(i = 0; i < 16; i++)
         memset(temp3[i], 0, 24);
@@ -379,7 +399,12 @@ void create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *
             {
                 temp3[x][i] = toupper(tag_types_rlmc_list[x][i]);
             }
-         } else {
+        } else if(memcmp(tag_type, rlvc_type, 4) == 0) {
+            for(i = 0; i < strlen(tag_types_rlvc_list[x]); i++)
+            {
+                temp3[x][i] = toupper(tag_types_rlvc_list[x][i]);
+            }
+        } else {
             for(i = 0; i < strlen(tag_types_list[x]); i++)
             {
                 temp3[x][i] = toupper(tag_types_list[x][i]);
@@ -625,12 +650,13 @@ void write_brlan(char *infile, char* outfile)
     {
         memset(tag_types_list[i], 0, 24);
         memset(tag_types_rlmc_list[i], 0, 24);
+        memset(tag_types_rlvc_list[i], 0, 24);
     }
     strcpy(tag_types_list[0], "X Translation");
     strcpy(tag_types_list[1], "Y Translation");
     strcpy(tag_types_list[2], "Z Translation");
-    strcpy(tag_types_list[3], "0x03");
-    strcpy(tag_types_list[4], "0x04");
+    strcpy(tag_types_list[3], "X Flip");
+    strcpy(tag_types_list[4], "Y Flip");
     strcpy(tag_types_list[5], "Angle");
     strcpy(tag_types_list[6], "X Zoom");
     strcpy(tag_types_list[7], "Y Zoom");
@@ -659,6 +685,23 @@ void write_brlan(char *infile, char* outfile)
     strcpy(tag_types_rlmc_list[13], "0x0D");
     strcpy(tag_types_rlmc_list[14], "0x0E");
     strcpy(tag_types_rlmc_list[15], "0x0F");
+
+    strcpy(tag_types_rlvc_list[0], "Top Left R");
+    strcpy(tag_types_rlvc_list[1], "Top Left G");
+    strcpy(tag_types_rlvc_list[2], "Top Left B");
+    strcpy(tag_types_rlvc_list[3], "Top Left A");
+    strcpy(tag_types_rlvc_list[4], "Top Right R");
+    strcpy(tag_types_rlvc_list[5], "Top Right G");
+    strcpy(tag_types_rlvc_list[6], "Top Right B");
+    strcpy(tag_types_rlvc_list[7], "Top Right A");
+    strcpy(tag_types_rlvc_list[8], "Bottom Left R");
+    strcpy(tag_types_rlvc_list[9], "Bottom Left G");
+    strcpy(tag_types_rlvc_list[10], "Bottom Left B");
+    strcpy(tag_types_rlvc_list[11], "Bottom Left A");
+    strcpy(tag_types_rlvc_list[12], "Bottom Right R");
+    strcpy(tag_types_rlvc_list[13], "Bottom Right G");
+    strcpy(tag_types_rlvc_list[14], "Bottom Right B");
+    strcpy(tag_types_rlvc_list[15], "Bottom Right A");
 
     FILE* fpx = fopen(infile, "r");
     if(fpx == NULL) {

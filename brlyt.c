@@ -209,7 +209,7 @@ void PrintBRLYTEntry_lyt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     BRLYT_fileoffset = entry.data_location;
     BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_lytheader_chunk));
     mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
-    a = mxmlNewElement(tag, "a"); mxmlNewTextf(a, 0, "%08x", data.a);
+    a = mxmlNewElement(tag, "a"); mxmlNewTextf(a, 0, "%02x", data.a);
     size = mxmlNewElement(tag, "size");
     width = mxmlNewElement(size, "width"); mxmlNewTextf(width, 0, "%f", float_swap_bytes(data.width));
     height = mxmlNewElement(size, "height"); mxmlNewTextf(height, 0,"%f", float_swap_bytes(data.height));
@@ -486,8 +486,8 @@ void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     size = mxmlNewElement(tag, "size");
     width = mxmlNewElement(size, "width"); mxmlNewTextf(width, 0, "%f", float_swap_bytes(data.width));
     height = mxmlNewElement(size, "height"); mxmlNewTextf(height, 0, "%f", float_swap_bytes(data.height));
-    mxml_node_t *tpl, *color, *vtx, *coordinates, *set, *coord;
-    tpl = mxmlNewElement(tag, "tpl"); mxmlElementSetAttrf(tpl, "name", "%s", getMaterial(short_swap_bytes(data2.mat_off)));
+    mxml_node_t *material, *color, *vtx, *coordinates, *set, *coord;
+    material = mxmlNewElement(tag, "material"); mxmlElementSetAttrf(material, "name", "%s", getMaterial(short_swap_bytes(data2.mat_off)));
     color = mxmlNewElement(tag, "colors");
     int n; for (n=0;n<4;n++)
     {
@@ -555,7 +555,7 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 
 void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
-    mxml_node_t *entries, *colors, *black_color, *white_color, *unk2, *tev_k, *flags;
+    mxml_node_t *entries, *colors, *forecolor, *backcolor, *unk2, *tev_k, *flags;
     brlyt_numoffs_chunk data;
     BRLYT_fileoffset = entry.data_location;
     BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_numoffs_chunk));
@@ -575,13 +575,13 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
         colors = mxmlNewElement(entries, "colors");
         int i; for (i=0;i<4;i++)
         {
-            black_color = mxmlNewElement(colors, "black_color");
-            mxmlNewTextf(black_color, 0, "%d", short_swap_bytes(data3.black_color[i]));
+            forecolor = mxmlNewElement(colors, "forecolor");
+            mxmlNewTextf(forecolor, 0, "%d", short_swap_bytes(data3.forecolor[i]));
         }
         for (i=0;i<4;i++)
         {
-            white_color = mxmlNewElement(colors, "white_color");
-            mxmlNewTextf(white_color, 0, "%d", short_swap_bytes(data3.white_color[i]));
+            backcolor = mxmlNewElement(colors, "backcolor");
+            mxmlNewTextf(backcolor, 0, "%d", short_swap_bytes(data3.backcolor[i]));
         }
         for (i=0;i<4;i++)
         {
@@ -602,30 +602,31 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
         memcpy(materials+lengthOfMaterials, data3.name, 1+strlen(data3.name));
         lengthOfMaterials = newSize;
 
-        mxml_node_t *material, *wrap_t, *wrap_s;
+        mxml_node_t *texture, *wrap_t, *wrap_s;
         int n = 0;
         for (n;n<bit_extract(flaggs, 28,31);n++)
         {
             brlyt_texref_chunk data4;
             BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_texref_chunk));
             int tplOffset = short_swap_bytes(data4.tex_offs);
-            material = mxmlNewElement(entries, "material"); mxmlElementSetAttrf(material, "name", "%s", getTexture(tplOffset));
-            wrap_s = mxmlNewElement(material, "wrap_s"); mxmlNewTextf(wrap_s, 0, "%02x", data4.wrap_s);
-            wrap_t = mxmlNewElement(material, "wrap_t"); mxmlNewTextf(wrap_t, 0, "%02x", data4.wrap_t);
+            texture = mxmlNewElement(entries, "texture"); mxmlElementSetAttrf(texture, "name", "%s", getTexture(tplOffset));
+            wrap_s = mxmlNewElement(texture, "wrap_s"); mxmlNewTextf(wrap_s, 0, "%02x", data4.wrap_s);
+            wrap_t = mxmlNewElement(texture, "wrap_t"); mxmlNewTextf(wrap_t, 0, "%02x", data4.wrap_t);
         }
 
-        mxml_node_t *ua2, *dataa;
+        mxml_node_t *tex_coords, *dataa;
 //        # 0x14 * flags[24-27], followed by
                 n = 0;
                 for (n;n<bit_extract(flaggs, 24,27);n++)
                 {
-                        brlyt_ua2_chunk data4;
-                        BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_ua2_chunk));
-                        ua2 = mxmlNewElement(entries, "ua2");
-                        int j; for (j=0;j<5;j++)
-                        {
-                            dataa = mxmlNewElement(ua2, "data"); mxmlNewTextf(dataa, 0, "%.10f", float_swap_bytes(data4.unk[j]));
-                        }
+                        brlyt_tex_coords data4;
+                        BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_tex_coords));
+                        tex_coords = mxmlNewElement(entries, "tex_coords");
+                        dataa = mxmlNewElement(tex_coords, "x1"); mxmlNewTextf(dataa, 0, "%.10f", float_swap_bytes(data4.x1));
+                        dataa = mxmlNewElement(tex_coords, "y1"); mxmlNewTextf(dataa, 0, "%.10f", float_swap_bytes(data4.y1));
+                        dataa = mxmlNewElement(tex_coords, "angle"); mxmlNewTextf(dataa, 0, "%.10f", float_swap_bytes(data4.angle));
+                        dataa = mxmlNewElement(tex_coords, "x2"); mxmlNewTextf(dataa, 0, "%.10f", float_swap_bytes(data4.x2));
+                        dataa = mxmlNewElement(tex_coords, "y2"); mxmlNewTextf(dataa, 0, "%.10f", float_swap_bytes(data4.y2));
                 }
                 
                 mxml_node_t *ua3;
@@ -1150,24 +1151,24 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             {
                 mxml_node_t *valnode;
                 int colorNumber = 0;
-                for (valnode=mxmlFindElement(setnode, setnode, "black_color", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "black_color", NULL, NULL, MXML_DESCEND) )
+                for (valnode=mxmlFindElement(setnode, setnode, "forecolor", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "forecolor", NULL, NULL, MXML_DESCEND) )
                 {
                     char tempCoord[256];
                     get_value(valnode, tempCoord, 256);
                         
-                    chunk.black_color[colorNumber] = strtol(tempCoord, NULL, 10);
-                    chunk.black_color[colorNumber] = short_swap_bytes(chunk.black_color[colorNumber]);
+                    chunk.forecolor[colorNumber] = strtol(tempCoord, NULL, 10);
+                    chunk.forecolor[colorNumber] = short_swap_bytes(chunk.forecolor[colorNumber]);
 
                     colorNumber+=1;
                 }
                 colorNumber = 0;
-                for (valnode=mxmlFindElement(setnode, setnode, "white_color", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "white_color", NULL, NULL, MXML_DESCEND) )
+                for (valnode=mxmlFindElement(setnode, setnode, "backcolor", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "backcolor", NULL, NULL, MXML_DESCEND) )
                 {
                     char tempCoord[256];
                     get_value(valnode, tempCoord, 256);
                     
-                    chunk.white_color[colorNumber] = strtol(tempCoord, NULL, 10);
-                    chunk.white_color[colorNumber] = short_swap_bytes(chunk.white_color[colorNumber]);
+                    chunk.backcolor[colorNumber] = strtol(tempCoord, NULL, 10);
+                    chunk.backcolor[colorNumber] = short_swap_bytes(chunk.backcolor[colorNumber]);
 
                     colorNumber+=1;
                 }
@@ -1204,7 +1205,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             matSize += sizeof(chunk);
 
             brlyt_texref_chunk chunkTexRef;
-            for(setnode = mxmlFindElement(subnode, subnode, "material", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "material", NULL, NULL, MXML_DESCEND))
+            for(setnode = mxmlFindElement(subnode, subnode, "texture", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "texture", NULL, NULL, MXML_DESCEND))
             {
                 mxml_node_t *valnode;
                 char temp[256];
@@ -1232,21 +1233,34 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 matSize += sizeof(chunkTexRef);
             }
 
-            brlyt_ua2_chunk chunkUa2;
-            for(setnode = mxmlFindElement(subnode, subnode, "ua2", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "ua2", NULL, NULL, MXML_DESCEND))
+            brlyt_tex_coords chunkTexCoords;
+            for(setnode = mxmlFindElement(subnode, subnode, "tex_coords", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "tex_coords", NULL, NULL, MXML_DESCEND))
             {
+                char tempCoord[256];
                 mxml_node_t *valnode;
-                int dataNumber = 0;
-                for (valnode=mxmlFindElement(setnode, setnode, "data", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "data", NULL, NULL, MXML_DESCEND) )
-                {
-                    char tempCoord[256];
-                    get_value(valnode, tempCoord, 256);
-                    chunkUa2.unk[dataNumber] = float_swap_bytes(atof(tempCoord));
-                    dataNumber+=1;
-                }
-                fwrite(&chunkUa2, sizeof(chunkUa2), 1, fp);
-                *fileOffset = *fileOffset + sizeof(chunkUa2);
-                matSize += sizeof(chunkUa2);
+                valnode=mxmlFindElement(setnode, setnode, "x1", NULL, NULL, MXML_DESCEND);
+		memset(tempCoord, 0, 256);
+                get_value(valnode, tempCoord, 256);
+                chunkTexCoords.x1 = float_swap_bytes(atof(tempCoord));
+                valnode=mxmlFindElement(setnode, setnode, "y1", NULL, NULL, MXML_DESCEND);
+		memset(tempCoord, 0, 256);
+                get_value(valnode, tempCoord, 256);
+                chunkTexCoords.y1 = float_swap_bytes(atof(tempCoord));
+                valnode=mxmlFindElement(setnode, setnode, "angle", NULL, NULL, MXML_DESCEND);
+		memset(tempCoord, 0, 256);
+                get_value(valnode, tempCoord, 256);
+                chunkTexCoords.angle = float_swap_bytes(atof(tempCoord));
+                valnode=mxmlFindElement(setnode, setnode, "x2", NULL, NULL, MXML_DESCEND);
+		memset(tempCoord, 0, 256);
+                get_value(valnode, tempCoord, 256);
+                chunkTexCoords.x2 = float_swap_bytes(atof(tempCoord));
+                valnode=mxmlFindElement(setnode, setnode, "y2", NULL, NULL, MXML_DESCEND);
+		memset(tempCoord, 0, 256);
+                get_value(valnode, tempCoord, 256);
+                chunkTexCoords.y2 = float_swap_bytes(atof(tempCoord));
+                fwrite(&chunkTexCoords, sizeof(chunkTexCoords), 1, fp);
+                *fileOffset = *fileOffset + sizeof(chunkTexCoords);
+                matSize += sizeof(chunkTexCoords);
             }
             brlyt_4b_chunk chunkUa3;
             for(setnode = mxmlFindElement(subnode, subnode, "ua3", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "ua3", NULL, NULL, MXML_DESCEND))
