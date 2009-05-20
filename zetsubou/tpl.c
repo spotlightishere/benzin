@@ -132,6 +132,7 @@ int TPL_ConvertRGBA8ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapd
 						}
 					}
 					iv++;
+					if(iv ==  8) i  = 0;	// Gotta reset i every 8 "pixels"!
 					if(iv >= 16) iv = 0;	// Swap every 16 "pixels"!
 				}
 			}
