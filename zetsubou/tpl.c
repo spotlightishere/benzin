@@ -95,6 +95,8 @@ int TPL_ConvertRGBA8ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapd
 	u32 goodheight = height;
 	u32 x, y;
 	u32 x1, y1;
+	if(*bitmapdata != NULL)
+		free(*bitmapdata);
 	*bitmapdata = (u8*)calloc(width * height, 4);
 	if(*bitmapdata == NULL)
 		return -1;

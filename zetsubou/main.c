@@ -25,7 +25,7 @@ void bad_args(char progname[])
 
 int main(int argc, char *argv[])
 {
-	printf("Zetsubou v0.1. Written by SquidMan (Alex Marshall)\nFormat information from YAGCD. RGB5A3 code by booto. CMP code by segher.\nBased off of gentpl by comex.\n\n");
+	printf("Zetsubou v0.1. Written by SquidMan (Alex Marshall)\nFormat information from YAGCD. RGB5A3 code by booto. CMP code by segher.\nLightly based off of gentpl by comex.\n\n");
 	if(argc < 3)
 		bad_args(argv[0]);
 	char type = toupper(argv[1][0]);
@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
 		else
 			bad_args(argv[0]);
 		ret = TPL_ConvertToGD(tplbuf, tplsize, basename, outfmt);
+		free(tplbuf);
 		free(basename);
 		if(ret < 0) {
 			printf("Error converting from TPL.\n");
