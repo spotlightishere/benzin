@@ -38,14 +38,9 @@ int main(int argc, char *argv[])
 			printf("Error opening %s.\n", argv[2]);
 			exit(1);
 		}
-		char *basename = (char*)calloc(strlen(argv[2]) + 1, 1);
-		int arg1strlen = strlen(argv[2]);
-		int i;
-		for(i = 0; (i < arg1strlen); i++) {
-			if((argv[2][i] == '.') && ((argv[2][i + 1] != '.') && (argv[2][i + 1] != '/')))
-				break;
-			basename[i] = argv[2][i];
-		}
+		char *basename = strdup(argv[2]);
+		char *last_dot = strrchr(basename, '.');
+		if(last_dot) *last_dot = 0;
 		fseek(fp, 0, SEEK_END);
 		u32 tplsize = ftell(fp);
 		u8* tplbuf  = (u8*)malloc(tplsize);
