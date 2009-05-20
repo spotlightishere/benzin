@@ -224,9 +224,9 @@ int TPL_ConvertRGB5A3ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmap
 						(*(u32**)bitmapdata)[x + (y * width)] = rgba;
 					}else{
 						// RGB4A3
-						u8 b = (((oldpixel >> 11) & 0xF) * 255) / 15;
-						u8 g = (((oldpixel >> 7)  & 0xF) * 255) / 15;
-						u8 r = (((oldpixel >> 3)  & 0xF) * 255) / 15;
+						u8 b = (((oldpixel >> 12) & 0xF) * 255) / 15;
+						u8 g = (((oldpixel >> 8)  & 0xF) * 255) / 15;
+						u8 r = (((oldpixel >> 4)  & 0xF) * 255) / 15;
 						u8 a = (((oldpixel >> 0)  & 0x7) * 64) / 7;
 						u32 rgba = (r << 0) | (g << 8) | (b << 16) | (a << 24);
 						(*(u32**)bitmapdata)[x + (y * width)] = rgba;
@@ -260,7 +260,6 @@ int TPL_ConvertBitMapToRGB5A3(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 w
 						newpixel = 0;
 					else {
 						u32 rgba = ((u32*)subbitmapdata)[x + (y * width)];
-						rgba = be32(rgba);
 						u8 r = (rgba >> 0)  & 0xFF;
 						u8 g = (rgba >> 8)  & 0xFF;
 						u8 b = (rgba >> 16) & 0xFF;
@@ -271,10 +270,10 @@ int TPL_ConvertBitMapToRGB5A3(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 w
 							r = ((r * 15) / 255) & 0xF;
 							g = ((g * 15) / 255) & 0xF;
 							b = ((b * 15) / 255) & 0xF;
-							a = ((a * 7) / 64)  & 0x7;
-							newpixel |= r << 11;
-							newpixel |= g << 7;
-							newpixel |= b << 3;
+							a = ((a * 7)  / 255) & 0x7;
+							newpixel |= r << 12;
+							newpixel |= g << 8;
+							newpixel |= b << 4;
 							newpixel |= a << 0;
 						}else{
 							// We don't have enough Alpha to matter. Use RGB5.
@@ -387,6 +386,7 @@ int TPL_ConvertIA4ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapdat
 			for(y = y1; y < (y1 + 4); y++) {
 				for(x = x1; x < (x1 + 8); x++) {
 					u8 oldpixel = *(u8*)(tplbuf + (tplpoint + ((iv++))));
+					oldpixel = ~oldpixel;
 					if((x >= width) || (y >= height))
 						continue;
 					u8 b = ((oldpixel & 0xF) * 255) / 15;
