@@ -95,8 +95,6 @@ int TPL_ConvertRGBA8ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapd
 	u32 goodheight = height;
 	u32 x, y;
 	u32 x1, y1;
-	if(*bitmapdata != NULL)
-		free(*bitmapdata);
 	*bitmapdata = (u8*)calloc(width * height, 4);
 	if(*bitmapdata == NULL)
 		return -1;
@@ -820,6 +818,7 @@ int TPL_ConvertToGD(u8* tplbuf, u32 tplsize, char basename[], u32 format)
 		fwrite(&h.max_lod,        1, 1, tplmeta);
 		fwrite(&h.unpacked,       1, 1, tplmeta);
 		fclose(tplmeta);
+		free(bitmapdata);
 	}
 	free(outname);
 	return 0;
@@ -1134,6 +1133,7 @@ int TPL_ConvertToBMP(u8* tplbuf, u32 tplsize, char basename[])
 		fwrite(&h.max_lod, 1, 1, out);
 		fwrite(&h.unpacked, 1, 1, out);
 		fclose(out);
+		free(subbitmapdata);
 	}
 	free(outname);
 	return 0;
