@@ -699,7 +699,7 @@ int TPL_ConvertToGD(u8* tplbuf, u32 tplsize, char basename[], u32 format)
 		tplpoint += 8;
 		texcount++;
 	}
-	char *outname = (char*)malloc(strlen(basename) + 3);
+	char *outname = malloc(strlen(basename) + 6);
 	for(i = 0; i < texcount; i++) {
 		printf("Converting file %d.\n", i);
 		memset(outname, 0, strlen(basename) + 6);
@@ -867,7 +867,7 @@ int TPL_ConvertFromGDs(const u32 count, char *gds[], char outname[], u32 format,
 		u8* bitmapdata = (u8*)malloc(width * height * 4);
 		memset(bitmapdata, 0, width * height * 4);
 		u8* tplbuf;
-		u32 iv, x, y, z;
+		u32 x, y;
 		for(y = 0; y < height; y++) {
 			for(x = 0; x < width; x++) {
 				u32 p;
@@ -988,7 +988,7 @@ int TPL_ConvertToBMP(u8* tplbuf, u32 tplsize, char basename[])
 		tplpoint += 8;
 		texcount++;
 	}
-	char *outname = (char*)malloc(strlen(basename) + 3);
+	char *outname = malloc(strlen(basename) + 6);
 	for(i = 0; i < texcount; i++) {
 		printf("Converting file %d.\n", i);
 		memset(outname, 0, strlen(basename) + 6);
