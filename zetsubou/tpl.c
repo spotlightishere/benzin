@@ -819,6 +819,7 @@ int TPL_ConvertToGD(u8* tplbuf, u32 tplsize, char basename[], u32 format)
 		fwrite(&h.unpacked,       1, 1, tplmeta);
 		fclose(tplmeta);
 	}
+	free(outname);
 	return 0;
 }
 
@@ -1132,6 +1133,7 @@ int TPL_ConvertToBMP(u8* tplbuf, u32 tplsize, char basename[])
 		fwrite(&h.unpacked, 1, 1, out);
 		fclose(out);
 	}
+	free(outname);
 	return 0;
 }
 

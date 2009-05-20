@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
 		else
 			bad_args(argv[0]);
 		ret = TPL_ConvertToGD(tplbuf, tplsize, basename, outfmt);
+		free(basename);
 		if(ret < 0) {
 			printf("Error converting from TPL.\n");
 			exit(1);
