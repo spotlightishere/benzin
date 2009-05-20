@@ -819,6 +819,7 @@ int TPL_ConvertToGD(u8* tplbuf, u32 tplsize, char basename[], u32 format)
 		fwrite(&h.unpacked,       1, 1, tplmeta);
 		fclose(tplmeta);
 		free(bitmapdata);
+		free(im);
 	}
 	free(outname);
 	return 0;
