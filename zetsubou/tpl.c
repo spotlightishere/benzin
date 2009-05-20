@@ -699,10 +699,10 @@ int TPL_ConvertToGD(u8* tplbuf, u32 tplsize, char basename[], u32 format)
 		tplpoint += 8;
 		texcount++;
 	}
-	char *outname = malloc(strlen(basename) + 6);
+	char *outname = malloc(strlen(basename) + 8);
 	for(i = 0; i < texcount; i++) {
 		printf("Converting file %d.\n", i);
-		memset(outname, 0, strlen(basename) + 6);
+		memset(outname, 0, strlen(basename) + 8);
 		sprintf(outname, "%s%02x.%s", basename, i, formatstr);
 		printf("Output to %s.\n", outname);
 		tplpoint = be32(TPLTextures[i][0]);
@@ -799,7 +799,7 @@ int TPL_ConvertToGD(u8* tplbuf, u32 tplsize, char basename[], u32 format)
 		}
 		gdImagePng(im, fileout);
 		fclose(fileout);
-		memset(outname, 0, strlen(basename) + 6);
+		memset(outname, 0, strlen(basename) + 8);
 		sprintf(outname, "%s%02x.%s", basename, i, "met");
 		FILE* tplmeta = fopen(outname, "wb");
 		char tplheadstartmagic[] = {'T', 'P', 'L', 'M'};
@@ -988,10 +988,10 @@ int TPL_ConvertToBMP(u8* tplbuf, u32 tplsize, char basename[])
 		tplpoint += 8;
 		texcount++;
 	}
-	char *outname = malloc(strlen(basename) + 6);
+	char *outname = malloc(strlen(basename) + 8);
 	for(i = 0; i < texcount; i++) {
 		printf("Converting file %d.\n", i);
-		memset(outname, 0, strlen(basename) + 6);
+		memset(outname, 0, strlen(basename) + 8);
 		sprintf(outname, "%s%02x.bmp", basename, i);
 		printf("Output to %s.\n", outname);
 		tplpoint = be32(TPLTextures[i][0]);
