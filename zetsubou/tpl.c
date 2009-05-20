@@ -99,45 +99,50 @@ int TPL_ConvertRGBA8ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapd
 	if(*bitmapdata == NULL)
 		return -1;
 	u32 outsz = width * height * 4;
-	u8 ag[32];
-	u8 rb[32];
+	u8 a[8];
+	u8 r[8];
+	u8 g[8];
+	u8 b[8];
 	int i = 0;
 	int z = 0;
+	int iv = 0;
 	int bmpslot = 0;
 	for(y1 = 0; y1 < height; y1 += 4) {
 		for(x1 = 0; x1 < width; x1 += 4) {
 			for(y = y1; y < (y1 + 4); y++) {
 				for(x = x1; x < (x1 + 4); x++) {
-					width = goodwidth;
+					width = goodwidth;	// Lolwut, we kept corrupting, so this makes sure it isn't.
 					height = goodheight;
-					fflush(stdout);
 					u16 oldpixel = *(u16*)(tplbuf + (tplpoint + ((x + (y * width)) * 2)));
 					if((x >= width) || (y >= height)) {
-						ag[i] = 0;
-						rb[i++] = 255;
+						if(iv < 8) {
+							a[i] = 0;
+							r[i++] = 0;
+						}else{
+							g[i] = 0;
+							b[i++] = 0;
+						}
 					}else{
-						ag[i] = (oldpixel >> 8) & 0xFF;
-						rb[i++] = (oldpixel >> 0) & 0xFF;
+						if(iv < 8) {
+							a[i] = (oldpixel >> 8) & 0xFF;
+							r[i++] = (oldpixel >> 0) & 0xFF;
+						}else{
+							g[i] = (oldpixel >> 8) & 0xFF;
+							b[i++] = (oldpixel >> 0) & 0xFF;
+						}
 					}
+					iv++;
+					if(iv >= 16) iv = 0;	// Swap every 16 "pixels"!
 				}
 			}
-			z++;
-			if(z == 2) {
-				width = goodwidth;
-				height = goodheight;
-				for(i = 0; i < 8; i++) {
-					u32 rgba = (rb[i] << 0) | (ag[8 + i] << 8) | (rb[8 + i] << 16) | (ag[i] << 24);
-					if(rgba != (255 | (255 << 16)))
-						(*(u32**)bitmapdata)[bmpslot++] = rgba;
-				}
-				for(i = 16; i < 24; i++) {
-					u32 rgba = (rb[i] << 0) | (ag[8 + i] << 8) | (rb[8 + i] << 16) | (ag[i] << 24);
-					if(rgba != (255 | (255 << 16)))
-						(*(u32**)bitmapdata)[bmpslot++] = rgba;
-				}
-				z = 0;
-				i = 0;
+			width = goodwidth;		// Lolwut, we kept corrupting, so this makes sure it isn't.
+			height = goodheight;
+			for(i = 0; i < 8; i++) {
+				u32 rgba = (r[i] << 0) | (g[i] << 8) | (b[i] << 16) | (a[i] << 24);
+				(*(u32**)bitmapdata)[bmpslot++] = rgba;
 			}
+			z = 0;
+			i = 0;
 		}
 	}
 	return outsz;
