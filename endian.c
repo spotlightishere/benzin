@@ -31,7 +31,7 @@ u32 int_swap_bytes(u32 int1)
         charTemp = 0x00;
         charTemp = int1c[1]; int1c[1] = int1c[2]; int1c[2] = charTemp;
 
-        u32 *newInt; newInt = (int*)int1c;
+        u32 *newInt; newInt = (unsigned int*)int1c;
         return *newInt;
 }
 

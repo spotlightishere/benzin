@@ -16,11 +16,10 @@
 
 int main(int argc, char* argv[])
 {
-    u8 len;
     u8 type = 3;
     char *ext;
 
-    if (argc < 3)
+    if (argc < 4)
     {
         printf("Please use ./benzin r brlytfilename.brlyt xmlytfilename.xmlyt\n");
         printf("                - OR - \n");
@@ -125,32 +124,13 @@ if(type == 1)
     }else if((argv[1][0] == 'm') || (argv[1][0] == 'w')) {
 if(type == 2)
 {
-        dbgprintf("1:%d 2:%d f1:%s f2:%s\n", brlanargmake, brlanargdestmake, argv[brlanargmake], argv[brlanargdestmake]);
         make_brlan(argv[brlanargmake], argv[brlanargdestmake]);
 }
 if(type == 1)
 {
-        dbgprintf("1:%d 2:%d f1:%s f2:%s\n", brlytargmake, brlytargdestmake, argv[brlytargmake], argv[brlytargdestmake]);
         make_brlyt(argv[brlytargmake], argv[brlytargdestmake]);
 }
     }
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
