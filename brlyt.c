@@ -18,6 +18,7 @@
 #include "brlyt.h"
 #include "memory.h"
 #include "xml.h"
+#include "endian.h"
 
 #ifdef DEBUGBRLYT
 #define dbgprintf    printf
@@ -53,23 +54,16 @@ int lengthOfTextures;
 
 static int FourCCsMatch(fourcc cc1, fourcc cc2)
 {
-    dbgprintf("FourCCs\n");
     int ret[4];
-    dbgprintf("Let's go %08x %08x\n", cc1, cc2);
     ret[0] = (cc1[0] == cc2[0]);
-    dbgprintf("Got zero |%02x| |%02x| %d\n", cc1[0], cc2[0], ret[0]);
     ret[1] = (cc1[1] == cc2[1]);
-    dbgprintf("Got one |%02x| |%02x| %d\n", cc1[1], cc2[1], ret[1]);
     ret[2] = (cc1[2] == cc2[2]);
-    dbgprintf("Got two |%02x| |%02x| %d\n", cc1[2], cc2[2], ret[2]);
     ret[3] = (cc1[3] == cc2[3]);
-    dbgprintf("Got three |%02x| |%02x| %d\n", cc1[3], cc2[3], ret[3]);
     int retval;
     if(ret[0] && ret[1] && ret[2] && ret[3])
         retval = 1;
     else
         retval = 0;
-    dbgprintf("Got retval %d\n", retval);
     return retval;
 }
 
@@ -105,17 +99,16 @@ unsigned int bit_extract(unsigned int num, unsigned int start, unsigned int end)
     //simple bitmask, figure out when awake
     //unsigned int mask = (2**(31 - start + 1) - 1) - (2**(31 - end) - 1)
     unsigned int mask;
-    int first = 0;
+    int first;
     int firstMask = 1;
-    for (first;first<31-start+1;first++)
+    for (first=0;first<31-start+1;first++)
     {
         firstMask *= 2;
     }
     firstMask -= 1;
-    first = 0;
     int secondMask = 1;
 
-    for (first;first< 31-end;first++)
+    for (first=0;first< 31-end;first++)
     {
         secondMask *=2;
     }
@@ -133,8 +126,8 @@ char* getMaterial(u16 offset)
 
     if (offset > 1)
     {
-        int n = 1;
-        for (n; n<offset;n++)
+        int n;
+        for (n=1; n<offset;n++)
             mat = mat + strlen(mat) + 1;
     }
     return mat;
@@ -148,8 +141,8 @@ char* getTexture(u16 offset)
 
     if (offset > 1)
     {
-        int n = 1;
-        for (n; n<offset;n++)
+        int n;
+        for (n=1; n<offset;n++)
             tex = tex + strlen(tex) + 1;
     }
     return tex;
@@ -185,6 +178,7 @@ u16 findTexOffset(char *tex)
 
 int BRLYT_ReadEntries(u8* brlyt_file, size_t file_size, brlyt_header header, brlyt_entry* entries)
 {
+	return 0;
 }
 
 void BRLYT_CheckHeaderSanity(brlyt_header header, size_t filesize)
@@ -229,8 +223,8 @@ void PrintBRLYTEntry_grp1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 
     int offset;
     offset = 20;
-    int n = 0;
-    for (n;n<short_swap_bytes(data.numsubs);n++)
+    int n;
+    for (n=0;n<short_swap_bytes(data.numsubs);n++)
     {
         char subb[16];
         BRLYT_ReadDataFromMemory(subb, brlyt_file, sizeof(subb));
@@ -251,8 +245,8 @@ void PrintBRLYTEntry_txl1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     int pos = 4;
     pos += data.offs;
     int bpos = pos;
-    int n = 0;
-    for (n;n<short_swap_bytes(data.num);n++)
+    int n;
+    for (n=0;n<short_swap_bytes(data.num);n++)
     {
         brlyt_offsunk_chunk data2;
         BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_offsunk_chunk));
@@ -269,7 +263,6 @@ void PrintBRLYTEntry_txl1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
         memcpy(name, nameRead, sizeof(name));
         naame = mxmlNewElement(entries, "name"); mxmlNewTextf(naame, 0, "%s", name);
         BRLYT_fileoffset = tempLocation;
-        int oldsize = sizeof(name);
         int newSize = lengthOfTextures+sizeof(name);
         textures = realloc(textures, newSize);
         numberOfTextures += 1;
@@ -290,8 +283,8 @@ void PrintBRLYTEntry_fnl1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     int pos = 4;
     pos += data.offs;
     int bpos = pos;
-    int n = 0;
-    for (n;n<short_swap_bytes(data.num);n++)
+    int n;
+    for (n=0;n<short_swap_bytes(data.num);n++)
     {
         brlyt_offsunk_chunk data2;
         BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_offsunk_chunk));
@@ -313,7 +306,7 @@ void PrintBRLYTEntry_fnl1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 
 void PrintBRLYTEntry_pan1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
-    mxml_node_t *flags1, *flags2, *alpha1, *alpha2;
+    mxml_node_t *flags1, *alpha1;
     mxml_node_t *coords, *x, *y, *z;
     mxml_node_t *flip, *rotate, *zoom;
     mxml_node_t *size, *width, *height;
@@ -342,7 +335,7 @@ void PrintBRLYTEntry_pan1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 
 void PrintBRLYTEntry_wnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
-    mxml_node_t *flags1, *flags2, *alpha1, *alpha2;
+    mxml_node_t *flags1, *alpha1;
     mxml_node_t *coords, *x, *y, *z;
     mxml_node_t *flip, *rotate, *zoom;
     mxml_node_t *size, *width, *height;
@@ -430,7 +423,7 @@ void PrintBRLYTEntry_wnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 
 void PrintBRLYTEntry_bnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
-    mxml_node_t *flags1, *flags2, *alpha1, *alpha2;
+    mxml_node_t *flags1, *alpha1;
     mxml_node_t *coords, *x, *y, *z;
     mxml_node_t *flip, *rotate, *zoom;
     mxml_node_t *size, *width, *height;
@@ -459,7 +452,7 @@ void PrintBRLYTEntry_bnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 
 void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
-    mxml_node_t *flags1, *flags2, *alpha1, *alpha2;
+    mxml_node_t *flags1, *alpha1;
     mxml_node_t *coords, *x, *y, *z;
     mxml_node_t *flip, *rotate, *zoom;
     mxml_node_t *size, *width, *height;
@@ -509,7 +502,7 @@ void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 
 void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
-    mxml_node_t *flags1, *flags2, *alpha1, *alpha2;
+    mxml_node_t *flags1, *alpha1;
     mxml_node_t *coords, *x, *y, *z;
     mxml_node_t *flip, *rotate, *zoom;
     mxml_node_t *size, *width, *height;
@@ -549,7 +542,7 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     color = mxmlNewElement(tag, "color"); mxmlNewTextf(color, 0, "%08x-%08x", be32(data2.color1), be32(data2.color2));
 //    int q; for(q=0;q<short_swap_bytes(data2.len2);q++) printf("%02x", texty[q]);    // S T U P I D   U T F 1 6    T E X T
     unsigned char textbuffer[4096];
-    int q; for(q=0;q<short_swap_bytes(data2.len2);q++) sprintf(&textbuffer[q*2], "%02x", texty[q]);
+    int q; for(q=0;q<short_swap_bytes(data2.len2);q++) sprintf((char*)&textbuffer[q*2], "%02x", texty[q]);
     text = mxmlNewElement(tag, "text"); mxmlNewTextf(text, 0, "%s", textbuffer);
 }
 
@@ -561,7 +554,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_numoffs_chunk));
     mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
     int n = 0;
-    for (n;n<short_swap_bytes(data.num);n++)
+    for (n=0;n<short_swap_bytes(data.num);n++)
     {
         int offset;
         BRLYT_ReadDataFromMemory(&offset, brlyt_file, sizeof(offset));
@@ -595,7 +588,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
         }
         flags = mxmlNewElement(entries, "flags"); mxmlNewTextf(flags, 0, "%08x", be32(data3.flags));
 
-        int oldsize = 1+strlen(data3.name);
         int newSize = lengthOfMaterials+strlen(data3.name)+1;
         materials = realloc(materials, newSize);
         numberOfMaterials += 1;
@@ -604,7 +596,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 
         mxml_node_t *texture, *wrap_t, *wrap_s;
         int n = 0;
-        for (n;n<bit_extract(flaggs, 28,31);n++)
+        for (n=0;n<bit_extract(flaggs, 28,31);n++)
         {
             brlyt_texref_chunk data4;
             BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_texref_chunk));
@@ -617,7 +609,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
         mxml_node_t *tex_coords, *dataa;
 //        # 0x14 * flags[24-27], followed by
                 n = 0;
-                for (n;n<bit_extract(flaggs, 24,27);n++)
+                for (n=0;n<bit_extract(flaggs, 24,27);n++)
                 {
                         brlyt_tex_coords data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_tex_coords));
@@ -632,7 +624,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 mxml_node_t *ua3;
         //# 4*flags[20-23], followed by
                 n = 0;
-                for (n;n<bit_extract(flaggs, 20,23);n++)
+                for (n=0;n<bit_extract(flaggs, 20,23);n++)
                 {
                         brlyt_4b_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
@@ -651,7 +643,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 mxml_node_t *ua4;
         //# 4 * flags[6]
                 n = 0;
-                for (n;n<bit_extract(flaggs, 6,100);n++)
+                for (n=0;n<bit_extract(flaggs, 6,100);n++)
                 {
                         brlyt_4b_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
@@ -665,7 +657,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 mxml_node_t *ua5;
         //# 4 * flags[4]
                 n = 0;
-                for (n;n<bit_extract(flaggs, 4,100);n++)
+                for (n=0;n<bit_extract(flaggs, 4,100);n++)
                 {
                         brlyt_4b_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
@@ -679,7 +671,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 mxml_node_t *ua6;
         //# 4 * flags[19]
                 n = 0;
-                for (n;n<bit_extract(flaggs, 19,100);n++)
+                for (n=0;n<bit_extract(flaggs, 19,100);n++)
                 {
                         brlyt_4b_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
@@ -692,7 +684,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 
                 mxml_node_t *ua7, *a, *b, *c, *d, *e;
                 n = 0;
-                for (n;n<bit_extract(flaggs, 17,18);n++)
+                for (n=0;n<bit_extract(flaggs, 17,18);n++)
                 {
                         brlyt_ua7_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_ua7_chunk));
@@ -707,7 +699,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 mxml_node_t *ua8;
         //# 4 * flags[14-16]
                 n = 0;
-                for (n;n<bit_extract(flaggs, 14,16);n++)
+                for (n=0;n<bit_extract(flaggs, 14,16);n++)
                 {
                         brlyt_4b_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
@@ -721,7 +713,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 mxml_node_t *ua9;
         //# 0x10 * flags[9-13]
                 n = 0;
-                for (n;n<bit_extract(flaggs, 9,13);n++)
+                for (n=0;n<bit_extract(flaggs, 9,13);n++)
                 {
                         brlyt_10b_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_10b_chunk));
@@ -736,7 +728,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 mxml_node_t *uaa;
         //# 4 * flags[8], these are bytes btw
                 n = 0;
-                for (n;n<bit_extract(flaggs, 8,8);n++)
+                for (n=0;n<bit_extract(flaggs, 8,8);n++)
                 {
                         brlyt_4b_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
@@ -750,7 +742,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 mxml_node_t *uab;
         //# 4 * flags[7]
                 n = 0;
-                for (n;n<bit_extract(flaggs, 7,7);n++)
+                for (n=0;n<bit_extract(flaggs, 7,7);n++)
                 {
                         brlyt_4b_chunk data4;
                         BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_4b_chunk));
@@ -923,7 +915,6 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             {
                 char tempChar[4];
                 get_value(valnode, tempChar, 256);
-                float something;
                 *(float*)(&(lytheader.width)) = atof(tempChar);
             }
             valnode = mxmlFindElement(subnode , subnode ,"height", NULL, NULL, MXML_DESCEND);
@@ -2161,7 +2152,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 temp[1] = tempy[w*2+1];
                 temp[2] = 0x0;
                 //printf("w: %d, temp: %s\n", w, temp);
-                texty[w] = (u8)strtoul(temp, NULL, 16);
+                texty[w] = (u8)strtoul((char*)temp, NULL, 16);
             }
         }
         fwrite(&chunk, sizeof(chunk), 1, fp);
@@ -2338,7 +2329,6 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
             {
                 picCoords = realloc(picCoords, sizeof(float) * 8 * sets);
                 mxml_node_t *valnode;
-                int numberOfCoordinates;
                 for (valnode=mxmlFindElement(setnode, setnode, "coord", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "coord", NULL, NULL, MXML_DESCEND) )
                 {
                         
@@ -2347,7 +2337,6 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                         get_value(valnode, tempCoord, 256);
                         float tempCoordGotten = atof(tempCoord);
                         float coordGotten = float_swap_bytes(tempCoordGotten);
-                        int picOffset = numberOfPicCoords * sizeof(float);
                         memcpy(&picCoords[numberOfPicCoords], &coordGotten, sizeof(float));
                         numberOfPicCoords++;
                 }
@@ -2396,7 +2385,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                     u8 stringLength = strlen(tempSub) + 1;
                     subs = realloc(subs, 1 + sizeof(char) * subsLength);
                     strcpy(&subs[oldSubsLength], tempSub);
-                    for (stringLength;stringLength<17;stringLength++)
+                    for (stringLength=0;stringLength<17;stringLength++)
                         subs[oldSubsLength+stringLength] = 0x00;
                     numSubs++;
                 }
@@ -2446,7 +2435,6 @@ void WriteBRLYTHeader(brlyt_header rlythead, FILE* fp)
 
 void write_brlyt(char *infile, char *outfile)
 {
-    u32 timesIn = 0;
     unsigned int fileOffset = 0;
     FILE* fpx = fopen(infile, "r");
     if(fpx == NULL) {
@@ -2470,12 +2458,9 @@ void write_brlyt(char *infile, char *outfile)
         exit(1);
     }
 
-    u32 fileError = ferror(fp);
-
     u8* tagblob;
     u32 blobsize;
     u16 blobcount = 0;
-    u32 bloboffset;
     brlyt_header rlythead;
     rlythead.magic[0] = 'R';
     rlythead.magic[1] = 'L';
@@ -2486,7 +2471,6 @@ void write_brlyt(char *infile, char *outfile)
     rlythead.lyt_offset = sizeof(brlyt_header);
     rlythead.unk2 = 1;
     WriteBRLYTHeader(rlythead, fp);
-    char temp[256];
 
     fileOffset += sizeof(brlyt_header);
 
