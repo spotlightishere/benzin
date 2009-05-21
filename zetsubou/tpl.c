@@ -151,8 +151,6 @@ int TPL_ConvertBitMapToRGB565(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 w
 /* Let's try icefire's code. */
 int TPL_ConvertRGBA8ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapdata, u32 width, u32 height)
 {
-	u32 goodwidth = width;
-	u32 goodheight = height;
 	u32 x, y;
 	u32 x1, y1;
 	*bitmapdata = (u8*)calloc(width * height, 4);
@@ -161,7 +159,6 @@ int TPL_ConvertRGBA8ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapd
 	u32 outsz = width * height * 4;
 	u8 r, g, b, a;
 	int i, iv = 0;
-	int bmpslot = 0;
 	for(y1 = 0; y1 < height; y1 += 4) {
 		for(x1 = 0; x1 < width; x1 += 4) {
 			for(i = 0; i < 2; i++) {
