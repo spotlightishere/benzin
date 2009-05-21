@@ -833,6 +833,7 @@ void parse_brlyt(char *filename, char *filenameout)
     u8* brlyt_file = (u8*)malloc(file_size);
     fseek(fp, 0, SEEK_SET);
     fread(brlyt_file, file_size, 1, fp);
+    fclose(fp);
     BRLYT_fileoffset = 0;
     brlyt_header header;
     BRLYT_ReadDataFromMemory(&header, brlyt_file, sizeof(brlyt_header));
@@ -872,6 +873,8 @@ void parse_brlyt(char *filename, char *filenameout)
     mxmlSaveFile(xml, xmlFile, whitespace_cb);
     fclose(xmlFile);
     mxmlDelete(xml);
+    free(entries);
+    free(brlyt_file);
     free(materials);
     free(textures);
 }

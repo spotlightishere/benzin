@@ -307,6 +307,7 @@ void parse_brlan(char* filename, char *filenameout)
         }
      }
     mxmlSaveFile(xml, xmlFile, whitespace_cb);
+    mxmlDelete(xml);
     fclose(xmlFile);
     fclose(fp);
 }
