@@ -81,7 +81,7 @@ const char *whitespace_cb(mxml_node_t *node, int where)
     }
     if (where == 3 || where == 1){
        return "";
-    }else if((node->prev && (where == 0 || node->parent)) && !(where == 2 && strncmp(name, "ua", 2) && strcmp(name, "flip") && strcmp(name, "zoom") && strcmp(name, "coords") && strcmp(name, "entries") && strcmp(name, "xmlyt") && strcmp(name, "xmlan") && strcmp(name, "entries") && strcmp(name, "triplet") && strcmp(name, "pair") && strcmp(name, "entry") && strcmp(name, "pane") && (strcmp(name, "tag") && strcmp(name, "size") && strcmp(name, "material") && strcmp(name, "colors") && strcmp(name, "subs") && strcmp(name, "font") && strcmp(name, "wnd4") && strcmp(name, "wnd4mat") && strcmp(name, "set") && strcmp(name, "coordinates"))) ){
+    }else if(((node->prev && where == 0) || node->parent) && !(where == 2 && strncmp(name, "ua", 2) && strcmp(name, "flip") && strcmp(name, "zoom") && strcmp(name, "coords") && strcmp(name, "entries") && strcmp(name, "xmlyt") && strcmp(name, "xmlan") && strcmp(name, "entries") && strcmp(name, "triplet") && strcmp(name, "pair") && strcmp(name, "entry") && strcmp(name, "pane") && (strcmp(name, "tag") && strcmp(name, "size") && strcmp(name, "material") && strcmp(name, "colors") && strcmp(name, "subs") && strcmp(name, "font") && strcmp(name, "wnd4") && strcmp(name, "wnd4mat") && strcmp(name, "set") && strcmp(name, "coordinates"))) ){
         sprintf(xmlbuff, "\n%*s",  (depth-1)*4, "");
     }else{
         return "";
