@@ -18,6 +18,7 @@
 #include "types.h"
 #include "brlan.h"
 #include "xml.h"
+#include "endian.h"
 
 #if DEBUGBRLAN == 1
 #define dbgprintf    printf
@@ -231,11 +232,9 @@ void parse_brlan(char* filename, char *filenameout)
     BRLAN_fileoffset = 0;
     brlan_header header;
     BRLAN_ReadDataFromMemoryX(&header, data, sizeof(brlan_header));
-    dbgprintf("brlan_header read to.\n");
     BRLAN_fileoffset = short_swap_bytes(header.pai1_offset);
     brlan_pai1_universal universal;
     BRLAN_ReadDataFromMemoryX(&universal, data, sizeof(brlan_pai1_universal));
-    dbgprintf("pa1_universal read to.\n");
     
     int pai1_header_type;
     brlan_pai1_header_type1 pai1_header1;
@@ -293,8 +292,6 @@ void parse_brlan(char* filename, char *filenameout)
     for( i = 0; i < tagcount; i++) {
         brlan_entry brlanEntry;
         tag_header tagHeader;
-        tag_entry tagEntry;
-        tag_entryinfo tagEntryInfo;
         BRLAN_fileoffset = be32(taglocations[i]) + short_swap_bytes(header.pai1_offset);
         u32 brlanEntryOffset = BRLAN_fileoffset;
         BRLAN_ReadDataFromMemory(&brlanEntry, data, sizeof(brlan_entry));
@@ -606,6 +603,11 @@ void create_tag_from_xml(mxml_node_t *tree, mxml_node_t *node, FILE* fp)
             exit(1);
         }
         for ( i = 0; i < 4; i++) head.magic[i] = temp[i];
+	if (FourCCInList(head.magic) == 0)
+	{
+		printf("animation type not recognized: %.4s", head.magic);
+		exit(1);
+	} 
         create_entries_from_xml(node, tagnode, &entr, &head, fp);    
         entr.num_tags++;
     }
@@ -728,7 +730,6 @@ void write_brlan(char *infile, char* outfile)
         exit(1);
     }
     u16 blobcount = 0;
-    u32 bloboffset;
     brlan_header rlanhead;
     rlanhead.magic[0] = 'R';
     rlanhead.magic[1] = 'L';
@@ -768,22 +769,10 @@ void write_brlan(char *infile, char* outfile)
     paihead.entry_offset = sizeof(brlan_pai1_header_type1);
     WriteBRLANPaiHeader(paihead, fp);
 
-    u8* tagchunksbig = (u8*)calloc(MAXIMUM_TAGS_SIZE, 1);
-    MEMORY* tagsmem = mopen(tagchunksbig, MAXIMUM_TAGS_SIZE, 3);
     u32 totaltagsize = 0;
 
-    u32 headerOffset;
-    u32 tagsbigOffset;
-    u32 blobOffsets[256];
-    u8* timgblob;
-    u32 timgsize;
     u16 timgcount = 0;
-    u32 timgoffset;
-    u8* timgchunksbig = (u8*)calloc(MAXIMUM_TIMGS_SIZE, 1);
-    MEMORY* timgmem = mopen(timgchunksbig, MAXIMUM_TIMGS_SIZE, 3);
     u32 totaltimgize = 0;
-    u32 timgStartOffset = ftell(fp);
-    u32 timgOffsets[256];
     
     u32 timgnumber = 0x0;
     for(node = mxmlFindElement(tree, tree, "timg", NULL, NULL, MXML_DESCEND); node != NULL; node = mxmlFindElement(node, tree, "timg", NULL, NULL, MXML_DESCEND))
