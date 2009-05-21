@@ -99,10 +99,10 @@ int TPL_ConvertRGBA8ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapd
 	if(*bitmapdata == NULL)
 		return -1;
 	u32 outsz = width * height * 4;
-	u8 a[8];
-	u8 r[8];
-	u8 g[8];
-	u8 b[8];
+	u8 a[16];
+	u8 r[16];
+	u8 g[16];
+	u8 b[16];
 	int i = 0;
 	int z = 0;
 	int iv = 0;
@@ -115,7 +115,7 @@ int TPL_ConvertRGBA8ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapd
 					height = goodheight;
 					u16 oldpixel = *(u16*)(tplbuf + (tplpoint + ((x + (y * width)) * 2)));
 					if((x >= width) || (y >= height)) {
-						if(iv < 8) {
+						if(iv < 16) {
 							a[i] = 0;
 							r[i++] = 0;
 						}else{
@@ -123,7 +123,7 @@ int TPL_ConvertRGBA8ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapd
 							b[i++] = 0;
 						}
 					}else{
-						if(iv < 8) {
+						if(iv < 16) {
 							a[i] = (oldpixel >> 8) & 0xFF;
 							r[i++] = (oldpixel >> 0) & 0xFF;
 						}else{
@@ -132,13 +132,13 @@ int TPL_ConvertRGBA8ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmapd
 						}
 					}
 					iv++;
-					if(iv ==  8) i  = 0;	// Gotta reset i every 8 "pixels"!
-					if(iv >= 16) iv = 0;	// Swap every 16 "pixels"!
+					if(iv == 16) i  = 0;	// Gotta reset i every 16 "pixels"!
+					if(iv >= 32) iv = 0;	// Swap every 32 "pixels"!
 				}
 			}
 			width = goodwidth;		// Lolwut, we kept corrupting, so this makes sure it isn't.
 			height = goodheight;
-			for(i = 0; i < 8; i++) {
+			for(i = 0; i < 16; i++) {
 				u32 rgba = (r[i] << 0) | (g[i] << 8) | (b[i] << 16) | (a[i] << 24);
 				(*(u32**)bitmapdata)[bmpslot++] = rgba;
 			}
@@ -781,6 +781,7 @@ int TPL_ConvertToGD(u8* tplbuf, u32 tplsize, char basename[], u32 format)
 		}
 		if(ret == -1) {
 			printf("Error converting file.\n");
+			gdImageDestroy(im);
 			return -1;
 		}
 		int x, y;
