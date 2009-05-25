@@ -184,7 +184,7 @@ int BRLYT_ReadEntries(u8* brlyt_file, size_t file_size, brlyt_header header, brl
 void BRLYT_CheckHeaderSanity(brlyt_header header, size_t filesize)
 {
     if((header.magic[0] != 'R') || (header.magic[1] != 'L') || (header.magic[2] != 'Y') || (header.magic[3] != 'T')) {
-        printf("BRLYT magic doesn't match! %c%c%c%c\n", header.magic[0], header.magic[1], header.magic[2], header.magic[3]);
+        printf("BRLYT magic doesn't match! %.4s\n", header.magic);
         exit(1);
     }
     if(filesize != be32(header.filesize)) {
@@ -202,7 +202,7 @@ void PrintBRLYTEntry_lyt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     brlyt_lytheader_chunk data;
     BRLYT_fileoffset = entry.data_location;
     BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_lytheader_chunk));
-    mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+    mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
     a = mxmlNewElement(tag, "a"); mxmlNewTextf(a, 0, "%02x", data.a);
     size = mxmlNewElement(tag, "size");
     width = mxmlNewElement(size, "width"); mxmlNewTextf(width, 0, "%f", float_swap_bytes(data.width));
@@ -211,25 +211,22 @@ void PrintBRLYTEntry_lyt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 
 void PrintBRLYTEntry_grp1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
-    mxml_node_t *subs;
-    mxml_node_t *sub;
+    mxml_node_t *subs, *sub;
     brlyt_group_chunk data;
     BRLYT_fileoffset = entry.data_location;
     BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_group_chunk));
-    mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+    mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
     mxmlElementSetAttrf(tag, "name", "%s", data.name);
 
     if (short_swap_bytes(data.numsubs) > 0) subs = mxmlNewElement(tag, "subs");
 
-    int offset;
-    offset = 20;
     int n;
     for (n=0;n<short_swap_bytes(data.numsubs);n++)
     {
         char subb[16];
+	memset(subb, 0x00, 16);
         BRLYT_ReadDataFromMemory(subb, brlyt_file, sizeof(subb));
-        sub = mxmlNewElement(subs, "sub"); mxmlNewTextf(sub, 0, "%s", subb);
-        offset += 16;
+        sub = mxmlNewElement(subs, "sub"); mxmlNewTextf(sub, 0, "%.16s", subb);
     }
 }
 
@@ -240,7 +237,7 @@ void PrintBRLYTEntry_txl1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     brlyt_numoffs_chunk data;
     BRLYT_fileoffset = entry.data_location;
     BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_numoffs_chunk));
-    mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+    mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
     entries = mxmlNewElement(tag, "entries");
     int pos = 4;
     pos += data.offs;
@@ -278,7 +275,7 @@ void PrintBRLYTEntry_fnl1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     brlyt_numoffs_chunk data;
     BRLYT_fileoffset = entry.data_location;
     BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_numoffs_chunk));
-    mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+    mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
     entries = mxmlNewElement(tag, "entries");
     int pos = 4;
     pos += data.offs;
@@ -313,7 +310,7 @@ void PrintBRLYTEntry_pan1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     brlyt_pane_chunk data;
     BRLYT_fileoffset = entry.data_location;
     BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_pane_chunk));
-    mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+    mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
     mxmlElementSetAttrf(tag, "name", "%s", data.name);
     flags1 = mxmlNewElement(tag, "flags"); mxmlNewTextf(flags1, 0, "%02x-%02x", data.flag1, data.flag2);
     alpha1 = mxmlNewElement(tag, "alpha"); mxmlNewTextf(alpha1, 0, "%02x-%02x", data.alpha, data.alpha2);
@@ -342,7 +339,7 @@ void PrintBRLYTEntry_wnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     brlyt_pane_chunk data;
     BRLYT_fileoffset = entry.data_location;
     BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_pane_chunk));
-    mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+    mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
     mxmlElementSetAttrf(tag, "name", "%s", data.name);
     flags1 = mxmlNewElement(tag, "flags"); mxmlNewTextf(flags1, 0, "%02x-%02x", data.flag1, data.flag2);
     alpha1 = mxmlNewElement(tag, "alpha"); mxmlNewTextf(alpha1, 0, "%02x-%02x", data.alpha, data.alpha2);
@@ -430,7 +427,7 @@ void PrintBRLYTEntry_bnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     brlyt_pane_chunk data;
     BRLYT_fileoffset = entry.data_location;
     BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_pane_chunk));
-    mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+    mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
     mxmlElementSetAttrf(tag, "name", "%s", data.name);
     flags1 = mxmlNewElement(tag, "flags"); mxmlNewTextf(flags1, 0, "%02x-%02x", data.flag1, data.flag2);
     alpha1 = mxmlNewElement(tag, "alpha"); mxmlNewTextf(alpha1, 0, "%02x-%02x", data.alpha, data.alpha2);
@@ -461,7 +458,7 @@ void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_pane_chunk));
     brlyt_pic_chunk data2;
     BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_pic_chunk));
-    mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+    mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
     mxmlElementSetAttrf(tag, "name", "%s", data.name);
     flags1 = mxmlNewElement(tag, "flags"); mxmlNewTextf(flags1, 0, "%02x-%02x", data.flag1, data.flag2);
     alpha1 = mxmlNewElement(tag, "alpha"); mxmlNewTextf(alpha1, 0, "%02x-%02x", data.alpha, data.alpha2);
@@ -509,7 +506,7 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     brlyt_pane_chunk data;
     BRLYT_fileoffset = entry.data_location;
     BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_pane_chunk));
-    mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+    mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
     mxmlElementSetAttrf(tag, "name", "%s", data.name);
     flags1 = mxmlNewElement(tag, "flags"); mxmlNewTextf(flags1, 0, "%02x-%02x", data.flag1, data.flag2);
     alpha1 = mxmlNewElement(tag, "alpha"); mxmlNewTextf(alpha1, 0, "%02x-%02x", data.alpha, data.alpha2);
@@ -552,7 +549,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     brlyt_numoffs_chunk data;
     BRLYT_fileoffset = entry.data_location;
     BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_numoffs_chunk));
-    mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+    mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
     int n = 0;
     for (n=0;n<short_swap_bytes(data.num);n++)
     {
@@ -595,7 +592,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
         lengthOfMaterials = newSize;
 
         mxml_node_t *texture, *wrap_t, *wrap_s;
-        int n = 0;
+        int n;
         for (n=0;n<bit_extract(flaggs, 28,31);n++)
         {
             brlyt_texref_chunk data4;
@@ -608,7 +605,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 
         mxml_node_t *tex_coords, *dataa;
 //        # 0x14 * flags[24-27], followed by
-                n = 0;
                 for (n=0;n<bit_extract(flaggs, 24,27);n++)
                 {
                         brlyt_tex_coords data4;
@@ -623,7 +619,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 
                 mxml_node_t *ua3;
         //# 4*flags[20-23], followed by
-                n = 0;
                 for (n=0;n<bit_extract(flaggs, 20,23);n++)
                 {
                         brlyt_4b_chunk data4;
@@ -642,7 +637,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 
                 mxml_node_t *ua4;
         //# 4 * flags[6]
-                n = 0;
                 for (n=0;n<bit_extract(flaggs, 6,100);n++)
                 {
                         brlyt_4b_chunk data4;
@@ -656,7 +650,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 
                 mxml_node_t *ua5;
         //# 4 * flags[4]
-                n = 0;
                 for (n=0;n<bit_extract(flaggs, 4,100);n++)
                 {
                         brlyt_4b_chunk data4;
@@ -670,7 +663,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 
                 mxml_node_t *ua6;
         //# 4 * flags[19]
-                n = 0;
                 for (n=0;n<bit_extract(flaggs, 19,100);n++)
                 {
                         brlyt_4b_chunk data4;
@@ -683,7 +675,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 }
                 
                 mxml_node_t *ua7, *a, *b, *c, *d, *e;
-                n = 0;
                 for (n=0;n<bit_extract(flaggs, 17,18);n++)
                 {
                         brlyt_ua7_chunk data4;
@@ -698,7 +689,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 
                 mxml_node_t *ua8;
         //# 4 * flags[14-16]
-                n = 0;
                 for (n=0;n<bit_extract(flaggs, 14,16);n++)
                 {
                         brlyt_4b_chunk data4;
@@ -712,7 +702,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 
                 mxml_node_t *ua9;
         //# 0x10 * flags[9-13]
-                n = 0;
                 for (n=0;n<bit_extract(flaggs, 9,13);n++)
                 {
                         brlyt_10b_chunk data4;
@@ -727,7 +716,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
                 
                 mxml_node_t *uaa;
         //# 4 * flags[8], these are bytes btw
-                n = 0;
                 for (n=0;n<bit_extract(flaggs, 8,8);n++)
                 {
                         brlyt_4b_chunk data4;
@@ -741,7 +729,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 
                 mxml_node_t *uab;
         //# 4 * flags[7]
-                n = 0;
                 for (n=0;n<bit_extract(flaggs, 7,7);n++)
                 {
                         brlyt_4b_chunk data4;
@@ -758,22 +745,22 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 
 void PrintBRLYTEntry_gre1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
-    mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+    mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
 }
 
 void PrintBRLYTEntry_grs1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
-    mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+    mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
 }
 
 void PrintBRLYTEntry_pae1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
-    mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+    mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
 }
 
 void PrintBRLYTEntry_pas1(brlyt_entry entry, u8* brlyt_file, mxml_node_t* tag)
 {
-    mxmlElementSetAttrf(tag, "type", "%c%c%c%c", entry.magic[0], entry.magic[1], entry.magic[2], entry.magic[3]);
+    mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
 }
 
 void PrintBRLYTEntries(brlyt_entry *entries, int entrycnt, u8* brlyt_file, mxml_node_t *xmlyt)
@@ -1442,8 +1429,8 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
     }
     if ( memcmp(temp, pan1, sizeof(pan1)) == 0)
     {
-         brlyt_pane_chunk chunk;
-
+        brlyt_pane_chunk chunk;
+        char temp[256];
         if(mxmlElementGetAttr(node, "name") != NULL)
             strcpy(temp, mxmlElementGetAttr(node, "name"));
         else{
@@ -1565,8 +1552,8 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
     }
     if ( memcmp(temp, bnd1, sizeof(bnd1)) == 0)
     {
-         brlyt_pane_chunk chunk;
-
+        brlyt_pane_chunk chunk;
+        char temp[256];
         if(mxmlElementGetAttr(node, "name") != NULL)
             strcpy(temp, mxmlElementGetAttr(node, "name"));
         else{
@@ -1689,7 +1676,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
     if ( memcmp(temp, wnd1, sizeof(wnd1)) == 0)
     {
          brlyt_pane_chunk chunk;
-
+        char temp[256];
         if(mxmlElementGetAttr(node, "name") != NULL)
             strcpy(temp, mxmlElementGetAttr(node, "name"));
         else{
@@ -1949,7 +1936,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
     {
         brlyt_pane_chunk chunk;
         brlyt_text_chunk chunk2;
-
+        char temp[256];
         if(mxmlElementGetAttr(node, "name") != NULL)
             strcpy(temp, mxmlElementGetAttr(node, "name"));
         else{
@@ -2177,7 +2164,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
     if ( memcmp(temp, pic1, sizeof(pic1)) == 0)
     {
         brlyt_pane_chunk chunk;
-
+        char temp[256];
         if(mxmlElementGetAttr(node, "name") != NULL)
             strcpy(temp, mxmlElementGetAttr(node, "name"));
         else{
@@ -2360,7 +2347,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
     {
         brlyt_group_chunk chunk;
         chunk.unk = 0;
-
+        char temp[256];
         if(mxmlElementGetAttr(node, "name") != NULL)
             strcpy(temp, mxmlElementGetAttr(node, "name"));
         else{
@@ -2385,11 +2372,9 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                     char tempSub[256];
                     get_value(valnode, tempSub, 256);
                     subsLength += 16;
-                    u8 stringLength = strlen(tempSub) + 1;
                     subs = realloc(subs, 1 + sizeof(char) * subsLength);
+                    memset(&subs[oldSubsLength], 0x00, 16);
                     strcpy(&subs[oldSubsLength], tempSub);
-                    for (stringLength=0;stringLength<17;stringLength++)
-                        subs[oldSubsLength+stringLength] = 0x00;
                     numSubs++;
                 }
             }
