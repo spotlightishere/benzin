@@ -2358,7 +2358,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
         strcpy(chunk.name, temp);
         int numSubs = 0;
         char *subs;
-        subs=malloc(0);
+	subs = malloc(0 * sizeof(char));
         u32 subsLength = 0;
 
         mxml_node_t *subnode = mxmlFindElement(node, node, "subs", NULL, NULL, MXML_DESCEND);
@@ -2384,7 +2384,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
         *fileOffset = *fileOffset + sizeof(chunk);
         fwrite(subs, sizeof(char) * subsLength, 1, fp);
         *fileOffset = *fileOffset + subsLength;
-        if (subsLength > 0) free(subs);
+        free(subs);
     }
     if ( memcmp(temp, grs1, sizeof(grs1)) == 0)
     {
