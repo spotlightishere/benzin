@@ -3,3 +3,11 @@ on linux you will need to have libmxml-dev
 for ubuntu, in the terminal, type "sudo apt-get install libmxml-dev"
 
 if you get more errors that are thread related, you may need to add -lpthread to the end of the LIBS line
+
+
+
+
+Credits:
+-----------------------------
+Most of the work done by Octoroks
+that is all....
