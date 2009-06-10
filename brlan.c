@@ -82,7 +82,7 @@ static int FourCCsMatch(fourcc cc1, fourcc cc2)
 static int FourCCInList(fourcc cc)
 {
     int i;
-    for(i = 0; i < 6; i++)
+    for(i = 0; i < 7; i++)
         if(FourCCsMatch(cc, tag_FourCCs[i])) return 1;
     return 0;
 }
