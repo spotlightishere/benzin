@@ -10,7 +10,8 @@ typedef enum
     RLVI_ENTRY    = 2,
     RLVC_ENTRY    = 3,
     RLMC_ENTRY    = 4,
-    RLTP_ENTRY    = 5
+    RLTP_ENTRY    = 5,
+    RLIM_ENTRY
 } brlan_entry_type;
 
 typedef struct

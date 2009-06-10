@@ -29,7 +29,7 @@
 #define MAXIMUM_TAGS_SIZE        (0xf000)
 #define MAXIMUM_TIMGS_SIZE        (0x1000)
 
-fourcc tag_FourCCs[] = { "RLPA", "RLTS", "RLVI", "RLVC", "RLMC", "RLTP" };
+fourcc tag_FourCCs[] = { "RLPA", "RLTS", "RLVI", "RLVC", "RLMC", "RLTP" , "RLIM" };
 
 char tag_types_list[15][24];
 char tag_types_rlmc_list[15][24];
