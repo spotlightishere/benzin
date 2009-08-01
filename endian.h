@@ -1,3 +1,10 @@
+/******************************************************************************\
+*  endian.h                                                                    *
+*  Part of Benzin                                                              *
+*  Handles endianness.                                                         *
+*  Copyright (c)2009 HACKERCHANNEL Team                                        *
+\******************************************************************************/
+
 #ifndef _ENDIAN_H_
 #define _ENDIAN_H_
 

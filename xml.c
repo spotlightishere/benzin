@@ -1,3 +1,10 @@
+/******************************************************************************\
+*  xml.c                                                                       *
+*  Part of Benzin                                                              *
+*  Handles some XML stuff.                                                     *
+*  Copyright (c)2009 HACKERCHANNEL Team                                        *
+\******************************************************************************/
+
 #include <string.h>
 #include <mxml.h>
 

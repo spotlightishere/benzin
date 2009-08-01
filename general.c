@@ -1,11 +1,9 @@
-/*
- *  general.c
- *  
- *
- *  Created by Alex Marshall on 09/01/30.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
+/******************************************************************************\
+*  general.c                                                                   *
+*  Part of Benzin                                                              *
+*  Handles generic stuff.                                                      *
+*  Copyright (c)2009 HACKERCHANNEL Team                                        *
+\******************************************************************************/
 
 #include "general.h"
 

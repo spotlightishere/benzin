@@ -1,3 +1,10 @@
+/******************************************************************************\
+*  types.h                                                                     *
+*  Part of Benzin                                                              *
+*  Handles typedefs.                                                           *
+*  Copyright (c)2009 HACKERCHANNEL Team                                        *
+\******************************************************************************/
+
 #ifndef __TYPEDEFS_H_
 #define __TYPEDEFS_H_
 

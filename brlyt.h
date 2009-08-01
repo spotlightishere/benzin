@@ -1,12 +1,9 @@
-/*
- *  brlyt.h
- *
- *
- *  Created by Alex Marshall on 09/01/27.
- *  Updated by Stephen Simpson on 09/03/11.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
+/******************************************************************************\
+*  brlyt.h                                                                     *
+*  Part of Benzin                                                              *
+*  Handles BRLYT banner datas.                                                 *
+*  Copyright (c)2009 HACKERCHANNEL Team                                        *
+\******************************************************************************/
 
 #ifndef BRLYT_H_
 #define BRLYT_H_

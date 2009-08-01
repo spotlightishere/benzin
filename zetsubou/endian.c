@@ -1,13 +1,11 @@
-/*
- *  endian.c
- *  Zetsubou
- *
- *  Created by Alex Marshall on 09/03/17.
- *  Copyright 2009 HACKERCHANNEL. All rights reserved.
- *
- *  Licensed under the terms of the GNU GPLv2.
- *
- */
+/******************************************************************************\
+*  endian.c                                                                    *
+*  Part of Zetsubou                                                            *
+*  Part of Benzin                                                              *
+*  Handles endianness.                                                         *
+*  Copyright (c)2009 HACKERCHANNEL Team                                        *
+\******************************************************************************/
+
 
 #include "types.h"
 #include "endian.h"

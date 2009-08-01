@@ -1,13 +1,10 @@
-/*
- *  tpl.h
- *  Zetsubou
- *
- *  Created by Alex Marshall on 09/03/17.
- *  Copyright 2009 HACKERCHANNEL. All rights reserved.
- *
- *  Licensed under the terms of the GNU GPLv2.
- *
- */
+/******************************************************************************\
+*  tpl.h                                                                       *
+*  Part of Zetsubou                                                            *
+*  Part of Benzin                                                              *
+*  The TPL handling shiz.                                                      *
+*  Copyright (c)2009 HACKERCHANNEL Team                                        *
+\******************************************************************************/
 
 #ifndef _TPL_H_
 #define _TPL_H_

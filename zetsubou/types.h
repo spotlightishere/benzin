@@ -1,13 +1,10 @@
-/*
- *  types.h
- *  Zetsubou
- *
- *  Created by Alex Marshall on 09/03/17.
- *  Copyright 2009 HACKERCHANNEL. All rights reserved.
- *
- *  Licensed under the terms of the GNU GPLv2.
- *
- */
+/******************************************************************************\
+*  types.h                                                                     *
+*  Part of Zetsubou                                                            *
+*  Part of Benzin                                                              *
+*  The typedefs stuff.                                                         *
+*  Copyright (c)2009 HACKERCHANNEL Team                                        *
+\******************************************************************************/
 
 #ifndef __TYPEDEFS_H_
 #define __TYPEDEFS_H_

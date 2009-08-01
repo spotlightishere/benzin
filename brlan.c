@@ -1,11 +1,9 @@
-/*
- *  brlan.c
- *  
- *
- *  Created by Alex Marshall on 09/01/27.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
+/******************************************************************************\
+*  brlan.c                                                                     *
+*  Part of Benzin                                                              *
+*  Handles BRLAN banner datas.                                                 *
+*  Copyright (c)2009 HACKERCHANNEL Team                                        *
+\******************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>

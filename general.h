@@ -1,11 +1,9 @@
-/*
- *  general.h
- *  
- *
- *  Created by Alex Marshall on 09/01/30.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
+/******************************************************************************\
+*  general.h                                                                   *
+*  Part of Benzin                                                              *
+*  Handles general stuff.                                                      *
+*  Copyright (c)2009 HACKERCHANNEL Team                                        *
+\******************************************************************************/
 
 #define BENZIN_VERSION_MAJOR        1
 #define BENZIN_VERSION_MINOR        2

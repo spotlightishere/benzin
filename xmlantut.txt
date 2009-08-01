@@ -1,0 +1,145 @@
+===============================================================================
+XMLAN Tutorial v0.1               Für Benzin                        By SquidMan
+===============================================================================
+
+General Format ........................................................ [LAN01]
+Animation Types ....................................................... [LAN02]
+    RLPA .............................................................. [LAN03]
+    RLVC .............................................................. [LAN04]
+    RLMC .............................................................. [LAN05]
+    RLTP .............................................................. [LAN06]
+    RLVI .............................................................. [LAN07]
+    RLTS .............................................................. [LAN08]
+
+
+===============================================================================
+General Format                    Für Benzin                            [LAN01]
+===============================================================================
+
+This section explains the general formatting for XMLAN files.
+XMLAN is simply an alternate naming to help distinguish between a source file
+for BRLAN or BRLYT (the latter uses XMLYT). As you may have guessed, the name
+is a portmonteau of XML and BRLAN. This is because the format is XML.
+
+To create an XMLAN file, you must start the file with:
+	<?xml version="1.0"?>
+
+Now you must add your XMLAN entry:
+	<xmlan framesize="#">
+Change the # in there to the maximum amount of frames before looping.
+Don't forget to close the XMLAN tag at the end of your file!
+	</xmlan>
+
+Now for the real substance of the XMLAN. For every "tag" (every image with
+animation has at least 1 "tag") add the following:
+	<tag name="xxxx" type="YYYY" format="zzzz">
+xxxx needs to be replaced with the name of the tag in the XMLYT, YYYY needs to
+be an Animation type (look at the Animation Types section), and zzzz needs to
+be replaced by either Normal or Alpha. You must use Alpha for any RLVC tag that
+uses alpha. Like the XMLAN tag, make sure to close this.
+
+For each "entry" in the tag (each animation has an entry) add:
+	<entry type="xxxx">
+Where xxxx is the animation type (see the page for the tag that you are using
+for names).
+Then, inside of the entry, you put your "triplets" (The value for the entry at
+a specified point)
+	<triplet>
+		<frame>xxxx</frame>
+		<value>yyyy</value>
+		<blend>zzzz</blend>
+	</triplet>
+xxxx is the frame to have the set value, yyyy is the value to set, and zzzz is
+the blending value (so it doesn't appear all choppy). Check the entry type's
+info to see what the value affects. 
+
+You need multiple triplets for an animation. If you only have one, it will just
+be static. Very boring =].
+
+
+===============================================================================
+Animation Types                   Für Benzin                            [LAN02]
+===============================================================================
+
+TODO....
+
+
+-------------------------------------------------------------------------------
+ >>>> RLPA                        Für Benzin                            [LAN03]
+-------------------------------------------------------------------------------
+
+TODO: Maybe more description....
+
+This is probably the most used tag type of all, it handles many different
+actions in one. Because of this, the entry types have been Macroed to make it
+easier to read. 
+
+Macro table:
+
+/-----------------------------------------------------------------------------\
+| Macro	          | ID#  | Value                                              |
+|-----------------|------|----------------------------------------------------|
+| X Translation   | 0x00 | The X location relative to the starting position.  |
+| Y Translation   | 0x01 | The Y location relative to the starting position.  |
+| Z Translation   | 0x02 | The Z location relative to the starting position.  |
+| 0x03            | 0x03 | Unknown.                                           |
+| 0x04            | 0x04 | Unknown.                                           |
+| Angle           | 0x05 | The rotation relative to the starting rotation.    |
+| X Zoom          | 0x06 | X zooming relative to starting X zoom.             |
+| Y Zoom          | 0x07 | Y zooming relative to starting Y zoom.             |
+| Width           | 0x08 | X width. To perform clipping.                      |
+| Height          | 0x09 | Y width. To perform clipping.                      |
+| 0x0A            | 0x0A | Unknown.                                           |
+| 0x0B            | 0x0B | Unknown.                                           |
+| 0x0C            | 0x0C | Unknown.                                           |
+| 0x0D            | 0x0D | Unknown.                                           |
+| 0x0E            | 0x0E | Unknown.                                           |
+| 0x0F            | 0x0F | Unknown.                                           |
+\-----------------------------------------------------------------------------/
+
+
+-------------------------------------------------------------------------------
+ >>>> RLVC                        Für Benzin                            [LAN04]
+-------------------------------------------------------------------------------
+
+TODO: Add more info...
+
+This tag type is for vertex colors. The only use of it that I've seen is with
+the entry type being 16.
+
+/-----------------------------------------------------------------------------\
+| Entry Type | Value                                                          |
+|------------|----------------------------------------------------------------|
+| 16         | Alpha.                                                         |
+\-----------------------------------------------------------------------------/
+
+
+-------------------------------------------------------------------------------
+ >>>> RLMC                        Für Benzin                            [LAN05]
+-------------------------------------------------------------------------------
+
+TODO: Add more info...
+
+This tag type is for material colors?
+
+
+-------------------------------------------------------------------------------
+ >>>> RLTP                        Für Benzin                            [LAN06]
+-------------------------------------------------------------------------------
+
+TODO....
+
+
+-------------------------------------------------------------------------------
+ >>>> RLVI                        Für Benzin                            [LAN07]
+-------------------------------------------------------------------------------
+
+TODO....
+
+
+-------------------------------------------------------------------------------
+ >>>> RLTS                        Für Benzin                            [LAN08]
+-------------------------------------------------------------------------------
+
+TODO....
+

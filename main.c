@@ -1,3 +1,10 @@
+/******************************************************************************\
+*  main.c                                                                      *
+*  Part of Benzin                                                              *
+*  The main stuff.                                                             *
+*  Copyright (c)2009 HACKERCHANNEL Team                                        *
+\******************************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

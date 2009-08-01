@@ -1,9 +1,4 @@
-On linux you will need to have libmxml-dev
-
-For Debian-based systems (or if you've got Aptitude), in a terminal type ``sudo apt-get install libmxml-dev''
-
 If you get more errors that are thread related, you may need to add -lpthread to the end of the LIBS line
-
 
 Credits:
 -----------------------------
@@ -16,7 +11,6 @@ comex    - Did lots of python shiz back in the day
 
 License:
 -----------------------------
-Benzin is licensed under the GNU GPLv2.
+Laichzeit is licensed under the GNU GPLv2.
 For more information, see LICENSE
-If you wish to use code from Benzin in your project, please ask permission from one of the authors.
-Benzin's sub-projects may not be licensed under this same license, so check each sub-projects README and LICENSE before using them.
+If you wish to use code from Laichzeit in your project, please ask permission from one of the authors.

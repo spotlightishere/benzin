@@ -1,13 +1,10 @@
-/*
- *  main.c
- *  Zetsubou
- *
- *  Created by Alex Marshall on 09/03/17.
- *  Copyright 2009 HACKERCHANNEL. All rights reserved.
- *
- *  Licensed under the terms of the GNU GPLv2.
- *
- */
+/******************************************************************************\
+*  main.c                                                                      *
+*  Part of Zetsubou                                                            *
+*  Part of Benzin                                                              *
+*  The Main Code.                                                              *
+*  Copyright (c)2009 HACKERCHANNEL Team                                        *
+\******************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>

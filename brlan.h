@@ -1,3 +1,10 @@
+/******************************************************************************\
+*  brlan.h                                                                     *
+*  Part of Benzin                                                              *
+*  Handles BRLAN banner datas.                                                 *
+*  Copyright (c)2009 HACKERCHANNEL Team                                        *
+\******************************************************************************/
+
 #ifndef BRLAN_H_
 #define BRLAN_H_
 

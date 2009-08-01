@@ -1,11 +1,9 @@
-/*
- *  memfile.h
- *  0CFMaker
- *
- *  Created by Alex Marshall on 09/02/08.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
+/******************************************************************************\
+*  memfile.h                                                                   *
+*  Part of Benzin                                                              *
+*  Handles memory like files.                                                  *
+*  Copyright (c)2009 HACKERCHANNEL Team                                        *
+\******************************************************************************/
 
 #ifndef _MEMFILE_H_
 #define _MEMFILE_H_
