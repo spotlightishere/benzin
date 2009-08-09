@@ -2094,12 +2094,12 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
                 get_value(valnode, tempCoord, 256);
                 chunk2.line_space = float_swap_bytes(atof(tempCoord));
             }
-            valnode = mxmlFindElement(subnode, subnode, "unk", NULL, NULL, MXML_DESCEND);
+            valnode = mxmlFindElement(subnode, subnode, "alignment", NULL, NULL, MXML_DESCEND);
             if (valnode != NULL)
             {
                 char tempCoord[256];
                 get_value(valnode, tempCoord, 256);
-                chunk2.unk4 = strtol(tempCoord, NULL, 16);
+                chunk2.alignment = strtol(tempCoord, NULL, 16);
             }
         }
 
