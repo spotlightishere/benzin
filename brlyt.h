@@ -57,7 +57,7 @@ typedef struct
     u16 len2;
     u16 mat_off;
     u16 font_idx;
-    u8 unk4;
+    u8 alignment;
     u8 pad[3];    // [0, 0, 0]
     u32 name_offs;
     u32 color1;

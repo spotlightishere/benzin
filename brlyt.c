@@ -521,7 +521,7 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     size = mxmlNewElement(tag, "size");
     width = mxmlNewElement(size, "width"); mxmlNewTextf(width, 0, "%.20f", float_swap_bytes(data.width));
     height = mxmlNewElement(size, "height"); mxmlNewTextf(height, 0, "%.20f", float_swap_bytes(data.height));
-    mxml_node_t *length, *font, *xsize, *ysize, *charsize, *linesize, *unkk, *color, *text;
+    mxml_node_t *length, *font, *xsize, *ysize, *charsize, *linesize, *alignment, *color, *text;
     brlyt_text_chunk data2;
     BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_text_chunk));
     unsigned char texty[short_swap_bytes(data2.len2)];
@@ -532,7 +532,7 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
     ysize = mxmlNewElement(font, "ysize"); mxmlNewTextf(ysize, 0, "%f", float_swap_bytes(data2.font_size_y));
     charsize = mxmlNewElement(font, "charsize"); mxmlNewTextf(charsize, 0, "%f", float_swap_bytes(data2.char_space));
     linesize = mxmlNewElement(font, "linesize"); mxmlNewTextf(linesize, 0, "%f", float_swap_bytes(data2.line_space));
-    unkk = mxmlNewElement(font, "unk"); mxmlNewTextf(unkk, 0, "%02x", data2.unk4);
+    alignment = mxmlNewElement(font, "alignment"); mxmlNewTextf(alignment, 0, "%02x", data2.alignment);
     color = mxmlNewElement(tag, "color"); mxmlNewTextf(color, 0, "%08x-%08x", be32(data2.color1), be32(data2.color2));
 //    int q; for(q=0;q<short_swap_bytes(data2.len2);q++) printf("%02x", texty[q]);    // S T U P I D   U T F 1 6    T E X T
     unsigned char textbuffer[4096];
