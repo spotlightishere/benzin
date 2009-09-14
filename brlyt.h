@@ -12,114 +12,114 @@
 
 typedef struct
 {
-    fourcc        magic;            // RLYT
-    u32        unk1;            // 0xFEFF0008
-    u32        filesize;        // The filesize of the brlyt.
-    u16        lyt_offset;        // Offset to the lyt1 section.
-    u16        unk2;            // Number of sections.
+    fourcc		magic;			// RLYT
+	u32			unk1;			// 0xFEFF0008
+	u32			filesize;		// The filesize of the brlyt.
+	u16			lyt_offset;		// Offset to the lyt1 section.
+	u16			unk2;			// Number of sections.
 } brlyt_header;
 
 typedef struct
 {
-    fourcc        magic;            // The magic.
-    u32        length;            // How long the entry is.
+	fourcc		magic;			// The magic.
+	u32			length;			// How long the entry is.
 } brlyt_entry_header;
 
 typedef struct
 {
-    fourcc        magic;            // The magic.
-    u32        length;            // How long the entry is.
-    u32        data_location;        // The location of the data in the BRLYT file.
+	fourcc		magic;			// The magic.
+	u32			length;			// How long the entry is.
+	u32			data_location;	// The location of the data in the BRLYT file.
 } brlyt_entry;
 
 typedef struct
 {
-    unsigned char flag1;
-    unsigned char flag2;
-    unsigned char alpha;
-    unsigned char alpha2;
-    char name[24];
-    float x;
-    float y;
-    float z;
-    float flip_x;
-    float flip_y;
-    float angle;
-    float xmag;
-    float ymag;
-    float width;
-    float height;
+	u8			flag1;
+	u8			flag2;
+	u8			alpha;
+	u8			alpha2;
+	char		name[24];
+	float		x;
+	float		y;
+	float		z;
+	float		flip_x;
+	float		flip_y;
+	float		angle;
+	float		xmag;
+	float		ymag;
+	float		width;
+	float		height;
 } brlyt_pane_chunk;
 
 typedef struct
 {
-    u16 len1;
-    u16 len2;
-    u16 mat_off;
-    u16 font_idx;
-    u8 alignment;
-    u8 pad[3];    // [0, 0, 0]
-    u32 name_offs;
-    u32 color1;
-    u32 color2;
-    float font_size_x;
-    float font_size_y;
-    float char_space;
-    float line_space;
+	u16			len1;
+	u16			len2;
+	u16			mat_off;
+	u16			font_idx;
+	u8			alignment;
+	u8			pad[3];    // [0, 0, 0]
+	u32			name_offs;
+	u32			color1;
+	u32			color2;
+	float		font_size_x;
+	float		font_size_y;
+	float		char_space;
+	float		line_space;
 } brlyt_text_chunk;
 
 typedef struct
 {
-    u32 vtx_colors[4];    // [4294967295L, 4294967295L, 4294967295L, 4294967295L]
-    u16 mat_off;
-    u8 num_texcoords;
-    u8 padding;        // 0
+	u32			vtx_colors[4];	// [4294967295L, 4294967295L, 4294967295L, 4294967295L]
+	u16			mat_off;
+	u8			num_texcoords;
+	u8			padding;		// 0
 } brlyt_pic_chunk;
 
 typedef struct
 {
-	float unk1[4];		// all 0x00000000
-	u8 count;		// 0x01
-	u8 padding[3];		// 0x00 0x00 0x00
-	u32 offset1;		// 0x00000068   offset to 0xffffffff's
-	u32 offset2;		// 0x0000007c	offset to last 8bytes of wnd1
+	float		unk1[4];		// all 0x00000000
+	u8			count;			// 0x01
+	u8			padding[3];		// 0x00 0x00 0x00
+	u32			offset1;		// 0x00000068   offset to 0xffffffff's
+	u32			offset2;		// 0x0000007c	offset to last 8bytes of wnd1
 } brlyt_wnd;
 
-typedef struct			// pointed at by offset1
+typedef struct					// pointed at by offset1
 {
-	u32 unk1[4];		// all 0xffffffff
+	u32			unk1[4];		// all 0xffffffff
 } brlyt_wnd1;
 
 typedef struct
 {
-	u16 unk1[6];		// 0x0019 0x0000 0x0000 0x0080 0x001a 0x0000
+	u16			unk1[6];		// 0x0019 0x0000 0x0000 0x0080 0x001a 0x0000
 } brlyt_wnd2ish;
 
 typedef struct
 {
-	u16 unk1;		// 0x0000
-	u16 unk2;		// 0x0100
+	u16			unk1;			// 0x0000
+	u16			unk2;			// 0x0100
 } brlyt_wnd2;
 
 typedef struct
 {
-	float texcoords[8];	// 0x00 0x00 3f800000 0x00 0x00 3f800000 3f800000 3f800000
+	float		texcoords[8];	// 0x00 0x00 3f800000 0x00 0x00 3f800000 3f800000 3f800000
 } brlyt_wnd3;
 
-typedef struct			// pointed to by offset2
+typedef struct					// pointed to by offset2
 {
-	u32 offset;		// offset to something
+	u32			offset;			// offset to something
 } brlyt_wnd4;
 
 typedef struct
 {
-	u32 unk1;		// material number ??
+	u32			unk1;			// material number ??
 } brlyt_wnd4_mat;
 
-typedef struct			// 0003-0005
+typedef struct					// 0003-0005
 {
-	u32 unk1[2];		// 0xb4 0xb8
-	u16 unk2[8];		// 0x0012 0x0000 0x0013 0x0000 0x0014 0x0500 0x0015 0x0200
+	u32			unk1[2];		// 0xb4 0xb8
+	u16			unk2[8];		// 0x0012 0x0000 0x0013 0x0000 0x0014 0x0500 0x0015 0x0200
 } brlyt_wnd_addon2;
 
 // !!	bytes 0-7 header
@@ -135,74 +135,74 @@ typedef struct			// 0003-0005
 
 typedef struct
 {
-    char a;
-    char pad[3];
-    float width;
-    float height;
+	char		a;
+	char		pad[3];
+	float		width;
+	float		height;
 } brlyt_lytheader_chunk;
 
 typedef struct
 {
-    char name[16];
-    u16 numsubs;
-    u16 unk;
+	char		name[16];
+	u16			numsubs;
+	u16			unk;
 } brlyt_group_chunk;
 
 typedef struct
 {
-    u16 num;
-    u16 offs;
+	u16			num;
+	u16			offs;
 } brlyt_numoffs_chunk;
 
 typedef struct
 {
-    char name[20];
-    s16 forecolor[4];
-    s16 backcolor[4];
-    s16 unk_color_2[4];
-    u32 tev_kcolor[4];
-    u32 flags;
+	char		name[20];
+	s16			forecolor[4];
+	s16			backcolor[4];
+	s16			unk_color_2[4];
+	u32			tev_kcolor[4];
+	u32			flags;
 } brlyt_material_chunk;
 
 typedef struct
 {
-    int offset;
-    int unk;
+	int			offset;
+	int			unk;
 } brlyt_offsunk_chunk;
 
 typedef struct
 {
-    u16 tex_offs;
-    u8 wrap_s;
-    u8 wrap_t;
+	u16			tex_offs;
+	u8			wrap_s;
+	u8			wrap_t;
 } brlyt_texref_chunk;
 
-typedef struct
+typedef struct						// SRT Array
 {
-    float x1;
-    float y1;
-    float angle;
-    float x2;
-    float y2;
+	float		x1;
+	float		y1;
+	float		angle;
+	float		x2;
+	float		y2;
 } brlyt_tex_coords;
 
 typedef struct
 {
-    u8 unk[4];
+	u8			unk[4];
 } brlyt_4b_chunk;
 
 typedef struct
 {
-    u32 a;
-    u32 b;
-    float c;
-    float d;  // found to be floating point  * 04/22 *
-    float e;  // found to be floating point  * 04/22 *
+	u32			a;			// floating point
+	u32			b;			// floating point
+	float		c;
+	float		d;
+	float		e;
 } brlyt_ua7_chunk;
 
 typedef struct
 {
-    u8 unk[16];
+	u8			unk[16];
 } brlyt_10b_chunk;
 
 void swapBytes(unsigned char* char1, unsigned char* char2);
