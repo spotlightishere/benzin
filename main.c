@@ -60,6 +60,16 @@ int main(int argc, char* argv[])
 		{
 			type = 2;
 		}
+		ext = temp;
+		if(strcmp(++ext, "xmlyt") == 0)
+		{
+			type = 1;
+		}
+		ext = temp;
+		if(strcmp(++ext, "xmlan") == 0)
+		{
+			type = 2;
+		}
 		if(type > 2)
 		{
 			printf("Unknown file extension\n");

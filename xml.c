@@ -92,8 +92,6 @@ const char *whitespace_cb(mxml_node_t *node, int where)
 	if (where == 3 || where == 1){
 		return "";
 	}else if(((node->prev && where == 0) || node->parent) && !(where == 2 && strncmp(name, "ua", 2) && strcmp(name, "rotate") && strcmp(name, "scale") && strcmp(name, "translate") && strcmp(name, "entries") && strcmp(name, "xmlyt") && strcmp(name, "xmlan") && strcmp(name, "entries") && strcmp(name, "triplet") && strcmp(name, "pair") && strcmp(name, "entry") && strcmp(name, "pane") && (strcmp(name, "tag") && strcmp(name, "size") && strcmp(name, "material") && strcmp(name, "vtx") && strcmp(name, "colors") && strcmp(name, "subs") && strcmp(name, "font") && strcmp(name, "wnd4") && strcmp(name, "wnd4mat") && strcmp(name, "set") && strcmp(name, "coordinates") && strcmp(name, "TevStage") && strcmp(name, "texture") && strcmp(name, "TextureSRT") && strcmp(name, "CoordGen") && strcmp(name, "ChanControl") && strcmp(name, "MaterialColor") && strcmp(name, "TevSwapModeTable") && strcmp(name, "IndTextureSRT") && strcmp(name, "IndTextureOrder") && strcmp(name, "AlphaCompare") && strcmp(name, "BlendMode") )) ){
-		//sprintf(xmlbuff, "\n%*s",  (depth-1)*4 , "");
-		//sprintf(xmlbuff, "\n%*s",  (depth)*4 , "\t");
 		sprintf( xmlbuff , "\n%s" , tab_buffer );
 	}else{
 		return "";
