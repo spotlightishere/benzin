@@ -19,9 +19,9 @@
 #include "endian.h"
 
 #if DEBUGBRLAN == 1
-#define dbgprintf    printf
+#define dbgprintf	printf
 #else
-#define dbgprintf    //
+#define dbgprintf	//
 #endif //DEBUGBRLAN
 
 #define MAXIMUM_TAGS_SIZE		(0xf000)
@@ -119,21 +119,21 @@ void BRLAN_CreateXMLTag(tag_header tagHeader, void* data, u32 offset, mxml_node_
 			char type_rlim[4] = {'R', 'L', 'I', 'M'};
 			if(memcmp(tagHeader.magic, type_rlpa, 4) == 0)
 			{
-				mxmlElementSetAttrf(entry, "type2", "%s", tag_types_rlpa_list[tagEntryInfo.type2]);
+				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlpa_list[tagEntryInfo.type2]);
 			} else if (memcmp(tagHeader.magic, type_rlts, 4) == 0) {
-				mxmlElementSetAttrf(entry, "type2", "%s", tag_types_rlts_list[tagEntryInfo.type2]);
+				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlts_list[tagEntryInfo.type2]);
 			} else if (memcmp(tagHeader.magic, type_rlvi, 4) == 0) {
-				mxmlElementSetAttrf(entry, "type2", "%s", tag_types_rlvi_list[tagEntryInfo.type2]);
+				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlvi_list[tagEntryInfo.type2]);
 			} else if (memcmp(tagHeader.magic, type_rlvc, 4) == 0) {
-				mxmlElementSetAttrf(entry, "type2", "%s", tag_types_rlvc_list[tagEntryInfo.type2]);
+				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlvc_list[tagEntryInfo.type2]);
 			} else if (memcmp(tagHeader.magic, type_rlmc, 4) == 0) {
-				mxmlElementSetAttrf(entry, "type2", "%s", tag_types_rlmc_list[tagEntryInfo.type2]);
+				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlmc_list[tagEntryInfo.type2]);
 			} else if (memcmp(tagHeader.magic, type_rltp, 4) == 0) {
-				mxmlElementSetAttrf(entry, "type2", "%s", tag_types_rltp_list[tagEntryInfo.type2]);
+				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rltp_list[tagEntryInfo.type2]);
 			} else if (memcmp(tagHeader.magic, type_rlim, 4) == 0) {
-				mxmlElementSetAttrf(entry, "type2", "%s", tag_types_rlim_list[tagEntryInfo.type2]);
+				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlim_list[tagEntryInfo.type2]);
 			} else {
-				mxmlElementSetAttrf(entry, "type2", "%s", tag_types_list[tagEntryInfo.type2]);
+				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_list[tagEntryInfo.type2]);
 			}
 		} else {
 			mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
@@ -154,9 +154,12 @@ void BRLAN_CreateXMLTag(tag_header tagHeader, void* data, u32 offset, mxml_node_
 				u32 p2 = be32(tagData.part2);
 				u32 p3 = be32(tagData.part3);
 				triplet = mxmlNewElement(entry, "triplet");
-				frame = mxmlNewElement(triplet, "frame"); mxmlNewTextf(frame, 0, "%.15f", *(f32*)(&p1));
-				value = mxmlNewElement(triplet, "value"); mxmlNewTextf(value, 0, "%.15f", *(f32*)(&p2));
-				blend = mxmlNewElement(triplet, "blend"); mxmlNewTextf(blend, 0, "%.15f", *(f32*)(&p3));
+				frame = mxmlNewElement(triplet, "frame");
+				mxmlNewTextf(frame, 0, "%.15f", *(f32*)(&p1));
+				value = mxmlNewElement(triplet, "value");
+				mxmlNewTextf(value, 0, "%.15f", *(f32*)(&p2));
+				blend = mxmlNewElement(triplet, "blend");
+				mxmlNewTextf(blend, 0, "%.15f", *(f32*)(&p3));
 			} else {
 				tag_data2 tagData2;
 				BRLAN_ReadDataFromMemory(&tagData2, data, sizeof(tag_data2));
@@ -169,9 +172,12 @@ void BRLAN_CreateXMLTag(tag_header tagHeader, void* data, u32 offset, mxml_node_
 				u16 p2 = short_swap_bytes(tagData2.part2);
 				u16 p3 = short_swap_bytes(tagData2.padding);
 				pair = mxmlNewElement(entry, "pair");
-				data1 = mxmlNewElement(pair, "data1"); mxmlNewTextf(data1, 0, "%.15f", *(f32*)(&p1));
-				data2 = mxmlNewElement(pair, "data2"); mxmlNewTextf(data2, 0, "%04x", p2);
-				padding = mxmlNewElement(pair, "padding"); mxmlNewTextf(padding, 0, "%04x", p3);
+				data1 = mxmlNewElement(pair, "data1");
+				mxmlNewTextf(data1, 0, "%.15f", *(f32*)(&p1));
+				data2 = mxmlNewElement(pair, "data2");
+				mxmlNewTextf(data2, 0, "%04x", p2);
+				padding = mxmlNewElement(pair, "padding");
+				mxmlNewTextf(padding, 0, "%04x", p3);
 			}
 		}
 	}
@@ -202,16 +208,16 @@ void parse_brlan(char* filename, char *filenameout)
 		memset(tag_types_rltp_list[i], 0, 24);
 		memset(tag_types_rlim_list[i], 0, 24);
 	}
-	strcpy(tag_types_list[0], "X Translation");
-	strcpy(tag_types_list[1], "Y Translation");
-	strcpy(tag_types_list[2], "Z Translation");
-	strcpy(tag_types_list[3], "X Rotate");
-	strcpy(tag_types_list[4], "Y Rotate");
-	strcpy(tag_types_list[5], "Z Rotate");
-	strcpy(tag_types_list[6], "X Scale");
-	strcpy(tag_types_list[7], "Y Scale");
-	strcpy(tag_types_list[8], "Width");
-	strcpy(tag_types_list[9], "Height");
+	strcpy(tag_types_list[0],  "X Translation");
+	strcpy(tag_types_list[1],  "Y Translation");
+	strcpy(tag_types_list[2],  "Z Translation");
+	strcpy(tag_types_list[3],  "X Rotate");
+	strcpy(tag_types_list[4],  "Y Rotate");
+	strcpy(tag_types_list[5],  "Z Rotate");
+	strcpy(tag_types_list[6],  "X Scale");
+	strcpy(tag_types_list[7],  "Y Scale");
+	strcpy(tag_types_list[8],  "Width");
+	strcpy(tag_types_list[9],  "Height");
 	strcpy(tag_types_list[10], "0x0A");				// modified x
 	strcpy(tag_types_list[11], "0x0B");				// modified y
 	strcpy(tag_types_list[12], "0x0C");				// modified z
@@ -219,16 +225,16 @@ void parse_brlan(char* filename, char *filenameout)
 	strcpy(tag_types_list[14], "0x0E");
 	strcpy(tag_types_list[15], "0x0F");
 
-	strcpy(tag_types_rlpa_list[0], "X Translation");
-	strcpy(tag_types_rlpa_list[1], "Y Translation");
-	strcpy(tag_types_rlpa_list[2], "Z Translation");
-	strcpy(tag_types_rlpa_list[3], "X Rotate");
-	strcpy(tag_types_rlpa_list[4], "Y Rotate");
-	strcpy(tag_types_rlpa_list[5], "Z Rotate");
-	strcpy(tag_types_rlpa_list[6], "X Scale");
-	strcpy(tag_types_rlpa_list[7], "Y Scale");
-	strcpy(tag_types_rlpa_list[8], "Width");
-	strcpy(tag_types_rlpa_list[9], "Height");
+	strcpy(tag_types_rlpa_list[0],  "X Translation");
+	strcpy(tag_types_rlpa_list[1],  "Y Translation");
+	strcpy(tag_types_rlpa_list[2],  "Z Translation");
+	strcpy(tag_types_rlpa_list[3],  "X Rotate");
+	strcpy(tag_types_rlpa_list[4],  "Y Rotate");
+	strcpy(tag_types_rlpa_list[5],  "Z Rotate");
+	strcpy(tag_types_rlpa_list[6],  "X Scale");
+	strcpy(tag_types_rlpa_list[7],  "Y Scale");
+	strcpy(tag_types_rlpa_list[8],  "Width");
+	strcpy(tag_types_rlpa_list[9],  "Height");
 	strcpy(tag_types_rlpa_list[10], "0x0A");				// modified x
 	strcpy(tag_types_rlpa_list[11], "0x0B");				// modified y
 	strcpy(tag_types_rlpa_list[12], "0x0C");				// modified z
@@ -244,16 +250,16 @@ void parse_brlan(char* filename, char *filenameout)
 
 	strcpy(tag_types_rlvi_list[0], "Visibility");
 
-	strcpy(tag_types_rlvc_list[0], "Top Left R");
-	strcpy(tag_types_rlvc_list[1], "Top Left G");
-	strcpy(tag_types_rlvc_list[2], "Top Left B");
-	strcpy(tag_types_rlvc_list[3], "Top Left A");
-	strcpy(tag_types_rlvc_list[4], "Top Right R");
-	strcpy(tag_types_rlvc_list[5], "Top Right G");
-	strcpy(tag_types_rlvc_list[6], "Top Right B");
-	strcpy(tag_types_rlvc_list[7], "Top Right A");
-	strcpy(tag_types_rlvc_list[8], "Bottom Left R");
-	strcpy(tag_types_rlvc_list[9], "Bottom Left G");
+	strcpy(tag_types_rlvc_list[0],  "Top Left R");
+	strcpy(tag_types_rlvc_list[1],  "Top Left G");
+	strcpy(tag_types_rlvc_list[2],  "Top Left B");
+	strcpy(tag_types_rlvc_list[3],  "Top Left A");
+	strcpy(tag_types_rlvc_list[4],  "Top Right R");
+	strcpy(tag_types_rlvc_list[5],  "Top Right G");
+	strcpy(tag_types_rlvc_list[6],  "Top Right B");
+	strcpy(tag_types_rlvc_list[7],  "Top Right A");
+	strcpy(tag_types_rlvc_list[8],  "Bottom Left R");
+	strcpy(tag_types_rlvc_list[9],  "Bottom Left G");
 	strcpy(tag_types_rlvc_list[10], "Bottom Left B");
 	strcpy(tag_types_rlvc_list[11], "Bottom Left A");
 	strcpy(tag_types_rlvc_list[12], "Bottom Right R");
@@ -261,16 +267,16 @@ void parse_brlan(char* filename, char *filenameout)
 	strcpy(tag_types_rlvc_list[14], "Bottom Right B");
 	strcpy(tag_types_rlvc_list[15], "Bottom Right A");
 
-	strcpy(tag_types_rlmc_list[0], "0x00");
-	strcpy(tag_types_rlmc_list[1], "0x01");
-	strcpy(tag_types_rlmc_list[2], "0x02");
-	strcpy(tag_types_rlmc_list[3], "0x03");
-	strcpy(tag_types_rlmc_list[4], "Blackcolor R");
-	strcpy(tag_types_rlmc_list[5], "Blackcolor G");
-	strcpy(tag_types_rlmc_list[6], "Blackcolor B");
-	strcpy(tag_types_rlmc_list[7], "Blackcolor A");
-	strcpy(tag_types_rlmc_list[8], "Whitecolor R");
-	strcpy(tag_types_rlmc_list[9], "Whitecolor G");
+	strcpy(tag_types_rlmc_list[0],  "0x00");
+	strcpy(tag_types_rlmc_list[1],  "0x01");
+	strcpy(tag_types_rlmc_list[2],  "0x02");
+	strcpy(tag_types_rlmc_list[3],  "0x03");
+	strcpy(tag_types_rlmc_list[4],  "Blackcolor R");
+	strcpy(tag_types_rlmc_list[5],  "Blackcolor G");
+	strcpy(tag_types_rlmc_list[6],  "Blackcolor B");
+	strcpy(tag_types_rlmc_list[7],  "Blackcolor A");
+	strcpy(tag_types_rlmc_list[8],  "Whitecolor R");
+	strcpy(tag_types_rlmc_list[9],  "Whitecolor G");
 	strcpy(tag_types_rlmc_list[10], "Whitecolor B");
 	strcpy(tag_types_rlmc_list[11], "Whitecolor A");
 	strcpy(tag_types_rlmc_list[12], "0x0C");
@@ -278,16 +284,16 @@ void parse_brlan(char* filename, char *filenameout)
 	strcpy(tag_types_rlmc_list[14], "0x0E");
 	strcpy(tag_types_rlmc_list[15], "0x0F");
 
-	strcpy(tag_types_rltp_list[0], "PaletteZero");
-	strcpy(tag_types_rltp_list[1], "PaletteOne");
-	strcpy(tag_types_rltp_list[2], "PaletteTwo");
-	strcpy(tag_types_rltp_list[3], "PaletteThree");
-	strcpy(tag_types_rltp_list[4], "PaletteFour");
-	strcpy(tag_types_rltp_list[5], "PaletteFive");
-	strcpy(tag_types_rltp_list[6], "PaletteSix");
-	strcpy(tag_types_rltp_list[7], "PaletteSeven");
-	strcpy(tag_types_rltp_list[8], "PaletteEight");
-	strcpy(tag_types_rltp_list[9], "PaletteNine");
+	strcpy(tag_types_rltp_list[0],  "PaletteZero");
+	strcpy(tag_types_rltp_list[1],  "PaletteOne");
+	strcpy(tag_types_rltp_list[2],  "PaletteTwo");
+	strcpy(tag_types_rltp_list[3],  "PaletteThree");
+	strcpy(tag_types_rltp_list[4],  "PaletteFour");
+	strcpy(tag_types_rltp_list[5],  "PaletteFive");
+	strcpy(tag_types_rltp_list[6],  "PaletteSix");
+	strcpy(tag_types_rltp_list[7],  "PaletteSeven");
+	strcpy(tag_types_rltp_list[8],  "PaletteEight");
+	strcpy(tag_types_rltp_list[9],  "PaletteNine");
 	strcpy(tag_types_rltp_list[10], "PaletteTen");
 	strcpy(tag_types_rltp_list[11], "PaletteEleven");
 	strcpy(tag_types_rltp_list[12], "PaletteTwelve");
@@ -369,7 +375,9 @@ void parse_brlan(char* filename, char *filenameout)
 		BRLAN_ReadDataFromMemory(&brlanEntry, data, sizeof(brlan_entry));
 
 		mxml_node_t *pane;
-		pane = mxmlNewElement(xmlan, "pane"); mxmlElementSetAttrf(pane, "name", "%s", brlanEntry.name); mxmlElementSetAttrf(pane, "type", "%u", brlanEntry.is_material);
+		pane = mxmlNewElement(xmlan, "pane");
+		mxmlElementSetAttrf(pane, "name", "%s", brlanEntry.name);
+		mxmlElementSetAttrf(pane, "type", "%u", brlanEntry.is_material);
 
 		u32 entrylocations[brlanEntry.num_tags];
 		BRLAN_ReadDataFromMemory(entrylocations, data, brlanEntry.num_tags * sizeof(u32));
@@ -469,51 +477,51 @@ void create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *
 	char rltp_type[5] = {'R', 'L', 'T', 'P'};
 	char rlim_type[5] = {'R', 'L', 'I', 'M'};
 
-    for(i = 0; i < 16; i++)
-        memset(temp3[i], 0, 24);
-    for(x = 0; x < 16; x++)
-        if(memcmp(tag_type, rlpa_type, 4) == 0)
-        {
-            for(i = 0; i < strlen(tag_types_rlpa_list[x]); i++)
-            {
-                temp3[x][i] = toupper(tag_types_rlpa_list[x][i]);
-            }
-        } else if(memcmp(tag_type, rlts_type, 4) == 0) {
-            for(i = 0; i < strlen(tag_types_rlts_list[x]); i++)
-            {
-                temp3[x][i] = toupper(tag_types_rlts_list[x][i]);
-            }
-        } else if(memcmp(tag_type, rlvi_type, 4) == 0) {
-            for(i = 0; i < strlen(tag_types_rlvi_list[x]); i++)
-            {
-                temp3[x][i] = toupper(tag_types_rlvi_list[x][i]);
-            }
-        } else if(memcmp(tag_type, rlvc_type, 4) == 0) {
-            for(i = 0; i < strlen(tag_types_rlvc_list[x]); i++)
-            {
-                temp3[x][i] = toupper(tag_types_rlvc_list[x][i]);
-            }
-        } else if(memcmp(tag_type, rlmc_type, 4) == 0) {
-            for(i = 0; i < strlen(tag_types_rlmc_list[x]); i++)
-            {
-                temp3[x][i] = toupper(tag_types_rlmc_list[x][i]);
-            }
-        } else if(memcmp(tag_type, rltp_type, 4) == 0) {
-            for(i = 0; i < strlen(tag_types_rltp_list[x]); i++)
-            {
-                temp3[x][i] = toupper(tag_types_rltp_list[x][i]);
-            }
-        } else if(memcmp(tag_type, rlim_type, 4) == 0) {
-            for(i = 0; i < strlen(tag_types_rlim_list[x]); i++)
-            {
-                temp3[x][i] = toupper(tag_types_rlim_list[x][i]);
-            }
-        } else {
-            for(i = 0; i < strlen(tag_types_list[x]); i++)
-            {
-                temp3[x][i] = toupper(tag_types_list[x][i]);
-            }
-        }
+	for(i = 0; i < 16; i++)
+		memset(temp3[i], 0, 24);
+	for(x = 0; x < 16; x++)
+		if(memcmp(tag_type, rlpa_type, 4) == 0)
+		{
+			for(i = 0; i < strlen(tag_types_rlpa_list[x]); i++)
+			{
+				temp3[x][i] = toupper(tag_types_rlpa_list[x][i]);
+			}
+		} else if(memcmp(tag_type, rlts_type, 4) == 0) {
+			for(i = 0; i < strlen(tag_types_rlts_list[x]); i++)
+			{
+				temp3[x][i] = toupper(tag_types_rlts_list[x][i]);
+			}
+		} else if(memcmp(tag_type, rlvi_type, 4) == 0) {
+			for(i = 0; i < strlen(tag_types_rlvi_list[x]); i++)
+			{
+				temp3[x][i] = toupper(tag_types_rlvi_list[x][i]);
+			}
+		} else if(memcmp(tag_type, rlvc_type, 4) == 0) {
+			for(i = 0; i < strlen(tag_types_rlvc_list[x]); i++)
+			{
+				temp3[x][i] = toupper(tag_types_rlvc_list[x][i]);
+			}
+		} else if(memcmp(tag_type, rlmc_type, 4) == 0) {
+			for(i = 0; i < strlen(tag_types_rlmc_list[x]); i++)
+			{
+				temp3[x][i] = toupper(tag_types_rlmc_list[x][i]);
+			}
+		} else if(memcmp(tag_type, rltp_type, 4) == 0) {
+			for(i = 0; i < strlen(tag_types_rltp_list[x]); i++)
+			{
+				temp3[x][i] = toupper(tag_types_rltp_list[x][i]);
+			}
+		} else if(memcmp(tag_type, rlim_type, 4) == 0) {
+			for(i = 0; i < strlen(tag_types_rlim_list[x]); i++)
+			{
+				temp3[x][i] = toupper(tag_types_rlim_list[x][i]);
+			}
+		} else {
+			for(i = 0; i < strlen(tag_types_list[x]); i++)
+			{
+				temp3[x][i] = toupper(tag_types_list[x][i]);
+			}
+		}
 	head->entry_count = 0;
 	subnode = node;
 	for (x = 0, subnode = mxmlFindElement(subnode, node, "entry", NULL, NULL, MXML_DESCEND); subnode != NULL; subnode = mxmlFindElement(subnode, node, "entry", NULL, NULL, MXML_DESCEND), x++) {
@@ -605,7 +613,7 @@ void create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *
 			}
 			get_value(tempnode, temp, 256);
 			data2[x][i].part2 = short_swap_bytes(strtoul(temp, NULL, 16));
-			tempnode = mxmlFindElement(subsubnode, subsubnode, "padding", NULL, NULL, MXML_DESCEND);
+			tempnode = mxmlFindElement(subsubnode, subsubnode, "padding", NULL,NULL,MXML_DESCEND);
 			if(tempnode == NULL) {
 				printf("Couldn't find attribute \"padding\"!\n");
 				exit(1);
@@ -654,7 +662,7 @@ void create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *
 	if ( entryinfo[0].data_type == 0x200 )
 		free(data);
 	if ( entryinfo[0].data_type == 0x100 )
-		free(data2);    
+		free(data2);
 	u32 oldpos = ftell(fp);
 	fseek(fp, entryloc, SEEK_SET);
 	for( x = 0; x < head->entry_count; x++)
@@ -683,9 +691,10 @@ void create_tag_from_xml(mxml_node_t *tree, mxml_node_t *node, FILE* fp)
 		strcpy(temp, mxmlElementGetAttr(node, "type"));
 		entr.is_material = (u8)atoi(temp);
 	} else {
+		// add nice safety
 	}
 
-    
+
 	tag_header head;
 	mxml_node_t *tagnode;
 	for(tagnode = mxmlFindElement(node, node, "tag", NULL, NULL, MXML_DESCEND); tagnode != NULL; tagnode = mxmlFindElement(tagnode, node, "tag", NULL, NULL, MXML_DESCEND))
@@ -714,8 +723,8 @@ void create_tag_from_xml(mxml_node_t *tree, mxml_node_t *node, FILE* fp)
 		{
 			printf("animation type not recognized: %.4s", head.magic);
 			exit(1);
-		} 
-		create_entries_from_xml(node, tagnode, &entr, &head, fp);    
+		}
+		create_entries_from_xml(node, tagnode, &entr, &head, fp);
 		entr.num_tags++;
 	}
 	u32 tempOffset = ftell(fp);
@@ -731,7 +740,8 @@ void WriteBRLANHeader(brlan_header rlanhead, FILE* fp)
 	writehead.magic[1] = rlanhead.magic[1];
 	writehead.magic[2] = rlanhead.magic[2];
 	writehead.magic[3] = rlanhead.magic[3];
-	writehead.version = be32(rlanhead.version);
+	writehead.endian  = be16(rlanhead.endian);
+	writehead.version = be16(rlanhead.version);
 	writehead.file_size = be32(rlanhead.file_size);
 	writehead.pai1_offset = short_swap_bytes(rlanhead.pai1_offset);
 	writehead.pai1_count = short_swap_bytes(rlanhead.pai1_count);
@@ -770,16 +780,16 @@ void write_brlan(char *infile, char* outfile)
 		memset(tag_types_rlim_list[i], 0, 24);
 	}
 
-	strcpy(tag_types_list[0], "X Translation");
-	strcpy(tag_types_list[1], "Y Translation");
-	strcpy(tag_types_list[2], "Z Translation");
-	strcpy(tag_types_list[3], "X Rotate");
-	strcpy(tag_types_list[4], "Y Rotate");
-	strcpy(tag_types_list[5], "Z Rotate");
-	strcpy(tag_types_list[6], "X Scale");
-	strcpy(tag_types_list[7], "Y Scale");
-	strcpy(tag_types_list[8], "Width");
-	strcpy(tag_types_list[9], "Height");
+	strcpy(tag_types_list[0],  "X Translation");
+	strcpy(tag_types_list[1],  "Y Translation");
+	strcpy(tag_types_list[2],  "Z Translation");
+	strcpy(tag_types_list[3],  "X Rotate");
+	strcpy(tag_types_list[4],  "Y Rotate");
+	strcpy(tag_types_list[5],  "Z Rotate");
+	strcpy(tag_types_list[6],  "X Scale");
+	strcpy(tag_types_list[7],  "Y Scale");
+	strcpy(tag_types_list[8],  "Width");
+	strcpy(tag_types_list[9],  "Height");
 	strcpy(tag_types_list[10], "0x0A");
 	strcpy(tag_types_list[11], "0x0B");
 	strcpy(tag_types_list[12], "0x0C");
@@ -795,16 +805,16 @@ void write_brlan(char *infile, char* outfile)
 
 	strcpy(tag_types_rlvi_list[0], "Visibility");
 
-	strcpy(tag_types_rlvc_list[0], "Top Left R");
-	strcpy(tag_types_rlvc_list[1], "Top Left G");
-	strcpy(tag_types_rlvc_list[2], "Top Left B");
-	strcpy(tag_types_rlvc_list[3], "Top Left A");
-	strcpy(tag_types_rlvc_list[4], "Top Right R");
-	strcpy(tag_types_rlvc_list[5], "Top Right G");
-	strcpy(tag_types_rlvc_list[6], "Top Right B");
-	strcpy(tag_types_rlvc_list[7], "Top Right A");
-	strcpy(tag_types_rlvc_list[8], "Bottom Left R");
-	strcpy(tag_types_rlvc_list[9], "Bottom Left G");
+	strcpy(tag_types_rlvc_list[0],  "Top Left R");
+	strcpy(tag_types_rlvc_list[1],  "Top Left G");
+	strcpy(tag_types_rlvc_list[2],  "Top Left B");
+	strcpy(tag_types_rlvc_list[3],  "Top Left A");
+	strcpy(tag_types_rlvc_list[4],  "Top Right R");
+	strcpy(tag_types_rlvc_list[5],  "Top Right G");
+	strcpy(tag_types_rlvc_list[6],  "Top Right B");
+	strcpy(tag_types_rlvc_list[7],  "Top Right A");
+	strcpy(tag_types_rlvc_list[8],  "Bottom Left R");
+	strcpy(tag_types_rlvc_list[9],  "Bottom Left G");
 	strcpy(tag_types_rlvc_list[10], "Bottom Left B");
 	strcpy(tag_types_rlvc_list[11], "Bottom Left A");
 	strcpy(tag_types_rlvc_list[12], "Bottom Right R");
@@ -812,16 +822,16 @@ void write_brlan(char *infile, char* outfile)
 	strcpy(tag_types_rlvc_list[14], "Bottom Right B");
 	strcpy(tag_types_rlvc_list[15], "Bottom Right A");
 
-	strcpy(tag_types_rlmc_list[0], "0x00");
-	strcpy(tag_types_rlmc_list[1], "0x01");
-	strcpy(tag_types_rlmc_list[2], "0x02");
-	strcpy(tag_types_rlmc_list[3], "0x03");
-	strcpy(tag_types_rlmc_list[4], "Blackcolor R");
-	strcpy(tag_types_rlmc_list[5], "Blackcolor G");
-	strcpy(tag_types_rlmc_list[6], "Blackcolor B");
-	strcpy(tag_types_rlmc_list[7], "Blackcolor A");
-	strcpy(tag_types_rlmc_list[8], "Whitecolor R");
-	strcpy(tag_types_rlmc_list[9], "Whitecolor G");
+	strcpy(tag_types_rlmc_list[0],  "0x00");
+	strcpy(tag_types_rlmc_list[1],  "0x01");
+	strcpy(tag_types_rlmc_list[2],  "0x02");
+	strcpy(tag_types_rlmc_list[3],  "0x03");
+	strcpy(tag_types_rlmc_list[4],  "Blackcolor R");
+	strcpy(tag_types_rlmc_list[5],  "Blackcolor G");
+	strcpy(tag_types_rlmc_list[6],  "Blackcolor B");
+	strcpy(tag_types_rlmc_list[7],  "Blackcolor A");
+	strcpy(tag_types_rlmc_list[8],  "Whitecolor R");
+	strcpy(tag_types_rlmc_list[9],  "Whitecolor G");
 	strcpy(tag_types_rlmc_list[10], "Whitecolor B");
 	strcpy(tag_types_rlmc_list[11], "Whitecolor A");
 	strcpy(tag_types_rlmc_list[12], "0x0C");
@@ -829,16 +839,16 @@ void write_brlan(char *infile, char* outfile)
 	strcpy(tag_types_rlmc_list[14], "0x0E");
 	strcpy(tag_types_rlmc_list[15], "0x0F");
 
-	strcpy(tag_types_rltp_list[0], "PaletteZero");
-	strcpy(tag_types_rltp_list[1], "PaletteOne");
-	strcpy(tag_types_rltp_list[2], "PaletteTwo");
-	strcpy(tag_types_rltp_list[3], "PaletteThree");
-	strcpy(tag_types_rltp_list[4], "PaletteFour");
-	strcpy(tag_types_rltp_list[5], "PaletteFive");
-	strcpy(tag_types_rltp_list[6], "PaletteSix");
-	strcpy(tag_types_rltp_list[7], "PaletteSeven");
-	strcpy(tag_types_rltp_list[8], "PaletteEight");
-	strcpy(tag_types_rltp_list[9], "PaletteNine");
+	strcpy(tag_types_rltp_list[0],  "PaletteZero");
+	strcpy(tag_types_rltp_list[1],  "PaletteOne");
+	strcpy(tag_types_rltp_list[2],  "PaletteTwo");
+	strcpy(tag_types_rltp_list[3],  "PaletteThree");
+	strcpy(tag_types_rltp_list[4],  "PaletteFour");
+	strcpy(tag_types_rltp_list[5],  "PaletteFive");
+	strcpy(tag_types_rltp_list[6],  "PaletteSix");
+	strcpy(tag_types_rltp_list[7],  "PaletteSeven");
+	strcpy(tag_types_rltp_list[8],  "PaletteEight");
+	strcpy(tag_types_rltp_list[9],  "PaletteNine");
 	strcpy(tag_types_rltp_list[10], "PaletteTen");
 	strcpy(tag_types_rltp_list[11], "PaletteEleven");
 	strcpy(tag_types_rltp_list[12], "PaletteTwelve");
@@ -879,7 +889,8 @@ void write_brlan(char *infile, char* outfile)
 	rlanhead.magic[1] = 'L';
 	rlanhead.magic[2] = 'A';
 	rlanhead.magic[3] = 'N';
-	rlanhead.version = 0xFEFF0008;
+	rlanhead.endian = 0xFEFF;
+	rlanhead.version = 0x0008;
 	rlanhead.file_size = 0;
 	rlanhead.pai1_offset = sizeof(brlan_header);
 	rlanhead.pai1_count = 1;
@@ -896,7 +907,7 @@ void write_brlan(char *infile, char* outfile)
 	else{
 		printf("No framesize attribute found!\nDefaulting to 20.");
 		strcpy(temp, "20");
-	}    
+	}
 	paihead.framesize = atoi(temp);
 	memset(temp, 0, 256);
 	if(mxmlElementGetAttr(tree, "flags") != NULL)
@@ -917,7 +928,7 @@ void write_brlan(char *infile, char* outfile)
 
 	u16 timgcount = 0;
 	u32 totaltimgize = 0;
-    
+
 	u32 timgnumber = 0x0;
 	for(node = mxmlFindElement(tree, tree, "timg", NULL, NULL, MXML_DESCEND); node != NULL; node = mxmlFindElement(node, tree, "timg", NULL, NULL, MXML_DESCEND))
 	{
@@ -927,7 +938,7 @@ void write_brlan(char *infile, char* outfile)
 	u32 imagefileoffset = ftell(fp);
 	for( i = 0; i < timgnumber; i++) imageoffsets[i] = imagefileoffset;
 	WriteBRLANOffsets(imageoffsets, timgnumber, fp);
-    
+
 	for(node = mxmlFindElement(tree, tree, "timg", NULL, NULL, MXML_DESCEND); node != NULL; node = mxmlFindElement(node, tree, "timg", NULL, NULL, MXML_DESCEND)) {
 		timgcount++;
 		imageoffsets[timgcount-1] = ftell(fp) - imageoffsets[timgcount-1];
@@ -974,7 +985,7 @@ void write_brlan(char *infile, char* outfile)
 
 
 	paihead.num_timgs = timgcount;
-	paihead.entry_offset = sizeof(brlan_pai1_header_type1) + totaltimgize + (4*paihead.num_timgs);
+	paihead.entry_offset = sizeof(brlan_pai1_header_type1) +totaltimgize + (4*paihead.num_timgs);
 	paihead.num_entries = blobcount;
 	fseek(fp, 0, SEEK_END);
 	paihead.size = fileSize - rlanhead.pai1_offset;

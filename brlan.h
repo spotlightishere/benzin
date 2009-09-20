@@ -53,7 +53,8 @@ typedef struct
 typedef struct
 {
 	fourcc		magic;				// "RLAN" in ASCII.
-	u32			version;			// Always 0xFEFF 0x0008. Possibly a versioning string.
+	u16			endian;				// Always 0xFEFF. Tells endian.
+	u16			version;			// Always 0x0008. Version of brlan format
 	u32			file_size;			// Size of whole file, including the header.
 	u16			pai1_offset;		// The offset to the pai1 header from the start of file.
 	u16			pai1_count;			// How many pai1 sections there are (duh, only 1... wtf?)

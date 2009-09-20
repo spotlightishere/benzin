@@ -7,7 +7,7 @@
 
 #define BENZIN_VERSION_MAJOR        1
 #define BENZIN_VERSION_MINOR        9
-#define BENZIN_VERSION_BUILD        1
+#define BENZIN_VERSION_BUILD        2
 #define BENZIN_VERSION_OTHER        "BETA"
 
 #define INFORMATION_TEXT        \
