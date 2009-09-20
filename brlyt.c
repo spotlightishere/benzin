@@ -599,7 +599,6 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 	strcpy( origins[8] , "BOTTOM RIGHT" );
 
 	char alignments[9][15];
-	int o;
 	for ( o = 0 ; o < 8 ; o++ )
 		memset( alignments[o] , 0 , 20 );
 	strcpy( alignments[0] , "TOP LEFT" );
