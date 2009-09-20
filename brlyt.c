@@ -305,7 +305,9 @@ void PrintBRLYTEntry_fnl1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 void PrintBRLYTEntry_pan1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
 	char origins[9][15];
-	memset( origins , 0 , 8 * 20 );
+	int o;
+	for ( o = 0 ; o < 8 ; o++ )
+		memset( origins[o] , 0 , 20 );
 	strcpy( origins[0] , "TOP LEFT" );
 	strcpy( origins[1] , "TOP CENTER" );
 	strcpy( origins[2] , "TOP RIGHT" );
@@ -351,7 +353,9 @@ void PrintBRLYTEntry_pan1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 void PrintBRLYTEntry_wnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
 	char origins[9][15];
-	memset( origins , 0 , 8 * 20 );
+	int o;
+	for ( o = 0 ; o < 8 ; o++ )
+		memset( origins[o] , 0 , 20 );
 	strcpy( origins[0] , "TOP LEFT" );
 	strcpy( origins[1] , "TOP CENTER" );
 	strcpy( origins[2] , "TOP RIGHT" );
@@ -454,7 +458,9 @@ void PrintBRLYTEntry_wnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 void PrintBRLYTEntry_bnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
 	char origins[9][15];
-	memset( origins , 0 , 8 * 20 );
+	int o;
+	for ( o = 0 ; o < 8 ; o++ )
+		memset( origins[o] , 0 , 20 );
 	strcpy( origins[0] , "TOP LEFT" );
 	strcpy( origins[1] , "TOP CENTER" );
 	strcpy( origins[2] , "TOP RIGHT" );
@@ -500,7 +506,9 @@ void PrintBRLYTEntry_bnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
 	char origins[9][15];
-	memset( origins , 0 , 8 * 20 );
+	int o;
+	for ( o = 0 ; o < 8 ; o++ )
+		memset( origins[o] , 0 , 20 );
 	strcpy( origins[0] , "TOP LEFT" );
 	strcpy( origins[1] , "TOP CENTER" );
 	strcpy( origins[2] , "TOP RIGHT" );
@@ -577,7 +585,9 @@ void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
 	char origins[9][15];
-	memset( origins , 0 , 8 * 20 );
+	int o;
+	for ( o = 0 ; o < 8 ; o++ )
+		memset( origins[o] , 0 , 20 );
 	strcpy( origins[0] , "TOP LEFT" );
 	strcpy( origins[1] , "TOP CENTER" );
 	strcpy( origins[2] , "TOP RIGHT" );
@@ -2820,7 +2830,9 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 		if (subnode != NULL)
 		{
 			char origins[9][15];
-			memset( origins , 0 , 8 * 20 );
+			int o;
+			for ( o = 0 ; o < 8 ; o++ )
+				memset( origins[o] , 0 , 20 );
 			strcpy( origins[0] , "TOP LEFT" );
 			strcpy( origins[1] , "TOP CENTER" );
 			strcpy( origins[2] , "TOP RIGHT" );
@@ -2990,7 +3002,9 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 		if (subnode != NULL)
 		{
 			char origins[9][15];
-			memset( origins , 0 , 8 * 20 );
+			int o;
+			for ( o = 0 ; o < 8 ; o++ )
+				memset( origins[o] , 0 , 20 );
 			strcpy( origins[0] , "TOP LEFT" );
 			strcpy( origins[1] , "TOP CENTER" );
 			strcpy( origins[2] , "TOP RIGHT" );
@@ -3160,7 +3174,9 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 		if (subnode != NULL)
 		{
 			char origins[9][15];
-			memset( origins , 0 , 8 * 20 );
+			int o;
+			for ( o = 0 ; o < 8 ; o++ )
+				memset( origins[o] , 0 , 20 );
 			strcpy( origins[0] , "TOP LEFT" );
 			strcpy( origins[1] , "TOP CENTER" );
 			strcpy( origins[2] , "TOP RIGHT" );
@@ -3480,7 +3496,9 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 		if (subnode != NULL)
 		{
 			char origins[9][15];
-			memset( origins , 0 , 8 * 20 );
+			int o;
+			for ( o = 0 ; o < 8 ; o++ )
+				memset( origins[o] , 0 , 20 );
 			strcpy( origins[0] , "TOP LEFT" );
 			strcpy( origins[1] , "TOP CENTER" );
 			strcpy( origins[2] , "TOP RIGHT" );
@@ -3563,7 +3581,9 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 			if (valnode != NULL)
 			{
 				char alignments[9][15];
-				memset( alignments , 0 , 8 * 20 );
+				int o;
+				for ( o = 0 ; o < 8 ; o++ )
+					memset( alignments[o] , 0 , 20 );
 				strcpy( alignments[0] , "TOP LEFT" );
 				strcpy( alignments[1] , "TOP CENTER" );
 				strcpy( alignments[2] , "TOP RIGHT" );
@@ -3779,7 +3799,9 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 		if (subnode != NULL)
 		{
 			char origins[9][15];
-			memset( origins , 0 , 8 * 20 );
+			int o;
+			for ( o = 0 ; o < 8 ; o++ )
+				memset( origins[o] , 0 , 20 );
 			strcpy( origins[0] , "TOP LEFT" );
 			strcpy( origins[1] , "TOP CENTER" );
 			strcpy( origins[2] , "TOP RIGHT" );
