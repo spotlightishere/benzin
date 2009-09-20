@@ -550,13 +550,13 @@ void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 	int n; for (n=0;n<4;n++)
 	{
 		vtx = mxmlNewElement(color, "vtx");
-		attr = mxmlNewElement(color, "red");
+		attr = mxmlNewElement(vtx, "red");
 		mxmlNewTextf( attr , 0 , "%02x" , ( be32(data2.vtx_colors[n]) >> 24 ) & 0xff );
-		attr = mxmlNewElement(color, "red");
+		attr = mxmlNewElement(vtx, "green");
 		mxmlNewTextf( attr , 0 , "%02x" , ( be32(data2.vtx_colors[n]) >> 16 ) & 0xff );
-		attr = mxmlNewElement(color, "red");
+		attr = mxmlNewElement(vtx, "blue");
 		mxmlNewTextf( attr , 0 , "%02x" , ( be32(data2.vtx_colors[n]) >>  8 ) & 0xff );
-		attr = mxmlNewElement(color, "red");
+		attr = mxmlNewElement(vtx, "alpha");
 		mxmlNewTextf( attr , 0 , "%02x" , ( be32(data2.vtx_colors[n]) >>  0 ) & 0xff );
 
 	}
