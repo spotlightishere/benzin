@@ -656,12 +656,25 @@ void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 	{
 		float texcoords[8];
 		BRLYT_ReadDataFromMemory(texcoords, brlyt_file, sizeof(texcoords));
-		int i;
+
 		set = mxmlNewElement(coordinates, "set");
-		for(i = 0; i < 8; i++)
-		{
-			coord = mxmlNewElement(set, "coord"); mxmlNewTextf(coord, 0, "%f", float_swap_bytes(texcoords[i]));
-		}
+
+		coord = mxmlNewElement(set, "coordTL");
+		mxmlElementSetAttrf( coord , "s" ,  "%f" , float_swap_bytes(texcoords[0]) );
+		mxmlElementSetAttrf( coord , "t" ,  "%f" , float_swap_bytes(texcoords[1]) );
+
+		coord = mxmlNewElement(set, "coordTR");
+		mxmlElementSetAttrf( coord , "s" ,  "%f" , float_swap_bytes(texcoords[2]) );
+		mxmlElementSetAttrf( coord , "t" ,  "%f" , float_swap_bytes(texcoords[3]) );
+
+		coord = mxmlNewElement(set, "coordBL");
+		mxmlElementSetAttrf( coord , "s" ,  "%f" , float_swap_bytes(texcoords[4]) );
+		mxmlElementSetAttrf( coord , "t" ,  "%f" , float_swap_bytes(texcoords[5]) );
+
+		coord = mxmlNewElement(set, "coordBR");
+		mxmlElementSetAttrf( coord , "s" ,  "%f" , float_swap_bytes(texcoords[6]) );
+		mxmlElementSetAttrf( coord , "t" ,  "%f" , float_swap_bytes(texcoords[7]) );
+
 	}
 }
 
@@ -1202,6 +1215,7 @@ void parse_brlyt(char *filename, char *filenameout)
 	xmlFile = fopen(filenameout, "w");
 	mxml_node_t *xml;
 	mxml_node_t *xmlyt;
+	mxmlSetWrapMargin(0);
 	xml = mxmlNewXML("1.0");
 	xmlyt = mxmlNewElement(xml, "xmlyt");
 	mxmlElementSetAttrf(xmlyt, "version", "%d.%d.%d%s", BENZIN_VERSION_MAJOR, BENZIN_VERSION_MINOR, BENZIN_VERSION_BUILD, BENZIN_VERSION_OTHER);
@@ -3265,16 +3279,81 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 			{
 				picCoords = realloc(picCoords, sizeof(float) * 8 * sets);
 				mxml_node_t *valnode;
-				for (valnode=mxmlFindElement(setnode, setnode, "coord", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "coord", NULL, NULL, MXML_DESCEND) )
+				valnode=mxmlFindElement(setnode, setnode, "coordTL", NULL, NULL, MXML_DESCEND);
+				if ( valnode != NULL )
 				{
+					float tempCoordGotten , coordGotten;
+					char tempCoord[256];
 
-						char tempCoord[256];
-						int j; for (j=0;j<256;j++) tempCoord[j]=0;
-						get_value(valnode, tempCoord, 256);
-						float tempCoordGotten = atof(tempCoord);
-						float coordGotten = float_swap_bytes(tempCoordGotten);
-						memcpy(&picCoords[numberOfPicCoords], &coordGotten, sizeof(float));
-						numberOfPicCoords++;
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "s" ) );
+					tempCoordGotten = atof(tempCoord);
+					coordGotten = float_swap_bytes(tempCoordGotten);
+					memcpy(&picCoords[numberOfPicCoords], &coordGotten, sizeof(float));
+					numberOfPicCoords++;
+
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "t" ) );
+					tempCoordGotten = atof(tempCoord);
+					coordGotten = float_swap_bytes(tempCoordGotten);
+					memcpy(&picCoords[numberOfPicCoords], &coordGotten, sizeof(float));
+					numberOfPicCoords++;
+				}
+				valnode=mxmlFindElement(setnode, setnode, "coordTR", NULL, NULL, MXML_DESCEND);
+				if ( valnode != NULL )
+				{
+					float tempCoordGotten , coordGotten;
+					char tempCoord[256];
+
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "s" ) );
+					tempCoordGotten = atof(tempCoord);
+					coordGotten = float_swap_bytes(tempCoordGotten);
+					memcpy(&picCoords[numberOfPicCoords], &coordGotten, sizeof(float));
+					numberOfPicCoords++;
+
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "t" ) );
+					tempCoordGotten = atof(tempCoord);
+					coordGotten = float_swap_bytes(tempCoordGotten);
+					memcpy(&picCoords[numberOfPicCoords], &coordGotten, sizeof(float));
+					numberOfPicCoords++;
+				}
+				valnode=mxmlFindElement(setnode, setnode, "coordBL", NULL, NULL, MXML_DESCEND);
+				if ( valnode != NULL )
+				{
+					float tempCoordGotten , coordGotten;
+					char tempCoord[256];
+
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "s" ) );
+					tempCoordGotten = atof(tempCoord);
+					coordGotten = float_swap_bytes(tempCoordGotten);
+					memcpy(&picCoords[numberOfPicCoords], &coordGotten, sizeof(float));
+					numberOfPicCoords++;
+
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "t" ) );
+					tempCoordGotten = atof(tempCoord);
+					coordGotten = float_swap_bytes(tempCoordGotten);
+					memcpy(&picCoords[numberOfPicCoords], &coordGotten, sizeof(float));
+					numberOfPicCoords++;
+				}
+				valnode=mxmlFindElement(setnode, setnode, "coordBR", NULL, NULL, MXML_DESCEND);
+				if ( valnode != NULL )
+				{
+					float tempCoordGotten , coordGotten;
+					char tempCoord[256];
+
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "s" ) );
+					tempCoordGotten = atof(tempCoord);
+					coordGotten = float_swap_bytes(tempCoordGotten);
+					memcpy(&picCoords[numberOfPicCoords], &coordGotten, sizeof(float));
+					numberOfPicCoords++;
+
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "t" ) );
+					tempCoordGotten = atof(tempCoord);
+					coordGotten = float_swap_bytes(tempCoordGotten);
+					memcpy(&picCoords[numberOfPicCoords], &coordGotten, sizeof(float));
+					numberOfPicCoords++;
 				}
 				sets++;
 			}
