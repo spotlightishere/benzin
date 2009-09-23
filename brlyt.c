@@ -56,6 +56,7 @@ char aop[5][20];
 char blendmode[5][20];
 char logicop[16][20];
 char blendfactor[8][20];
+char chanid[10][20];
 
 static size_t BRLYT_fileoffset = 0;
 
@@ -252,6 +253,19 @@ void SetupConstants( )
 	strcpy( logicop[13]  , "GX_LO_INVOR" );
 	strcpy( logicop[14]  , "GX_LO_NAND" );
 	strcpy( logicop[15]  , "GX_LO_SET" );
+
+	for ( o = 0 ; o < 10 ; o++ )
+		memset( chanid[o] , 0 , 20 );
+	strcpy( chanid[0]  , "GX_COLOR0" );
+	strcpy( chanid[1]  , "GX_COLOR1" );
+	strcpy( chanid[2]  , "GX_ALPHA0" );
+	strcpy( chanid[3]  , "GX_ALPHA1" );
+	strcpy( chanid[4]  , "GX_COLOR0A0" );
+	strcpy( chanid[5]  , "GX_COLOR1A1" );
+	strcpy( chanid[6]  , "GX_COLORZERO" );
+	strcpy( chanid[7]  , "GX_BUMP" );
+	strcpy( chanid[8]  , "GX_BUMPN" );
+	strcpy( chanid[9]  , "GX_COLORNULL" );
 
 }
 
@@ -954,7 +968,7 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 						mxmlNewTextf(dataa, 0, "%04x", ( (data4.texmaptop << 8) | data4.texmapbot));
 
 						dataa = mxmlNewElement(ua9, "Color");
-						mxmlNewTextf(dataa, 0, "%02x", data4.color);
+						mxmlNewTextf(dataa, 0, "%s", chanid[(data4.color != 255) ? data4.color : 9]);
 
 						dataa = mxmlNewElement(ua9, "Padding1");
 						mxmlNewTextf(dataa, 0, "%01x", data4.empty1);
@@ -2369,6 +2383,7 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 			TevStages chunkUa9;
 			for (setnode = mxmlFindElement(subnode, subnode, "TevStage", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "TevStage", NULL, NULL, MXML_DESCEND))
 			{
+				int l;
 				mxml_node_t *valnode;
 				char tempCoord[256];
 
@@ -2388,6 +2403,12 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 				memset( tempCoord , 0 , 256 );
 				get_value( valnode , tempCoord , 256 );
 				chunkUa9.color = strtoul( tempCoord , NULL , 16 );
+				for ( l = 0 ; l < 10 ; l++ ){
+					if ( strncmp( chanid[l] , tempCoord , 14 ) == 0 ) {
+						chunkUa9.color = (l != 9) ? l : 255;
+						break;
+					}
+				}
 
 				valnode=mxmlFindElement(setnode, setnode, "Padding1", NULL, NULL, MXML_DESCEND);
 				memset( tempCoord , 0 , 256 );
