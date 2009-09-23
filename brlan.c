@@ -43,7 +43,7 @@ FILE* xmlanout;
 
 void CreateTagTypesLists( )
 {
-	int i, j;
+	int i;
 	for(i = 0; i < 16; i++)
 	{
 		memset(tag_types_list[i], 0, 24);
@@ -227,36 +227,73 @@ void BRLAN_CreateXMLTag(tag_header tagHeader, void* data, u32 offset, mxml_node_
 		BRLAN_ReadDataFromMemory(&tagEntryInfo, data, sizeof(tag_entryinfo));
 		entry = mxmlNewElement(tag, "entry");
 		mxmlElementSetAttrf(entry, "type1", "%u", tagEntryInfo.type1);
-		if(tagEntryInfo.type2 < 16)
+		char type_rlpa[4] = {'R', 'L', 'P', 'A'};
+		char type_rlts[4] = {'R', 'L', 'T', 'S'};
+		char type_rlvi[4] = {'R', 'L', 'V', 'I'};
+		char type_rlvc[4] = {'R', 'L', 'V', 'C'};
+		char type_rlmc[4] = {'R', 'L', 'M', 'C'};
+		char type_rltp[4] = {'R', 'L', 'T', 'P'};
+		char type_rlim[4] = {'R', 'L', 'I', 'M'};
+
+		if(memcmp(tagHeader.magic, type_rlpa, 4) == 0)
 		{
-			char type_rlpa[4] = {'R', 'L', 'P', 'A'};
-			char type_rlts[4] = {'R', 'L', 'T', 'S'};
-			char type_rlvi[4] = {'R', 'L', 'V', 'I'};
-			char type_rlvc[4] = {'R', 'L', 'V', 'C'};
-			char type_rlmc[4] = {'R', 'L', 'M', 'C'};
-			char type_rltp[4] = {'R', 'L', 'T', 'P'};
-			char type_rlim[4] = {'R', 'L', 'I', 'M'};
-			if(memcmp(tagHeader.magic, type_rlpa, 4) == 0)
+			if(tagEntryInfo.type2 < 16)
 			{
 				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlpa_list[tagEntryInfo.type2]);
-			} else if (memcmp(tagHeader.magic, type_rlts, 4) == 0) {
+			} else {
+				mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
+			}
+		} else if (memcmp(tagHeader.magic, type_rlts, 4) == 0) {
+			if(tagEntryInfo.type2 < 5)
+			{
 				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlts_list[tagEntryInfo.type2]);
-			} else if (memcmp(tagHeader.magic, type_rlvi, 4) == 0) {
+			} else {
+				mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
+			}
+		} else if (memcmp(tagHeader.magic, type_rlvi, 4) == 0) {
+			if(tagEntryInfo.type2 < 1)
+			{
 				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlvi_list[tagEntryInfo.type2]);
-			} else if (memcmp(tagHeader.magic, type_rlvc, 4) == 0) {
+			} else {
+				mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
+			}
+		} else if (memcmp(tagHeader.magic, type_rlvc, 4) == 0) {
+			if(tagEntryInfo.type2 < 16)
+			{
 				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlvc_list[tagEntryInfo.type2]);
-			} else if (memcmp(tagHeader.magic, type_rlmc, 4) == 0) {
+			} else {
+				mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
+			}
+		} else if (memcmp(tagHeader.magic, type_rlmc, 4) == 0) {
+			if(tagEntryInfo.type2 < 32)
+			{
 				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlmc_list[tagEntryInfo.type2]);
-			} else if (memcmp(tagHeader.magic, type_rltp, 4) == 0) {
+			} else {
+				mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
+			}
+		} else if (memcmp(tagHeader.magic, type_rltp, 4) == 0) {
+			if(tagEntryInfo.type2 < 16)
+			{
 				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rltp_list[tagEntryInfo.type2]);
-			} else if (memcmp(tagHeader.magic, type_rlim, 4) == 0) {
+			} else {
+				mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
+			}
+		} else if (memcmp(tagHeader.magic, type_rlim, 4) == 0) {
+			if(tagEntryInfo.type2 < 5)
+			{
 				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlim_list[tagEntryInfo.type2]);
 			} else {
-				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_list[tagEntryInfo.type2]);
+				mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
 			}
 		} else {
-			mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
+			if(tagEntryInfo.type2 < 16)
+			{
+				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_list[tagEntryInfo.type2]);
+			} else {
+				mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
+			}
 		}
+
 
 		for( j = 0; j < short_swap_bytes(tagEntryInfo.coord_count); j++)
 		{
@@ -340,7 +377,6 @@ void parse_brlan(char* filename, char *filenameout)
 	}
 
 	CreateGlobal_pai1(&pai1_header, pai1_header1, pai1_header2, pai1_header_type);
-
 
 	FILE *xmlFile;
 	xmlFile = fopen(filenameout, "w");
@@ -474,7 +510,7 @@ void create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *
 	mxml_node_t *subsubnode = NULL;
 	char temp[256];
 	char temp2[256];
-	char temp3[16][24];
+	char temp3[32][24];
 	int i, x;
 
 	char tag_type[256];
@@ -489,51 +525,61 @@ void create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *
 	char rltp_type[5] = {'R', 'L', 'T', 'P'};
 	char rlim_type[5] = {'R', 'L', 'I', 'M'};
 
-	for(i = 0; i < 16; i++)
+	for(i = 0; i < 32; i++)
 		memset(temp3[i], 0, 24);
 	for(x = 0; x < 16; x++)
+	{
 		if(memcmp(tag_type, rlpa_type, 4) == 0)
 		{
+			if ( x == 16 ) break;
 			for(i = 0; i < strlen(tag_types_rlpa_list[x]); i++)
 			{
 				temp3[x][i] = toupper(tag_types_rlpa_list[x][i]);
 			}
 		} else if(memcmp(tag_type, rlts_type, 4) == 0) {
+			if ( x == 5 ) break;
 			for(i = 0; i < strlen(tag_types_rlts_list[x]); i++)
 			{
 				temp3[x][i] = toupper(tag_types_rlts_list[x][i]);
 			}
 		} else if(memcmp(tag_type, rlvi_type, 4) == 0) {
+			if ( x == 1 ) break;
 			for(i = 0; i < strlen(tag_types_rlvi_list[x]); i++)
 			{
 				temp3[x][i] = toupper(tag_types_rlvi_list[x][i]);
 			}
 		} else if(memcmp(tag_type, rlvc_type, 4) == 0) {
+			if ( x == 16 ) break;
 			for(i = 0; i < strlen(tag_types_rlvc_list[x]); i++)
 			{
 				temp3[x][i] = toupper(tag_types_rlvc_list[x][i]);
 			}
 		} else if(memcmp(tag_type, rlmc_type, 4) == 0) {
+			if ( x == 32 ) break;
 			for(i = 0; i < strlen(tag_types_rlmc_list[x]); i++)
 			{
 				temp3[x][i] = toupper(tag_types_rlmc_list[x][i]);
 			}
 		} else if(memcmp(tag_type, rltp_type, 4) == 0) {
+			if ( x == 16 ) break;
 			for(i = 0; i < strlen(tag_types_rltp_list[x]); i++)
 			{
 				temp3[x][i] = toupper(tag_types_rltp_list[x][i]);
 			}
 		} else if(memcmp(tag_type, rlim_type, 4) == 0) {
+			if ( x == 5 ) break;
 			for(i = 0; i < strlen(tag_types_rlim_list[x]); i++)
 			{
 				temp3[x][i] = toupper(tag_types_rlim_list[x][i]);
 			}
 		} else {
+			if ( x == 16 ) break;
 			for(i = 0; i < strlen(tag_types_list[x]); i++)
 			{
 				temp3[x][i] = toupper(tag_types_list[x][i]);
 			}
 		}
+	}
 	head->entry_count = 0;
 	subnode = node;
 	for (x = 0, subnode = mxmlFindElement(subnode, node, "entry", NULL, NULL, MXML_DESCEND); subnode != NULL; subnode = mxmlFindElement(subnode, node, "entry", NULL, NULL, MXML_DESCEND), x++) {
