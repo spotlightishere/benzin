@@ -622,23 +622,36 @@ void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 
 	brlyt_pic_chunk data2;
 	BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_pic_chunk));
-	mxml_node_t *material, *color, *vtx, *attr, *coordinates, *set, *coord;
+	mxml_node_t *material, *color, *vtx, *coordinates, *set, *coord;
 	material = mxmlNewElement(tag, "material"); mxmlElementSetAttrf(material, "name", "%s", getMaterial(short_swap_bytes(data2.mat_num)));
 	color = mxmlNewElement(tag, "colors");
-	int n; for (n=0;n<4;n++)
-	{
-		vtx = mxmlNewElement(color, "vtx");
-		attr = mxmlNewElement(vtx, "red");
-		mxmlNewTextf( attr , 0 , "%02x" , ( be32(data2.vtx_colors[n]) >> 24 ) & 0xff );
-		attr = mxmlNewElement(vtx, "green");
-		mxmlNewTextf( attr , 0 , "%02x" , ( be32(data2.vtx_colors[n]) >> 16 ) & 0xff );
-		attr = mxmlNewElement(vtx, "blue");
-		mxmlNewTextf( attr , 0 , "%02x" , ( be32(data2.vtx_colors[n]) >>  8 ) & 0xff );
-		attr = mxmlNewElement(vtx, "alpha");
-		mxmlNewTextf( attr , 0 , "%02x" , ( be32(data2.vtx_colors[n]) >>  0 ) & 0xff );
 
-	}
+	vtx = mxmlNewElement(color, "vtxColorTL");
+	mxmlElementSetAttrf( vtx , "r" , "%02x" , ( be32(data2.vtx_colors[0]) >> 24 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "g" , "%02x" , ( be32(data2.vtx_colors[0]) >> 16 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "b" , "%02x" , ( be32(data2.vtx_colors[0]) >>  8 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "a" , "%02x" , ( be32(data2.vtx_colors[0]) >>  0 ) & 0xff );
+
+	vtx = mxmlNewElement(color, "vtxColorTR");
+	mxmlElementSetAttrf( vtx , "r" , "%02x" , ( be32(data2.vtx_colors[1]) >> 24 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "g" , "%02x" , ( be32(data2.vtx_colors[1]) >> 16 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "b" , "%02x" , ( be32(data2.vtx_colors[1]) >>  8 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "a" , "%02x" , ( be32(data2.vtx_colors[1]) >>  0 ) & 0xff );
+
+	vtx = mxmlNewElement(color, "vtxColorBL");
+	mxmlElementSetAttrf( vtx , "r" , "%02x" , ( be32(data2.vtx_colors[2]) >> 24 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "g" , "%02x" , ( be32(data2.vtx_colors[2]) >> 16 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "b" , "%02x" , ( be32(data2.vtx_colors[2]) >>  8 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "a" , "%02x" , ( be32(data2.vtx_colors[2]) >>  0 ) & 0xff );
+
+	vtx = mxmlNewElement(color, "vtxColorBR");
+	mxmlElementSetAttrf( vtx , "r" , "%02x" , ( be32(data2.vtx_colors[3]) >> 24 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "g" , "%02x" , ( be32(data2.vtx_colors[3]) >> 16 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "b" , "%02x" , ( be32(data2.vtx_colors[3]) >>  8 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "a" , "%02x" , ( be32(data2.vtx_colors[3]) >>  0 ) & 0xff );
+
 	coordinates = mxmlNewElement(tag, "coordinates");
+	int n;
 	for (n=0;n<data2.num_texcoords;n++)
 	{
 		float texcoords[8];
@@ -670,8 +683,16 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 	alignment = mxmlNewElement(font, "alignment");
 		mxmlElementSetAttrf(alignment, "x", "%s", originX[data2.alignment%3]);
 		mxmlElementSetAttrf(alignment, "y", "%s", originY[data2.alignment/3]);
-	color1 = mxmlNewElement(tag, "color1"); mxmlNewTextf(color1, 0, "%08x", be32(data2.color1) );
-	color2 = mxmlNewElement(tag, "color2"); mxmlNewTextf(color2, 0, "%08x", be32(data2.color2) );
+	color1 = mxmlNewElement(tag, "topcolor");// mxmlNewTextf(color1, 0, "%08x", be32(data2.color1) );
+		mxmlElementSetAttrf(color1, "r", "%02x", ( be32(data2.color1) >> 24 ) & 0xff );
+		mxmlElementSetAttrf(color1, "g", "%02x", ( be32(data2.color1) >> 16 ) & 0xff );
+		mxmlElementSetAttrf(color1, "b", "%02x", ( be32(data2.color1) >>  8 ) & 0xff );
+		mxmlElementSetAttrf(color1, "a", "%02x", ( be32(data2.color1) >>  0 ) & 0xff );
+	color2 = mxmlNewElement(tag, "bottomcolor");// mxmlNewTextf(color2, 0, "%08x", be32(data2.color2) );
+		mxmlElementSetAttrf(color2, "r", "%02x", ( be32(data2.color2) >> 24 ) & 0xff );
+		mxmlElementSetAttrf(color2, "g", "%02x", ( be32(data2.color2) >> 16 ) & 0xff );
+		mxmlElementSetAttrf(color2, "b", "%02x", ( be32(data2.color2) >>  8 ) & 0xff );
+		mxmlElementSetAttrf(color2, "a", "%02x", ( be32(data2.color2) >>  0 ) & 0xff );
 //	int q; for(q=0;q<short_swap_bytes(data2.len2);q++) printf("%02x", texty[q]);	// S T U P I D   U T F 1 6	T E X T
 	u8 textbuffer[4096];
 	int q; for(q=0;q<short_swap_bytes(data2.len2);q++) sprintf((char*)&textbuffer[q*2], "%02x", texty[q]);
@@ -699,26 +720,48 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 		u32 flaggs = be32(data3.flags);
 		entries = mxmlNewElement(tag, "entries"); mxmlElementSetAttrf(entries, "name",  "%s", data3.name);
 		colors = mxmlNewElement(entries, "colors");
-		int i; for (i=0;i<4;i++)
-		{
-			forecolor = mxmlNewElement(colors, "forecolor");
-			mxmlNewTextf(forecolor, 0, "%d", short_swap_bytes(data3.forecolor[i]));
-		}
-		for (i=0;i<4;i++)
-		{
-			backcolor = mxmlNewElement(colors, "backcolor");
-			mxmlNewTextf(backcolor, 0, "%d", short_swap_bytes(data3.backcolor[i]));
-		}
-		for (i=0;i<4;i++)
-		{
-			unk2 = mxmlNewElement(colors, "colorReg3");
-			mxmlNewTextf(unk2, 0, "%d", short_swap_bytes(data3.colorReg3[i]));
-		}
-		for (i=0;i<4;i++)
-		{
-			tev_k = mxmlNewElement(colors, "tev_k");
-			mxmlNewTextf(tev_k, 0, "%08x", be32(data3.tev_kcolor[i]));
-		}
+
+		forecolor = mxmlNewElement(colors, "forecolor");
+		mxmlElementSetAttrf(forecolor, "r", "%d", short_swap_bytes(data3.forecolor[0]));
+		mxmlElementSetAttrf(forecolor, "g", "%d", short_swap_bytes(data3.forecolor[1]));
+		mxmlElementSetAttrf(forecolor, "b", "%d", short_swap_bytes(data3.forecolor[2]));
+		mxmlElementSetAttrf(forecolor, "a", "%d", short_swap_bytes(data3.forecolor[3]));
+
+		backcolor = mxmlNewElement(colors, "backcolor");
+		mxmlElementSetAttrf(backcolor, "r", "%d", short_swap_bytes(data3.backcolor[0]));
+		mxmlElementSetAttrf(backcolor, "g", "%d", short_swap_bytes(data3.backcolor[1]));
+		mxmlElementSetAttrf(backcolor, "b", "%d", short_swap_bytes(data3.backcolor[2]));
+		mxmlElementSetAttrf(backcolor, "a", "%d", short_swap_bytes(data3.backcolor[3]));
+
+		unk2 = mxmlNewElement(colors, "colorReg3");
+		mxmlElementSetAttrf(unk2, "r", "%d", short_swap_bytes(data3.colorReg3[0]));
+		mxmlElementSetAttrf(unk2, "g", "%d", short_swap_bytes(data3.colorReg3[1]));
+		mxmlElementSetAttrf(unk2, "b", "%d", short_swap_bytes(data3.colorReg3[2]));
+		mxmlElementSetAttrf(unk2, "a", "%d", short_swap_bytes(data3.colorReg3[3]));
+
+		tev_k = mxmlNewElement(colors, "tev_k1");
+		mxmlElementSetAttrf(tev_k, "r", "%02x", ( be32(data3.tev_kcolor[0]) >> 24 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "g", "%02x", ( be32(data3.tev_kcolor[0]) >> 16 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "b", "%02x", ( be32(data3.tev_kcolor[0]) >>  8 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "a", "%02x", ( be32(data3.tev_kcolor[0]) >>  0 ) & 0xff );
+
+		tev_k = mxmlNewElement(colors, "tev_k2");
+		mxmlElementSetAttrf(tev_k, "r", "%02x", ( be32(data3.tev_kcolor[1]) >> 24 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "g", "%02x", ( be32(data3.tev_kcolor[1]) >> 16 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "b", "%02x", ( be32(data3.tev_kcolor[1]) >>  8 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "a", "%02x", ( be32(data3.tev_kcolor[1]) >>  0 ) & 0xff );
+
+		tev_k = mxmlNewElement(colors, "tev_k3");
+		mxmlElementSetAttrf(tev_k, "r", "%02x", ( be32(data3.tev_kcolor[2]) >> 24 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "g", "%02x", ( be32(data3.tev_kcolor[2]) >> 16 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "b", "%02x", ( be32(data3.tev_kcolor[2]) >>  8 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "a", "%02x", ( be32(data3.tev_kcolor[2]) >>  0 ) & 0xff );
+
+		tev_k = mxmlNewElement(colors, "tev_k4");
+		mxmlElementSetAttrf(tev_k, "r", "%02x", ( be32(data3.tev_kcolor[3]) >> 24 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "g", "%02x", ( be32(data3.tev_kcolor[3]) >> 16 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "b", "%02x", ( be32(data3.tev_kcolor[3]) >>  8 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "a", "%02x", ( be32(data3.tev_kcolor[3]) >>  0 ) & 0xff );
 
 		//flags = mxmlNewElement(entries, "flags"); mxmlNewTextf(flags, 0, "%08x", be32(data3.flags));
 
@@ -1616,46 +1659,174 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 			if (setnode != NULL)
 			{
 				mxml_node_t *valnode;
-				int colorNumber = 0;
-				for (valnode=mxmlFindElement(setnode, setnode, "forecolor", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "forecolor", NULL, NULL, MXML_DESCEND) )
+				valnode=mxmlFindElement(setnode, setnode, "forecolor", NULL, NULL, MXML_DESCEND);
+				if ( valnode != NULL )
 				{
 					char tempCoord[256];
-					get_value(valnode, tempCoord, 256);
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "r") );
+					chunk.forecolor[0] = strtol(tempCoord, NULL, 10);
+					chunk.forecolor[0] = short_swap_bytes(chunk.forecolor[0]);
 
-					chunk.forecolor[colorNumber] = strtol(tempCoord, NULL, 10);
-					chunk.forecolor[colorNumber] = short_swap_bytes(chunk.forecolor[colorNumber]);
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "g") );
+					chunk.forecolor[1] = strtol(tempCoord, NULL, 10);
+					chunk.forecolor[1] = short_swap_bytes(chunk.forecolor[1]);
 
-					colorNumber+=1;
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "b") );
+					chunk.forecolor[2] = strtol(tempCoord, NULL, 10);
+					chunk.forecolor[2] = short_swap_bytes(chunk.forecolor[2]);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "a") );
+					chunk.forecolor[3] = strtol(tempCoord, NULL, 10);
+					chunk.forecolor[3] = short_swap_bytes(chunk.forecolor[3]);
 				}
-				colorNumber = 0;
-				for (valnode=mxmlFindElement(setnode, setnode, "backcolor", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "backcolor", NULL, NULL, MXML_DESCEND) )
+				valnode=mxmlFindElement(setnode, setnode, "backcolor", NULL, NULL, MXML_DESCEND);
+				if ( valnode != NULL )
 				{
 					char tempCoord[256];
-					get_value(valnode, tempCoord, 256);
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "r") );
+					chunk.backcolor[0] = strtol(tempCoord, NULL, 10);
+					chunk.backcolor[0] = short_swap_bytes(chunk.backcolor[0]);
 
-					chunk.backcolor[colorNumber] = strtol(tempCoord, NULL, 10);
-					chunk.backcolor[colorNumber] = short_swap_bytes(chunk.backcolor[colorNumber]);
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "g") );
+					chunk.backcolor[1] = strtol(tempCoord, NULL, 10);
+					chunk.backcolor[1] = short_swap_bytes(chunk.backcolor[1]);
 
-					colorNumber+=1;
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "b") );
+					chunk.backcolor[2] = strtol(tempCoord, NULL, 10);
+					chunk.backcolor[2] = short_swap_bytes(chunk.backcolor[2]);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "a") );
+					chunk.backcolor[3] = strtol(tempCoord, NULL, 10);
+					chunk.backcolor[3] = short_swap_bytes(chunk.backcolor[3]);
 				}
-				colorNumber = 0;
-				for (valnode=mxmlFindElement(setnode, setnode, "colorReg3", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "colorReg3", NULL, NULL, MXML_DESCEND) )
+				valnode=mxmlFindElement(setnode, setnode, "colorReg3", NULL, NULL, MXML_DESCEND);
+				if ( valnode != NULL )
 				{
 					char tempCoord[256];
-					get_value(valnode, tempCoord, 256);
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "r") );
+					chunk.colorReg3[0] = strtol(tempCoord, NULL, 10);
+					chunk.colorReg3[0] = short_swap_bytes(chunk.colorReg3[0]);
 
-					chunk.colorReg3[colorNumber] = strtol(tempCoord, NULL, 10);
-					chunk.colorReg3[colorNumber] = short_swap_bytes(chunk.colorReg3[colorNumber]);
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "g") );
+					chunk.colorReg3[1] = strtol(tempCoord, NULL, 10);
+					chunk.colorReg3[1] = short_swap_bytes(chunk.colorReg3[1]);
 
-					colorNumber+=1;
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "b") );
+					chunk.colorReg3[2] = strtol(tempCoord, NULL, 10);
+					chunk.colorReg3[2] = short_swap_bytes(chunk.colorReg3[2]);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "a") );
+					chunk.colorReg3[3] = strtol(tempCoord, NULL, 10);
+					chunk.colorReg3[3] = short_swap_bytes(chunk.colorReg3[3]);
 				}
-				colorNumber = 0;
-				for (valnode=mxmlFindElement(setnode, setnode, "tev_k", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "tev_k", NULL, NULL, MXML_DESCEND) )
+
+				valnode=mxmlFindElement(setnode, setnode, "tev_k1", NULL, NULL, MXML_DESCEND);
 				{
+					u32 red, green, blue, alpha;
 					char tempCoord[256];
-					get_value(valnode, tempCoord, 256);
-					chunk.tev_kcolor[colorNumber] = be32(strtoul(tempCoord, NULL, 16));
-					colorNumber+=1;
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "r"));
+					red = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "g"));
+					green = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "b"));
+					blue = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "a"));
+					alpha = strtoul(tempCoord, NULL, 16);
+
+					chunk.tev_kcolor[0] = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+					chunk.tev_kcolor[0] = int_swap_bytes( chunk.tev_kcolor[0] );
+				}
+				valnode=mxmlFindElement(setnode, setnode, "tev_k2", NULL, NULL, MXML_DESCEND);
+				{
+					u32 red, green, blue, alpha;
+					char tempCoord[256];
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "r"));
+					red = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "g"));
+					green = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "b"));
+					blue = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "a"));
+					alpha = strtoul(tempCoord, NULL, 16);
+
+					chunk.tev_kcolor[1] = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+					chunk.tev_kcolor[1] = int_swap_bytes( chunk.tev_kcolor[1] );
+				}
+				valnode=mxmlFindElement(setnode, setnode, "tev_k3", NULL, NULL, MXML_DESCEND);
+				{
+					u32 red, green, blue, alpha;
+					char tempCoord[256];
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "r"));
+					red = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "g"));
+					green = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "b"));
+					blue = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "a"));
+					alpha = strtoul(tempCoord, NULL, 16);
+
+					chunk.tev_kcolor[2] = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+					chunk.tev_kcolor[2] = int_swap_bytes( chunk.tev_kcolor[2] );
+				}
+				valnode=mxmlFindElement(setnode, setnode, "tev_k4", NULL, NULL, MXML_DESCEND);
+				{
+					u32 red, green, blue, alpha;
+					char tempCoord[256];
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "r"));
+					red = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "g"));
+					green = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "b"));
+					blue = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "a"));
+					alpha = strtoul(tempCoord, NULL, 16);
+
+					chunk.tev_kcolor[3] = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+					chunk.tev_kcolor[3] = int_swap_bytes( chunk.tev_kcolor[3] );
 				}
 			}
 			/*
@@ -2780,19 +2951,85 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 			chunk2.len2 = strtoul(tempCoord+5, NULL, 16);
 			chunk2.len2 = short_swap_bytes(chunk2.len2);
 		}
-		subnode = mxmlFindElement(node, node, "color1", NULL, NULL, MXML_DESCEND);
+		subnode = mxmlFindElement(node, node, "topcolor", NULL, NULL, MXML_DESCEND);
 		if (subnode != NULL)
 		{
+			u32 red, green, blue, alpha;
 			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk2.color1 = be32(strtoul(tempCoord, NULL, 16));
+			memset( tempCoord , 0 , 256 );
+			if ( mxmlElementGetAttr(subnode, "r") != NULL)
+				strcpy(tempCoord, mxmlElementGetAttr(subnode, "r"));
+			else {
+				printf("No r attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			red = strtoul(tempCoord, NULL, 16);
+			memset( tempCoord , 0 , 256 );
+			if ( mxmlElementGetAttr(subnode, "g") != NULL)
+				strcpy(tempCoord, mxmlElementGetAttr(subnode, "g"));
+			else {
+				printf("No g attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			green = strtoul(tempCoord, NULL, 16);
+			memset( tempCoord , 0 , 256 );
+			if ( mxmlElementGetAttr(subnode, "b") != NULL)
+				strcpy(tempCoord, mxmlElementGetAttr(subnode, "b"));
+			else {
+				printf("No b attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			blue = strtoul(tempCoord, NULL, 16);
+			memset( tempCoord , 0 , 256 );
+			if ( mxmlElementGetAttr(subnode, "a") != NULL)
+				strcpy(tempCoord, mxmlElementGetAttr(subnode, "a"));
+			else {
+				printf("No a attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			alpha = strtoul(tempCoord, NULL, 16);
+			chunk2.color1 = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+			chunk2.color1 = be32( chunk2.color1 );
 		}
-		subnode = mxmlFindElement(node, node, "color2", NULL, NULL, MXML_DESCEND);
+		subnode = mxmlFindElement(node, node, "bottomcolor", NULL, NULL, MXML_DESCEND);
 		if (subnode != NULL)
 		{
+			u32 red, green, blue, alpha;
 			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk2.color2 = be32(strtoul(tempCoord, NULL, 16));
+			memset( tempCoord , 0 , 256 );
+			if ( mxmlElementGetAttr(subnode, "r") != NULL)
+				strcpy(tempCoord, mxmlElementGetAttr(subnode, "r"));
+			else {
+				printf("No r attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			red = strtoul(tempCoord, NULL, 16);
+			memset( tempCoord , 0 , 256 );
+			if ( mxmlElementGetAttr(subnode, "g") != NULL)
+				strcpy(tempCoord, mxmlElementGetAttr(subnode, "g"));
+			else {
+				printf("No g attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			green = strtoul(tempCoord, NULL, 16);
+			memset( tempCoord , 0 , 256 );
+			if ( mxmlElementGetAttr(subnode, "b") != NULL)
+				strcpy(tempCoord, mxmlElementGetAttr(subnode, "b"));
+			else {
+				printf("No b attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			blue = strtoul(tempCoord, NULL, 16);
+			memset( tempCoord , 0 , 256 );
+			if ( mxmlElementGetAttr(subnode, "a") != NULL)
+				strcpy(tempCoord, mxmlElementGetAttr(subnode, "a"));
+			else {
+				printf("No a attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			alpha = strtoul(tempCoord, NULL, 16);
+			chunk2.color2 = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+			chunk2.color2 = be32( chunk2.color2 );
 		}
 		u16 textyLength = short_swap_bytes(chunk2.len2);
 		if ((textyLength % 4) != 0)
@@ -2852,38 +3089,166 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 		{
 			mxml_node_t *valnode;
 			int i=0;
-			for(valnode = mxmlFindElement(subnode, subnode, "vtx", NULL, NULL, MXML_DESCEND); valnode != NULL; valnode = mxmlFindElement(valnode, subnode, "vtx", NULL, NULL, MXML_DESCEND))
+			valnode = mxmlFindElement(subnode, subnode, "vtxColorTL", NULL, NULL, MXML_DESCEND);
+			if ( valnode != NULL )
 			{
 				u32 red, green, blue, alpha;
-				mxml_node_t *subvalnode;
-				subvalnode = mxmlFindElement( valnode, valnode, "red", NULL, NULL, MXML_DESCEND);
-				if ( subvalnode != NULL ) {
-
-					char tempCoord[256];
-					get_value(subvalnode, tempCoord, 256);
-					red = strtoul(tempCoord, NULL, 16);
+				char tempCoord[256];
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "r") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "r"));
+				else {
+					printf("No r attribute found!\nQuitting!\n");
+					exit(1);
 				}
-				subvalnode = mxmlFindElement( valnode,valnode,"green", NULL, NULL, MXML_DESCEND);
-				if ( subvalnode != NULL ) {
-
-					char tempCoord[256];
-					get_value(subvalnode, tempCoord, 256);
-					green = strtoul(tempCoord, NULL, 16);
+				red = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "g") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "g"));
+				else {
+					printf("No g attribute found!\nQuitting!\n");
+					exit(1);
 				}
-				subvalnode = mxmlFindElement( valnode, valnode, "blue",NULL, NULL, MXML_DESCEND);
-				if ( subvalnode != NULL ) {
-
-					char tempCoord[256];
-					get_value(subvalnode, tempCoord, 256);
-					blue = strtoul(tempCoord, NULL, 16);
+				green = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "b") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "b"));
+				else {
+					printf("No b attribute found!\nQuitting!\n");
+					exit(1);
 				}
-				subvalnode = mxmlFindElement( valnode, valnode, "alpha",NULL,NULL, MXML_DESCEND);
-				if ( subvalnode != NULL ) {
-
-					char tempCoord[256];
-					get_value(subvalnode, tempCoord, 256);
-					alpha = strtoul(tempCoord, NULL, 16);
+				blue = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "a") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "a"));
+				else {
+					printf("No a attribute found!\nQuitting!\n");
+					exit(1);
 				}
+				alpha = strtoul(tempCoord, NULL, 16);
+				chunk2.vtx_colors[i] = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+				chunk2.vtx_colors[i] = int_swap_bytes( chunk2.vtx_colors[i] );
+				i++;
+			}
+			valnode = mxmlFindElement(subnode, subnode, "vtxColorTR", NULL, NULL, MXML_DESCEND);
+			if ( valnode != NULL )
+			{
+				u32 red, green, blue, alpha;
+				char tempCoord[256];
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "r") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "r"));
+				else {
+					printf("No r attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				red = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "g") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "g"));
+				else {
+					printf("No g attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				green = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "b") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "b"));
+				else {
+					printf("No b attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				blue = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "a") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "a"));
+				else {
+					printf("No a attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				alpha = strtoul(tempCoord, NULL, 16);
+				chunk2.vtx_colors[i] = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+				chunk2.vtx_colors[i] = int_swap_bytes( chunk2.vtx_colors[i] );
+				i++;
+			}
+			valnode = mxmlFindElement(subnode, subnode, "vtxColorBL", NULL, NULL, MXML_DESCEND);
+			if ( valnode != NULL )
+			{
+				u32 red, green, blue, alpha;
+				char tempCoord[256];
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "r") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "r"));
+				else {
+					printf("No r attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				red = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "g") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "g"));
+				else {
+					printf("No g attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				green = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "b") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "b"));
+				else {
+					printf("No b attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				blue = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "a") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "a"));
+				else {
+					printf("No a attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				alpha = strtoul(tempCoord, NULL, 16);
+				chunk2.vtx_colors[i] = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+				chunk2.vtx_colors[i] = int_swap_bytes( chunk2.vtx_colors[i] );
+				i++;
+			}
+			valnode = mxmlFindElement(subnode, subnode, "vtxColorBR", NULL, NULL, MXML_DESCEND);
+			if ( valnode != NULL )
+			{
+				u32 red, green, blue, alpha;
+				char tempCoord[256];
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "r") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "r"));
+				else {
+					printf("No r attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				red = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "g") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "g"));
+				else {
+					printf("No g attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				green = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "b") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "b"));
+				else {
+					printf("No b attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				blue = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "a") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "a"));
+				else {
+					printf("No a attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				alpha = strtoul(tempCoord, NULL, 16);
 				chunk2.vtx_colors[i] = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
 				chunk2.vtx_colors[i] = int_swap_bytes( chunk2.vtx_colors[i] );
 				i++;
