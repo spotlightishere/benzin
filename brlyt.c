@@ -57,6 +57,36 @@ char blendmode[5][20];
 char logicop[16][20];
 char blendfactor[8][20];
 char chanid[10][20];
+char tevswapsel[4][20];
+
+char texcoord[10][20] = 
+{
+"GX_TEXCOORD0",
+"GX_TEXCOORD1",
+"GX_TEXCOORD2",
+"GX_TEXCOORD3",
+"GX_TEXCOORD4",
+"GX_TEXCOORD5",
+"GX_TEXCOORD6",
+"GX_TEXCOORD7",
+"GX_MAXCOORD",
+"GX_TEXCOORDNULL"
+};
+
+char texmap[11][20] =
+{
+"GX_TEXMAP0",
+"GX_TEXMAP1",
+"GX_TEXMAP2",
+"GX_TEXMAP3",
+"GX_TEXMAP4",
+"GX_TEXMAP5",
+"GX_TEXMAP6",
+"GX_TEXMAP7",
+"GX_MAX_TEXMAP",
+"GX_TEXMAP_NULL",
+"GX_TEXMAP_DISABLE"	
+};
 
 static size_t BRLYT_fileoffset = 0;
 
@@ -266,22 +296,24 @@ void SetupConstants( )
 	strcpy( chanid[7]  , "GX_BUMP" );
 	strcpy( chanid[8]  , "GX_BUMPN" );
 	strcpy( chanid[9]  , "GX_COLORNULL" );
-
+	
+	for ( o = 0 ; o < 4 ; o++ )
+                memset( tevswapsel[o] , 0 , 20 );
+        strcpy( tevswapsel[0]  , "GX_TEV_SWAP0" );
+        strcpy( tevswapsel[1]  , "GX_TEV_SWAP1" );
+        strcpy( tevswapsel[2]  , "GX_TEV_SWAP2" );
+        strcpy( tevswapsel[3]  , "GX_TEV_SWAP3" );
+	
 }
 
 static int FourCCsMatch(fourcc cc1, fourcc cc2)
 {
-	int ret[4];
-	ret[0] = (cc1[0] == cc2[0]);
-	ret[1] = (cc1[1] == cc2[1]);
-	ret[2] = (cc1[2] == cc2[2]);
-	ret[3] = (cc1[3] == cc2[3]);
-	int retval;
-	if(ret[0] && ret[1] && ret[2] && ret[3])
-		retval = 1;
-	else
-		retval = 0;
-	return retval;
+	int ret = 1;
+	ret &= (cc1[0] == cc2[0]);
+	ret &= (cc1[1] == cc2[1]);
+	ret &= (cc1[2] == cc2[2]);
+	ret &= (cc1[3] == cc2[3]);
+	return ret;
 }
 
 static void BRLYT_ReadDataFromMemoryX(void* destination, void* input, size_t size)
@@ -945,8 +977,10 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 						BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_indtex_order));
 						ua8 = mxmlNewElement(entries, "IndTextureOrder");
 
-						dataa = mxmlNewElement(ua8, "TextureCoordinate"); mxmlNewTextf(dataa, 0, "%02x", data4.tex_coord);
-						dataa = mxmlNewElement(ua8, "TextureMap"); mxmlNewTextf(dataa, 0, "%02x", data4.tex_map);
+						dataa = mxmlNewElement(ua8, "TextureCoordinate");
+						mxmlNewTextf(dataa, 0, "%s", texcoord[(data4.tex_coord == 0xff) ? 9 : data4.tex_coord]);
+						dataa = mxmlNewElement(ua8, "TextureMap");
+						mxmlNewTextf(dataa, 0, "%s", texmap[(data4.tex_map > 8) ? (data4.tex_map == 0xff) ? 9 : 10 : data4.tex_map ]);
 						dataa = mxmlNewElement(ua8, "ScaleS");
 						mxmlNewTextf(dataa, 0, "%s", scale[data4.scale_s]);
 						dataa = mxmlNewElement(ua8, "ScaleT");
@@ -962,10 +996,12 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 						ua9 = mxmlNewElement(entries, "TevStage");
 
 						dataa = mxmlNewElement(ua9, "TextureCoordinate");
-						mxmlNewTextf(dataa, 0, "%02x", data4.texcoord);
+						mxmlNewTextf(dataa, 0, "%s", texcoord[(data4.texcoord == 0xff) ? 9 : data4.texcoord]);
 
 						dataa = mxmlNewElement(ua9, "TextureMap");
-						mxmlNewTextf(dataa, 0, "%04x", ( (data4.texmaptop << 8) | data4.texmapbot));
+						int texmapind = ((data4.texmaptop << 8) | data4.texmapbot);
+						mxmlNewTextf(dataa, 0, "%s",  texmap[(texmapind > 8) ? (texmapind == 0xff) ? 9 : 10 
+: texmapind ] );
 
 						dataa = mxmlNewElement(ua9, "Color");
 						mxmlNewTextf(dataa, 0, "%s", chanid[(data4.color != 255) ? data4.color : 9]);
@@ -974,10 +1010,10 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 						mxmlNewTextf(dataa, 0, "%01x", data4.empty1);
 
 						dataa = mxmlNewElement(ua9, "RasSelect");
-						mxmlNewTextf(dataa, 0, "%01x", data4.ras_sel);
+						mxmlNewTextf(dataa, 0, "%s", tevswapsel[data4.ras_sel]);
 
 						dataa = mxmlNewElement(ua9, "TexSelect");
-						mxmlNewTextf(dataa, 0, "%01x", data4.tex_sel);
+						mxmlNewTextf(dataa, 0, "%s", tevswapsel[data4.tex_sel]);
 
 						dataa = mxmlNewElement(ua9, "TevColorCombinerA");
 						mxmlNewTextf(dataa, 0, "%01x", data4.aC);
@@ -2345,12 +2381,30 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 				memset( tempCoord , 0 , 256 );
 				get_value( valnode , tempCoord , 256 );
 				chunkUa8.tex_coord = strtoul( tempCoord , NULL , 16 );
+				for ( l = 0 ; l < 10 ; l++ ){
+                                        if ( strncmp( texcoord[l] , tempCoord , 20 ) == 0 ) {
+                                                chunkUa8.tex_coord = (l == 9) ? 0xff : l ;
+                                                break;
+                                        }
+                                }
+
 
 				valnode=mxmlFindElement(setnode, setnode, "TextureMap", NULL, NULL, MXML_DESCEND);
 				memset( tempCoord , 0 , 256 );
 				get_value( valnode , tempCoord , 256 );
 				chunkUa8.tex_map = strtoul( tempCoord , NULL , 16 );
+				for ( l = 0 ; l < 11 ; l++ ){
+                                        if ( strncmp( texmap[l] , tempCoord , 20 ) == 0 ) {
+                                                if(l == 9)
+							l = 0xff;
+						if(l == 10)
+							l = 0x100;
+						chunkUa8.tex_map = l;
+                                                break;
+                                        }
+                                }
 
+				
 				valnode=mxmlFindElement(setnode, setnode, "ScaleS", NULL, NULL, MXML_DESCEND);
 				memset( tempCoord , 0 , 256 );
 				get_value( valnode , tempCoord , 256 );
@@ -2391,11 +2445,29 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 				memset( tempCoord , 0 , 256 );
 				get_value( valnode , tempCoord , 256 );
 				chunkUa9.texcoord = strtoul( tempCoord , NULL , 16 );
+				for ( l = 0 ; l < 10 ; l++ ){
+                                        if ( strncmp( texcoord[l] , tempCoord , 20 ) == 0 ) {
+                                                chunkUa9.texcoord = (l == 9) ? 0xff : l;
+                                                break;
+                                        }
+                                }
+
 
 				valnode=mxmlFindElement(setnode, setnode, "TextureMap", NULL, NULL, MXML_DESCEND);
 				memset( tempCoord , 0 , 256 );
 				get_value( valnode , tempCoord , 256 );
 				u32 tempval = strtoul( tempCoord , NULL , 16 );
+				for ( l = 0 ; l < 11 ; l++ ){
+                                        if ( strncmp( texmap[l] , tempCoord , 20 ) == 0 ) {
+                                                if(l == 9)
+                                                        l = 0xff;
+                                                if(l == 10)
+                                                        l = 0x100;
+                                                tempval = l;
+                                                break;
+                                        }
+                                }
+
 				chunkUa9.texmapbot = tempval & 0xff;
 				chunkUa9.texmaptop = (tempval & 0x100) >> 8;
 
@@ -2420,12 +2492,25 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 				memset( tempCoord , 0 , 256 );
 				get_value( valnode , tempCoord , 256 );
 				chunkUa9.ras_sel = strtoul( tempCoord , NULL , 16 );
+				for ( l = 0 ; l < 4 ; l++ ){
+                                        if ( strncmp( tevswapsel[l] , tempCoord , 20 ) == 0 ) {
+                                                chunkUa9.ras_sel = l;
+                                                break;
+                                        }
+                                }
 
+				
 				valnode=mxmlFindElement(setnode, setnode, "TexSelect", NULL, NULL, MXML_DESCEND);
 				memset( tempCoord , 0 , 256 );
 				get_value( valnode , tempCoord , 256 );
 				chunkUa9.tex_sel = strtoul( tempCoord , NULL , 16 );
-
+				for ( l = 0 ; l < 4 ; l++ ){
+                                        if ( strncmp( tevswapsel[l] , tempCoord , 20 ) == 0 ) {
+                                                chunkUa9.tex_sel = l;
+                                                break;
+                                        }
+                                }
+				
 				valnode=mxmlFindElement(setnode, setnode, "TevColorCombinerA", NULL, NULL, MXML_DESCEND);
 				memset( tempCoord , 0 , 256 );
 				get_value( valnode , tempCoord , 256 );
