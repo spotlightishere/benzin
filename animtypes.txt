@@ -1,23 +1,120 @@
 RLPA
-0   translateX
-1   translateY
-2   translateZ
-3   pane_unk1
-4   pane_unk2
-5   angle
-6   xmag
-7   ymag
-8   width
-9   height
-a   ??
-b   ??
-c   ??
-d   ??
-e   ??
-f   ??
+type1 = 0;
+type2 =
+	0   X Translate
+	1   Y Translate
+	2   Z Translate
+	3   X Rotate
+	4   Y Rotate
+	5   Z Rotate
+	6   X Scale
+	7   Y Scale
+	8	Width
+	9   Heightt
+	a   ??
+	b   ??
+	c   ??
+	d   ??
+	e   ??
+	f   ??
 
 RLVC --> vertex colors, arg can be 0 - f
+type1 = 0;
+type2 =
+	0	Top Left Red
+	1	Top Left Green
+	2	Top Left Blue
+	3	Top Left Alpha
+	4	Top Right Red
+	5	Top Right Green
+	6	Top Right Blue
+	7	Top Right Alpha
+	8	Bottom Left Red
+	9	Bottom Left Green
+	a	Bottom Left Blue
+	b	Bottom Left Alpha
+	c	Bottom Right Red
+	d	Bottom Right Green
+	e	Bottom Right Blue
+	f	Bottom Right Alpha
 
 this calls SetColorElement... except for Pictures (from disassembly) it seems ONLY to have an effect for arg = 0x10!  For this it's alpha
 
-RLMC --> material colors?
+RLMC --> material colors	-> valid type1s 0 - 1f
+type1 = 0;
+type2 =
+	0	MatColor Red
+	1	MatColor Green
+	2	MatColor Blue
+	3	MatColor Alpha
+	4	Forecolor Red
+	5	Forecolor Green
+	6	Forecolor Blue
+	7	Forecolor Alpha
+	8	Backcolor Red
+	9	Backcolor Green
+	a	Backcolor Blue
+	b	Backcolor Alpha
+	c	TevReg3 Red
+	d	TevReg3 Green
+	e	TevReg3 Blue
+	f	TevReg3 Alpha
+	10	TevKColor1 Red
+	11	TevKColor1 Green
+	12	TevKColor1 Blue
+	13	TevKColor1 Alpha
+	14	TevKColor2 Red
+	15	TevKColor2 Green
+	16	TevKColor2 Blue
+	17	TevKColor2 Alpha
+	18	TevKColor3 Red
+	19	TevKColor3 Green
+	1a	TevKColor3 Blue
+	1b	TevKColor3 Alpha
+	1c	TevKColor4 Red
+	1d	TevKColor4 Green
+	1e	TevKColor4 Blue
+	1f	TevKColor4 Alpha
+
+RLTP --> TPL Pallete	-> valid type1s 0 - 1f
+type2 =	0;	TYPE2 MUST BE 0
+type1 = 
+	0	PaletteZero
+	1	PaletteOne
+	2	PaletteTwo
+	3	PaletteThree
+	4	PaletteFour
+	5	PaletteFive
+	6	PaletteSix
+	7	PaletteSeven
+	8	PaletteEight
+	9	PaletteNine
+	a	PaletteTen
+	b	PaletteEleven
+	c	PaletteTwelve
+	d	PaletteThirteen
+	e	PaletteFourteen
+	f	PaletteFifteen
+
+RLTS -> Texture SRT Array
+type1 = number of the array to manipulate
+type2 =
+	0	XTrans
+	1	YTrans
+	2	Rotate
+	3	XScale
+	4	YScale
+
+RLIM -> Independent Texture SRT Array
+type1 = number of the array to manipulate
+type2 =
+	0	XTrans
+	1	YTrans
+	2	Rotate
+	3	XScale
+	4	YScale
+
+RLVI -> Visibility
+type1 = 0
+type2 = 0
+	set value to 1 to make visible and 0 to make invisible

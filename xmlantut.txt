@@ -10,6 +10,7 @@ Animation Types ....................................................... [LAN02]
     RLTP .............................................................. [LAN06]
     RLVI .............................................................. [LAN07]
     RLTS .............................................................. [LAN08]
+	RLIM .............................................................. [LAN09]
 
 
 ===============================================================================
@@ -82,11 +83,11 @@ Macro table:
 | X Translation   | 0x00 | The X location relative to the starting position.  |
 | Y Translation   | 0x01 | The Y location relative to the starting position.  |
 | Z Translation   | 0x02 | The Z location relative to the starting position.  |
-| 0x03            | 0x03 | Unknown.                                           |
-| 0x04            | 0x04 | Unknown.                                           |
-| Angle           | 0x05 | The rotation relative to the starting rotation.    |
-| X Zoom          | 0x06 | X zooming relative to starting X zoom.             |
-| Y Zoom          | 0x07 | Y zooming relative to starting Y zoom.             |
+| X Rotate        | 0x03 | The X rotation relative to the starting rotation.  |
+| Y Rotate        | 0x04 | The Y rotation relative to the starting rotation.  |
+| Z Rotate        | 0x05 | The Z rotation relative to the starting rotation.  |
+| X Scale         | 0x06 | X zooming relative to starting X zoom.             |
+| Y Scale         | 0x07 | Y zooming relative to starting Y zoom.             |
 | Width           | 0x08 | X width. To perform clipping.                      |
 | Height          | 0x09 | Y width. To perform clipping.                      |
 | 0x0A            | 0x0A | Unknown.                                           |
@@ -108,9 +109,25 @@ This tag type is for vertex colors. The only use of it that I've seen is with
 the entry type being 16.
 
 /-----------------------------------------------------------------------------\
-| Entry Type | Value                                                          |
-|------------|----------------------------------------------------------------|
-| 16         | Alpha.                                                         |
+| Entry Type          | Value                                                 |
+|---------------------|-------------------------------------------------------|
+| Top Left Red        | Red   color element of top left vertex                |
+| Top Left Green      | Green color element of top left vertex                |
+| Top Left Blue       | Blue  color element of top left vertex                |
+| Top Left Alpha      | Alpha color element of top left vertex                |
+| Top Right Red       | Red   color element of top right vertex               |
+| Top Right Green     | Green color element of top right vertex               |
+| Top Right Blue      | Blue  color element of top right vertex               |
+| Top Right Alpha     | Alpha color element of top right vertex               |
+| Bottom Left Red     | Red   color element of bottom left vertex             |
+| Bottom Left Green   | Green color element of bottom left vertex             |
+| Bottom Left Blue    | Blue  color element of bottom left vertex             |
+| Bottom Left Alpha   | Alpha color element of bottom left vertex             |
+| Bottom Right Red    | Red   color element of bottom right vertex            |
+| Bottom Right Green  | Green color element of bottom right vertex            |
+| Bottom Right Blue   | Blue  color element of bottom right vertex            |
+| Bottom Right Alpha  | Alpha color element of bottom right vertex            |
+| 16                  | Alpha.                                                |
 \-----------------------------------------------------------------------------/
 
 
@@ -120,8 +137,44 @@ the entry type being 16.
 
 TODO: Add more info...
 
-This tag type is for material colors?
+This tag type is for material colors
 
+/-----------------------------------------------------------------------------\
+| Entry Type          | Value                                                 |
+|---------------------|-------------------------------------------------------|
+| MatColor Red        | Red   color element of MatColor                       |
+| MatColor Green      | Green color element of MatColor                       |
+| MatColor Blue       | Blue  color element of MatColor                       |
+| MatColor Alpha      | Alpha color element of MatColor                       |
+| Forecolor Red       | Red   color element of Forecolor                      |
+| Forecolor Green     | Green color element of Forecolor                      |
+| Forecolor Blue      | Blue  color element of Forecolor                      |
+| Forecolor Alpha     | Alpha color element of Forecolor                      |
+| Backcolor Red       | Red   color element of Backcolor                      |
+| Backcolor Green     | Green color element of Backcolor                      |
+| Backcolor Blue      | Blue  color element of Backcolor                      |
+| Backcolor Alpha     | Alpha color element of Backcolor                      |
+| TevReg3Color Red    | Red   color element of TevReg3                        |
+| TevReg3Color Green  | Green color element of TevReg3                        |
+| TevReg3Color Blue   | Blue  color element of TevReg3                        |
+| TevReg3Color Alpha  | Alpha color element of TevReg3                        |
+| TevKColor1 Red      | Red   color element of TevKColor1                     |
+| TevKColor1 Green    | Green color element of TevKColor1                     |
+| TevKColor1 Blue     | Blue  color element of TevKColor1                     |
+| TevKColor1 Alpha    | Alpha color element of TevKColor1                     |
+| TevKColor2 Red      | Red   color element of TevKColor2                     |
+| TevKColor2 Green    | Green color element of TevKColor2                     |
+| TevKColor2 Blue     | Blue  color element of TevKColor2                     |
+| TevKColor2 Alpha    | Alpha color element of TevKColor2                     |
+| TevKColor3 Red      | Red   color element of TevKColor3                     |
+| TevKColor3 Green    | Green color element of TevKColor3                     |
+| TevKColor3 Blue     | Blue  color element of TevKColor3                     |
+| TevKColor3 Alpha    | Alpha color element of TevKColor3                     |
+| TevKColor4 Red      | Red   color element of TevKColor4                     |
+| TevKColor4 Green    | Green color element of TevKColor4                     |
+| TevKColor4 Blue     | Blue  color element of TevKColor4                     |
+| TevKColor4 Alpha    | Alpha color element of TevKColor4                     |
+\-----------------------------------------------------------------------------/
 
 -------------------------------------------------------------------------------
  >>>> RLTP                        Für Benzin                            [LAN06]
@@ -139,6 +192,12 @@ TODO....
 
 -------------------------------------------------------------------------------
  >>>> RLTS                        Für Benzin                            [LAN08]
+-------------------------------------------------------------------------------
+
+TODO....
+
+-------------------------------------------------------------------------------
+ >>>> RLIM                        Für Benzin                            [LAN09]
 -------------------------------------------------------------------------------
 
 TODO....

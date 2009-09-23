@@ -29,17 +29,136 @@
 
 fourcc tag_FourCCs[] = { "RLPA", "RLTS", "RLVI", "RLVC", "RLMC", "RLTP" , "RLIM" };
 
-char tag_types_list[15][24];
-char tag_types_rlpa_list[15][24];
-char tag_types_rlts_list[15][24];
-char tag_types_rlvi_list[15][24];
-char tag_types_rlvc_list[15][24];
-char tag_types_rlmc_list[15][24];
-char tag_types_rltp_list[15][24];
-char tag_types_rlim_list[15][24];
+char tag_types_list[16][24];
+char tag_types_rlpa_list[16][24];
+char tag_types_rlts_list[16][24];
+char tag_types_rlvi_list[16][24];
+char tag_types_rlvc_list[16][24];
+char tag_types_rlmc_list[16][24];
+char tag_types_rltp_list[16][24];
+char tag_types_rlim_list[16][24];
 
 static size_t BRLAN_fileoffset = 0;
 FILE* xmlanout;
+
+void CreateTagTypesLists( )
+{
+	int i;
+	for(i = 0; i < 16; i++)
+	{
+		memset(tag_types_list[i], 0, 24);
+		memset(tag_types_rlpa_list[i], 0, 24);
+		memset(tag_types_rlvc_list[i], 0, 24);
+		memset(tag_types_rltp_list[i], 0, 24);
+	}
+	for(i = 0; i < 5; i++)
+	{
+		memset(tag_types_rlts_list[i], 0, 24);
+		memset(tag_types_rlim_list[i], 0, 24);
+	}
+	for(i = 0; i < 32; i++)
+		memset(tag_types_rlmc_list[i], 0, 24);
+	memset(tag_types_rlvi_list[i], 0, 24);
+
+	strcpy(tag_types_list[0],  "X Translation");
+	strcpy(tag_types_list[1],  "Y Translation");
+	strcpy(tag_types_list[2],  "Z Translation");
+	strcpy(tag_types_list[3],  "X Rotate");
+	strcpy(tag_types_list[4],  "Y Rotate");
+	strcpy(tag_types_list[5],  "Z Rotate");
+	strcpy(tag_types_list[6],  "X Scale");
+	strcpy(tag_types_list[7],  "Y Scale");
+	strcpy(tag_types_list[8],  "Width");
+	strcpy(tag_types_list[9],  "Height");
+	strcpy(tag_types_list[10], "0x0A");				// modified x
+	strcpy(tag_types_list[11], "0x0B");				// modified y
+	strcpy(tag_types_list[12], "0x0C");				// modified z
+	strcpy(tag_types_list[13], "0x0D");
+	strcpy(tag_types_list[14], "0x0E");
+	strcpy(tag_types_list[15], "0x0F");
+
+	strcpy(tag_types_rlpa_list[0],  "X Translation");
+	strcpy(tag_types_rlpa_list[1],  "Y Translation");
+	strcpy(tag_types_rlpa_list[2],  "Z Translation");
+	strcpy(tag_types_rlpa_list[3],  "X Rotate");
+	strcpy(tag_types_rlpa_list[4],  "Y Rotate");
+	strcpy(tag_types_rlpa_list[5],  "Z Rotate");
+	strcpy(tag_types_rlpa_list[6],  "X Scale");
+	strcpy(tag_types_rlpa_list[7],  "Y Scale");
+	strcpy(tag_types_rlpa_list[8],  "Width");
+	strcpy(tag_types_rlpa_list[9],  "Height");
+	strcpy(tag_types_rlpa_list[10], "0x0A");				// modified x
+	strcpy(tag_types_rlpa_list[11], "0x0B");				// modified y
+	strcpy(tag_types_rlpa_list[12], "0x0C");				// modified z
+	strcpy(tag_types_rlpa_list[13], "0x0D");
+	strcpy(tag_types_rlpa_list[14], "0x0E");
+	strcpy(tag_types_rlpa_list[15], "0x0F");
+
+	strcpy(tag_types_rlts_list[0], "XTrans");
+	strcpy(tag_types_rlts_list[1], "YTrans");
+	strcpy(tag_types_rlts_list[2], "Rotate");
+	strcpy(tag_types_rlts_list[3], "XScale");
+	strcpy(tag_types_rlts_list[4], "YScale");
+
+	strcpy(tag_types_rlvi_list[0], "Visibility");
+
+	strcpy(tag_types_rlvc_list[0],  "Top Left R");
+	strcpy(tag_types_rlvc_list[1],  "Top Left G");
+	strcpy(tag_types_rlvc_list[2],  "Top Left B");
+	strcpy(tag_types_rlvc_list[3],  "Top Left A");
+	strcpy(tag_types_rlvc_list[4],  "Top Right R");
+	strcpy(tag_types_rlvc_list[5],  "Top Right G");
+	strcpy(tag_types_rlvc_list[6],  "Top Right B");
+	strcpy(tag_types_rlvc_list[7],  "Top Right A");
+	strcpy(tag_types_rlvc_list[8],  "Bottom Left R");
+	strcpy(tag_types_rlvc_list[9],  "Bottom Left G");
+	strcpy(tag_types_rlvc_list[10], "Bottom Left B");
+	strcpy(tag_types_rlvc_list[11], "Bottom Left A");
+	strcpy(tag_types_rlvc_list[12], "Bottom Right R");
+	strcpy(tag_types_rlvc_list[13], "Bottom Right G");
+	strcpy(tag_types_rlvc_list[14], "Bottom Right B");
+	strcpy(tag_types_rlvc_list[15], "Bottom Right A");
+
+	strcpy(tag_types_rlmc_list[0],  "MatColor Red");
+	strcpy(tag_types_rlmc_list[1],  "MatColor Green");
+	strcpy(tag_types_rlmc_list[2],  "MatColor Blue");
+	strcpy(tag_types_rlmc_list[3],  "MatColor Alpha");
+	strcpy(tag_types_rlmc_list[4],  "Forecolor Red");
+	strcpy(tag_types_rlmc_list[5],  "Forecolor Green");
+	strcpy(tag_types_rlmc_list[6],  "Forecolor Blue");
+	strcpy(tag_types_rlmc_list[7],  "Forecolor Alpha");
+	strcpy(tag_types_rlmc_list[8],  "Backcolor Red");
+	strcpy(tag_types_rlmc_list[9],  "Backcolor Green");
+	strcpy(tag_types_rlmc_list[10], "Backcolor Blue");
+	strcpy(tag_types_rlmc_list[11], "Backcolor Alpha");
+	strcpy(tag_types_rlmc_list[12], "TevReg3 Red");
+	strcpy(tag_types_rlmc_list[13], "TevReg3 Green");
+	strcpy(tag_types_rlmc_list[14], "TevReg3 Blue");
+	strcpy(tag_types_rlmc_list[15], "TevReg3 Alpha");
+
+	strcpy(tag_types_rltp_list[0],  "PaletteZero");
+	strcpy(tag_types_rltp_list[1],  "PaletteOne");
+	strcpy(tag_types_rltp_list[2],  "PaletteTwo");
+	strcpy(tag_types_rltp_list[3],  "PaletteThree");
+	strcpy(tag_types_rltp_list[4],  "PaletteFour");
+	strcpy(tag_types_rltp_list[5],  "PaletteFive");
+	strcpy(tag_types_rltp_list[6],  "PaletteSix");
+	strcpy(tag_types_rltp_list[7],  "PaletteSeven");
+	strcpy(tag_types_rltp_list[8],  "PaletteEight");
+	strcpy(tag_types_rltp_list[9],  "PaletteNine");
+	strcpy(tag_types_rltp_list[10], "PaletteTen");
+	strcpy(tag_types_rltp_list[11], "PaletteEleven");
+	strcpy(tag_types_rltp_list[12], "PaletteTwelve");
+	strcpy(tag_types_rltp_list[13], "PaletteThirteen");
+	strcpy(tag_types_rltp_list[14], "PaletteFourteen");
+	strcpy(tag_types_rltp_list[15], "PaletteFifteen");
+
+	strcpy(tag_types_rlim_list[0], "XTrans");
+	strcpy(tag_types_rlim_list[1], "YTrans");
+	strcpy(tag_types_rlim_list[2], "Rotate");
+	strcpy(tag_types_rlim_list[3], "XScale");
+	strcpy(tag_types_rlim_list[4], "YScale");
+}
 
 static void BRLAN_ReadDataFromMemoryX(void* destination, void* input, size_t size)
 {
@@ -108,36 +227,73 @@ void BRLAN_CreateXMLTag(tag_header tagHeader, void* data, u32 offset, mxml_node_
 		BRLAN_ReadDataFromMemory(&tagEntryInfo, data, sizeof(tag_entryinfo));
 		entry = mxmlNewElement(tag, "entry");
 		mxmlElementSetAttrf(entry, "type1", "%u", tagEntryInfo.type1);
-		if(tagEntryInfo.type2 < 16)
+		char type_rlpa[4] = {'R', 'L', 'P', 'A'};
+		char type_rlts[4] = {'R', 'L', 'T', 'S'};
+		char type_rlvi[4] = {'R', 'L', 'V', 'I'};
+		char type_rlvc[4] = {'R', 'L', 'V', 'C'};
+		char type_rlmc[4] = {'R', 'L', 'M', 'C'};
+		char type_rltp[4] = {'R', 'L', 'T', 'P'};
+		char type_rlim[4] = {'R', 'L', 'I', 'M'};
+
+		if(memcmp(tagHeader.magic, type_rlpa, 4) == 0)
 		{
-			char type_rlpa[4] = {'R', 'L', 'P', 'A'};
-			char type_rlts[4] = {'R', 'L', 'T', 'S'};
-			char type_rlvi[4] = {'R', 'L', 'V', 'I'};
-			char type_rlvc[4] = {'R', 'L', 'V', 'C'};
-			char type_rlmc[4] = {'R', 'L', 'M', 'C'};
-			char type_rltp[4] = {'R', 'L', 'T', 'P'};
-			char type_rlim[4] = {'R', 'L', 'I', 'M'};
-			if(memcmp(tagHeader.magic, type_rlpa, 4) == 0)
+			if(tagEntryInfo.type2 < 16)
 			{
 				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlpa_list[tagEntryInfo.type2]);
-			} else if (memcmp(tagHeader.magic, type_rlts, 4) == 0) {
+			} else {
+				mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
+			}
+		} else if (memcmp(tagHeader.magic, type_rlts, 4) == 0) {
+			if(tagEntryInfo.type2 < 5)
+			{
 				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlts_list[tagEntryInfo.type2]);
-			} else if (memcmp(tagHeader.magic, type_rlvi, 4) == 0) {
+			} else {
+				mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
+			}
+		} else if (memcmp(tagHeader.magic, type_rlvi, 4) == 0) {
+			if(tagEntryInfo.type2 < 1)
+			{
 				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlvi_list[tagEntryInfo.type2]);
-			} else if (memcmp(tagHeader.magic, type_rlvc, 4) == 0) {
+			} else {
+				mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
+			}
+		} else if (memcmp(tagHeader.magic, type_rlvc, 4) == 0) {
+			if(tagEntryInfo.type2 < 16)
+			{
 				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlvc_list[tagEntryInfo.type2]);
-			} else if (memcmp(tagHeader.magic, type_rlmc, 4) == 0) {
+			} else {
+				mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
+			}
+		} else if (memcmp(tagHeader.magic, type_rlmc, 4) == 0) {
+			if(tagEntryInfo.type2 < 32)
+			{
 				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlmc_list[tagEntryInfo.type2]);
-			} else if (memcmp(tagHeader.magic, type_rltp, 4) == 0) {
+			} else {
+				mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
+			}
+		} else if (memcmp(tagHeader.magic, type_rltp, 4) == 0) {
+			if(tagEntryInfo.type2 < 16)
+			{
 				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rltp_list[tagEntryInfo.type2]);
-			} else if (memcmp(tagHeader.magic, type_rlim, 4) == 0) {
+			} else {
+				mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
+			}
+		} else if (memcmp(tagHeader.magic, type_rlim, 4) == 0) {
+			if(tagEntryInfo.type2 < 5)
+			{
 				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_rlim_list[tagEntryInfo.type2]);
 			} else {
-				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_list[tagEntryInfo.type2]);
+				mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
 			}
 		} else {
-			mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
+			if(tagEntryInfo.type2 < 16)
+			{
+				mxmlElementSetAttrf(entry, "type2", "%s",tag_types_list[tagEntryInfo.type2]);
+			} else {
+				mxmlElementSetAttrf(entry, "type2", "%u", tagEntryInfo.type2);
+			}
 		}
+
 
 		for( j = 0; j < short_swap_bytes(tagEntryInfo.coord_count); j++)
 		{
@@ -185,6 +341,8 @@ void BRLAN_CreateXMLTag(tag_header tagHeader, void* data, u32 offset, mxml_node_
 
 void parse_brlan(char* filename, char *filenameout)
 {
+	int i, j;
+
 	FILE* fp = fopen(filename, "rb");
 	if(fp == NULL) {
 		printf("Error! Couldn't open %s!\n", filename);
@@ -196,116 +354,7 @@ void parse_brlan(char* filename, char *filenameout)
 	u8 data[lengthOfFile];
 	fread(data, lengthOfFile, 1, fp);
 
-	int i, j;
-	for(i = 0; i < 16; i++)
-	{
-		memset(tag_types_list[i], 0, 24);
-		memset(tag_types_rlpa_list[i], 0, 24);
-		memset(tag_types_rlts_list[i], 0, 24);
-		memset(tag_types_rlvi_list[i], 0, 24);
-		memset(tag_types_rlvc_list[i], 0, 24);
-		memset(tag_types_rlmc_list[i], 0, 24);
-		memset(tag_types_rltp_list[i], 0, 24);
-		memset(tag_types_rlim_list[i], 0, 24);
-	}
-	strcpy(tag_types_list[0],  "X Translation");
-	strcpy(tag_types_list[1],  "Y Translation");
-	strcpy(tag_types_list[2],  "Z Translation");
-	strcpy(tag_types_list[3],  "X Rotate");
-	strcpy(tag_types_list[4],  "Y Rotate");
-	strcpy(tag_types_list[5],  "Z Rotate");
-	strcpy(tag_types_list[6],  "X Scale");
-	strcpy(tag_types_list[7],  "Y Scale");
-	strcpy(tag_types_list[8],  "Width");
-	strcpy(tag_types_list[9],  "Height");
-	strcpy(tag_types_list[10], "0x0A");				// modified x
-	strcpy(tag_types_list[11], "0x0B");				// modified y
-	strcpy(tag_types_list[12], "0x0C");				// modified z
-	strcpy(tag_types_list[13], "0x0D");
-	strcpy(tag_types_list[14], "0x0E");
-	strcpy(tag_types_list[15], "0x0F");
-
-	strcpy(tag_types_rlpa_list[0],  "X Translation");
-	strcpy(tag_types_rlpa_list[1],  "Y Translation");
-	strcpy(tag_types_rlpa_list[2],  "Z Translation");
-	strcpy(tag_types_rlpa_list[3],  "X Rotate");
-	strcpy(tag_types_rlpa_list[4],  "Y Rotate");
-	strcpy(tag_types_rlpa_list[5],  "Z Rotate");
-	strcpy(tag_types_rlpa_list[6],  "X Scale");
-	strcpy(tag_types_rlpa_list[7],  "Y Scale");
-	strcpy(tag_types_rlpa_list[8],  "Width");
-	strcpy(tag_types_rlpa_list[9],  "Height");
-	strcpy(tag_types_rlpa_list[10], "0x0A");				// modified x
-	strcpy(tag_types_rlpa_list[11], "0x0B");				// modified y
-	strcpy(tag_types_rlpa_list[12], "0x0C");				// modified z
-	strcpy(tag_types_rlpa_list[13], "0x0D");
-	strcpy(tag_types_rlpa_list[14], "0x0E");
-	strcpy(tag_types_rlpa_list[15], "0x0F");
-
-	strcpy(tag_types_rlts_list[0], "XTrans");
-	strcpy(tag_types_rlts_list[1], "YTrans");
-	strcpy(tag_types_rlts_list[2], "Rotate");
-	strcpy(tag_types_rlts_list[3], "XScale");
-	strcpy(tag_types_rlts_list[4], "YScale");
-
-	strcpy(tag_types_rlvi_list[0], "Visibility");
-
-	strcpy(tag_types_rlvc_list[0],  "Top Left R");
-	strcpy(tag_types_rlvc_list[1],  "Top Left G");
-	strcpy(tag_types_rlvc_list[2],  "Top Left B");
-	strcpy(tag_types_rlvc_list[3],  "Top Left A");
-	strcpy(tag_types_rlvc_list[4],  "Top Right R");
-	strcpy(tag_types_rlvc_list[5],  "Top Right G");
-	strcpy(tag_types_rlvc_list[6],  "Top Right B");
-	strcpy(tag_types_rlvc_list[7],  "Top Right A");
-	strcpy(tag_types_rlvc_list[8],  "Bottom Left R");
-	strcpy(tag_types_rlvc_list[9],  "Bottom Left G");
-	strcpy(tag_types_rlvc_list[10], "Bottom Left B");
-	strcpy(tag_types_rlvc_list[11], "Bottom Left A");
-	strcpy(tag_types_rlvc_list[12], "Bottom Right R");
-	strcpy(tag_types_rlvc_list[13], "Bottom Right G");
-	strcpy(tag_types_rlvc_list[14], "Bottom Right B");
-	strcpy(tag_types_rlvc_list[15], "Bottom Right A");
-
-	strcpy(tag_types_rlmc_list[0],  "0x00");
-	strcpy(tag_types_rlmc_list[1],  "0x01");
-	strcpy(tag_types_rlmc_list[2],  "0x02");
-	strcpy(tag_types_rlmc_list[3],  "0x03");
-	strcpy(tag_types_rlmc_list[4],  "Blackcolor R");
-	strcpy(tag_types_rlmc_list[5],  "Blackcolor G");
-	strcpy(tag_types_rlmc_list[6],  "Blackcolor B");
-	strcpy(tag_types_rlmc_list[7],  "Blackcolor A");
-	strcpy(tag_types_rlmc_list[8],  "Whitecolor R");
-	strcpy(tag_types_rlmc_list[9],  "Whitecolor G");
-	strcpy(tag_types_rlmc_list[10], "Whitecolor B");
-	strcpy(tag_types_rlmc_list[11], "Whitecolor A");
-	strcpy(tag_types_rlmc_list[12], "0x0C");
-	strcpy(tag_types_rlmc_list[13], "0x0D");
-	strcpy(tag_types_rlmc_list[14], "0x0E");
-	strcpy(tag_types_rlmc_list[15], "0x0F");
-
-	strcpy(tag_types_rltp_list[0],  "PaletteZero");
-	strcpy(tag_types_rltp_list[1],  "PaletteOne");
-	strcpy(tag_types_rltp_list[2],  "PaletteTwo");
-	strcpy(tag_types_rltp_list[3],  "PaletteThree");
-	strcpy(tag_types_rltp_list[4],  "PaletteFour");
-	strcpy(tag_types_rltp_list[5],  "PaletteFive");
-	strcpy(tag_types_rltp_list[6],  "PaletteSix");
-	strcpy(tag_types_rltp_list[7],  "PaletteSeven");
-	strcpy(tag_types_rltp_list[8],  "PaletteEight");
-	strcpy(tag_types_rltp_list[9],  "PaletteNine");
-	strcpy(tag_types_rltp_list[10], "PaletteTen");
-	strcpy(tag_types_rltp_list[11], "PaletteEleven");
-	strcpy(tag_types_rltp_list[12], "PaletteTwelve");
-	strcpy(tag_types_rltp_list[13], "PaletteThirteen");
-	strcpy(tag_types_rltp_list[14], "PaletteFourteen");
-	strcpy(tag_types_rltp_list[15], "PaletteFifteen");
-
-	strcpy(tag_types_rlim_list[0], "XTrans");
-	strcpy(tag_types_rlim_list[1], "YTrans");
-	strcpy(tag_types_rlim_list[2], "Rotate");
-	strcpy(tag_types_rlim_list[3], "XScale");
-	strcpy(tag_types_rlim_list[4], "YScale");
+	CreateTagTypesLists();
 
 	BRLAN_fileoffset = 0;
 	brlan_header header;
@@ -328,7 +377,6 @@ void parse_brlan(char* filename, char *filenameout)
 	}
 
 	CreateGlobal_pai1(&pai1_header, pai1_header1, pai1_header2, pai1_header_type);
-
 
 	FILE *xmlFile;
 	xmlFile = fopen(filenameout, "w");
@@ -462,7 +510,7 @@ void create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *
 	mxml_node_t *subsubnode = NULL;
 	char temp[256];
 	char temp2[256];
-	char temp3[16][24];
+	char temp3[32][24];
 	int i, x;
 
 	char tag_type[256];
@@ -477,51 +525,61 @@ void create_entries_from_xml(mxml_node_t *tree, mxml_node_t *node, brlan_entry *
 	char rltp_type[5] = {'R', 'L', 'T', 'P'};
 	char rlim_type[5] = {'R', 'L', 'I', 'M'};
 
-	for(i = 0; i < 16; i++)
+	for(i = 0; i < 32; i++)
 		memset(temp3[i], 0, 24);
 	for(x = 0; x < 16; x++)
+	{
 		if(memcmp(tag_type, rlpa_type, 4) == 0)
 		{
+			if ( x == 16 ) break;
 			for(i = 0; i < strlen(tag_types_rlpa_list[x]); i++)
 			{
 				temp3[x][i] = toupper(tag_types_rlpa_list[x][i]);
 			}
 		} else if(memcmp(tag_type, rlts_type, 4) == 0) {
+			if ( x == 5 ) break;
 			for(i = 0; i < strlen(tag_types_rlts_list[x]); i++)
 			{
 				temp3[x][i] = toupper(tag_types_rlts_list[x][i]);
 			}
 		} else if(memcmp(tag_type, rlvi_type, 4) == 0) {
+			if ( x == 1 ) break;
 			for(i = 0; i < strlen(tag_types_rlvi_list[x]); i++)
 			{
 				temp3[x][i] = toupper(tag_types_rlvi_list[x][i]);
 			}
 		} else if(memcmp(tag_type, rlvc_type, 4) == 0) {
+			if ( x == 16 ) break;
 			for(i = 0; i < strlen(tag_types_rlvc_list[x]); i++)
 			{
 				temp3[x][i] = toupper(tag_types_rlvc_list[x][i]);
 			}
 		} else if(memcmp(tag_type, rlmc_type, 4) == 0) {
+			if ( x == 32 ) break;
 			for(i = 0; i < strlen(tag_types_rlmc_list[x]); i++)
 			{
 				temp3[x][i] = toupper(tag_types_rlmc_list[x][i]);
 			}
 		} else if(memcmp(tag_type, rltp_type, 4) == 0) {
+			if ( x == 16 ) break;
 			for(i = 0; i < strlen(tag_types_rltp_list[x]); i++)
 			{
 				temp3[x][i] = toupper(tag_types_rltp_list[x][i]);
 			}
 		} else if(memcmp(tag_type, rlim_type, 4) == 0) {
+			if ( x == 5 ) break;
 			for(i = 0; i < strlen(tag_types_rlim_list[x]); i++)
 			{
 				temp3[x][i] = toupper(tag_types_rlim_list[x][i]);
 			}
 		} else {
+			if ( x == 16 ) break;
 			for(i = 0; i < strlen(tag_types_list[x]); i++)
 			{
 				temp3[x][i] = toupper(tag_types_list[x][i]);
 			}
 		}
+	}
 	head->entry_count = 0;
 	subnode = node;
 	for (x = 0, subnode = mxmlFindElement(subnode, node, "entry", NULL, NULL, MXML_DESCEND); subnode != NULL; subnode = mxmlFindElement(subnode, node, "entry", NULL, NULL, MXML_DESCEND), x++) {
@@ -767,100 +825,8 @@ void WriteBRLANPaiHeader(brlan_pai1_header_type1 paihead, FILE* fp)
 
 void write_brlan(char *infile, char* outfile)
 {
+	CreateTagTypesLists();
 	int i;
-	for(i = 0; i < 16; i++)
-	{
-		memset(tag_types_list[i], 0, 24);
-		memset(tag_types_rlpa_list[i], 0, 24);
-		memset(tag_types_rlts_list[i], 0, 24);
-		memset(tag_types_rlvi_list[i], 0, 24);
-		memset(tag_types_rlvc_list[i], 0, 24);
-		memset(tag_types_rlmc_list[i], 0, 24);
-		memset(tag_types_rltp_list[i], 0, 24);
-		memset(tag_types_rlim_list[i], 0, 24);
-	}
-
-	strcpy(tag_types_list[0],  "X Translation");
-	strcpy(tag_types_list[1],  "Y Translation");
-	strcpy(tag_types_list[2],  "Z Translation");
-	strcpy(tag_types_list[3],  "X Rotate");
-	strcpy(tag_types_list[4],  "Y Rotate");
-	strcpy(tag_types_list[5],  "Z Rotate");
-	strcpy(tag_types_list[6],  "X Scale");
-	strcpy(tag_types_list[7],  "Y Scale");
-	strcpy(tag_types_list[8],  "Width");
-	strcpy(tag_types_list[9],  "Height");
-	strcpy(tag_types_list[10], "0x0A");
-	strcpy(tag_types_list[11], "0x0B");
-	strcpy(tag_types_list[12], "0x0C");
-	strcpy(tag_types_list[13], "0x0D");
-	strcpy(tag_types_list[14], "0x0E");
-	strcpy(tag_types_list[15], "0x0F");
-
-	strcpy(tag_types_rlts_list[0], "XTrans");
-	strcpy(tag_types_rlts_list[1], "YTrans");
-	strcpy(tag_types_rlts_list[2], "Rotate");
-	strcpy(tag_types_rlts_list[3], "XScale");
-	strcpy(tag_types_rlts_list[4], "YScale");
-
-	strcpy(tag_types_rlvi_list[0], "Visibility");
-
-	strcpy(tag_types_rlvc_list[0],  "Top Left R");
-	strcpy(tag_types_rlvc_list[1],  "Top Left G");
-	strcpy(tag_types_rlvc_list[2],  "Top Left B");
-	strcpy(tag_types_rlvc_list[3],  "Top Left A");
-	strcpy(tag_types_rlvc_list[4],  "Top Right R");
-	strcpy(tag_types_rlvc_list[5],  "Top Right G");
-	strcpy(tag_types_rlvc_list[6],  "Top Right B");
-	strcpy(tag_types_rlvc_list[7],  "Top Right A");
-	strcpy(tag_types_rlvc_list[8],  "Bottom Left R");
-	strcpy(tag_types_rlvc_list[9],  "Bottom Left G");
-	strcpy(tag_types_rlvc_list[10], "Bottom Left B");
-	strcpy(tag_types_rlvc_list[11], "Bottom Left A");
-	strcpy(tag_types_rlvc_list[12], "Bottom Right R");
-	strcpy(tag_types_rlvc_list[13], "Bottom Right G");
-	strcpy(tag_types_rlvc_list[14], "Bottom Right B");
-	strcpy(tag_types_rlvc_list[15], "Bottom Right A");
-
-	strcpy(tag_types_rlmc_list[0],  "0x00");
-	strcpy(tag_types_rlmc_list[1],  "0x01");
-	strcpy(tag_types_rlmc_list[2],  "0x02");
-	strcpy(tag_types_rlmc_list[3],  "0x03");
-	strcpy(tag_types_rlmc_list[4],  "Blackcolor R");
-	strcpy(tag_types_rlmc_list[5],  "Blackcolor G");
-	strcpy(tag_types_rlmc_list[6],  "Blackcolor B");
-	strcpy(tag_types_rlmc_list[7],  "Blackcolor A");
-	strcpy(tag_types_rlmc_list[8],  "Whitecolor R");
-	strcpy(tag_types_rlmc_list[9],  "Whitecolor G");
-	strcpy(tag_types_rlmc_list[10], "Whitecolor B");
-	strcpy(tag_types_rlmc_list[11], "Whitecolor A");
-	strcpy(tag_types_rlmc_list[12], "0x0C");
-	strcpy(tag_types_rlmc_list[13], "0x0D");
-	strcpy(tag_types_rlmc_list[14], "0x0E");
-	strcpy(tag_types_rlmc_list[15], "0x0F");
-
-	strcpy(tag_types_rltp_list[0],  "PaletteZero");
-	strcpy(tag_types_rltp_list[1],  "PaletteOne");
-	strcpy(tag_types_rltp_list[2],  "PaletteTwo");
-	strcpy(tag_types_rltp_list[3],  "PaletteThree");
-	strcpy(tag_types_rltp_list[4],  "PaletteFour");
-	strcpy(tag_types_rltp_list[5],  "PaletteFive");
-	strcpy(tag_types_rltp_list[6],  "PaletteSix");
-	strcpy(tag_types_rltp_list[7],  "PaletteSeven");
-	strcpy(tag_types_rltp_list[8],  "PaletteEight");
-	strcpy(tag_types_rltp_list[9],  "PaletteNine");
-	strcpy(tag_types_rltp_list[10], "PaletteTen");
-	strcpy(tag_types_rltp_list[11], "PaletteEleven");
-	strcpy(tag_types_rltp_list[12], "PaletteTwelve");
-	strcpy(tag_types_rltp_list[13], "PaletteThirteen");
-	strcpy(tag_types_rltp_list[14], "PaletteFourteen");
-	strcpy(tag_types_rltp_list[15], "PaletteFifteen");
-
-	strcpy(tag_types_rlim_list[0], "XTrans");
-	strcpy(tag_types_rlim_list[1], "YTrans");
-	strcpy(tag_types_rlim_list[2], "Rotate");
-	strcpy(tag_types_rlim_list[3], "XScale");
-	strcpy(tag_types_rlim_list[4], "YScale");
 
 	FILE* fpx = fopen(infile, "r");
 	if(fpx == NULL) {

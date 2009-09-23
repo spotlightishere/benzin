@@ -25,6 +25,7 @@
 
 #define MAXIMUM_TAGS_SIZE		(0x1000)
 
+// MAGIC
 char pic1_magic[] = "pic1";
 char pan1_magic[] = "pan1";
 char bnd1_magic[] = "bnd1";
@@ -40,6 +41,22 @@ char grs1_magic[] = "grs1";
 char pae1_magic[] = "pae1";
 char pas1_magic[] = "pas1";
 
+// CONSTANTS
+char originX[3][15];
+char originY[3][15];
+char wraps[4][20];
+char tgen_types[11][20];
+char tgen_src[21][20];
+char mtxsrc[42][20];
+char tevcolor[4][20];
+char matsrc[2][20];
+char scale[10][20];
+char compare[8][20];
+char aop[5][20];
+char blendmode[5][20];
+char logicop[16][20];
+char blendfactor[8][20];
+
 static size_t BRLYT_fileoffset = 0;
 
 char *materials;
@@ -48,6 +65,195 @@ int lengthOfMaterials;
 char *textures;
 int numberOfTextures;
 int lengthOfTextures;
+
+void SetupConstants( )
+{
+	int o;
+	for ( o = 0 ; o < 3 ; o++ )
+		memset( originX[o] , 0 , 15 );
+	strcpy( originX[0] , "Left" );
+	strcpy( originX[1] , "Center" );
+	strcpy( originX[2] , "Right" );
+
+	for ( o = 0 ; o < 3 ; o++ )
+		memset( originY[o] , 0 , 15 );
+	strcpy( originY[0] , "Top" );
+	strcpy( originY[1] , "Center" );
+	strcpy( originY[2] , "Bottom" );
+
+	for ( o = 0 ; o < 4 ; o++ )
+		memset( wraps[o] , 0 , 20 );
+	strcpy( wraps[0] , "GX_CLAMP" );
+	strcpy( wraps[1] , "GX_REPEAT" );
+	strcpy( wraps[2] , "GX_MIRROR" );
+	strcpy( wraps[3] , "GX_MAXTEXWRAPMODE" );
+
+	for ( o = 0 ; o < 11 ; o++ )
+		memset( tgen_types[o] , 0 , 20 );
+	strcpy( tgen_types[0]  , "GX_TG_MTX3x4" );
+	strcpy( tgen_types[1]  , "GX_TG_MTX2x4" );
+	strcpy( tgen_types[2]  , "GX_TG_BUMP0" );
+	strcpy( tgen_types[3]  , "GX_TG_BUMP1" );
+	strcpy( tgen_types[4]  , "GX_TG_BUMP2" );
+	strcpy( tgen_types[5]  , "GX_TG_BUMP3" );
+	strcpy( tgen_types[6]  , "GX_TG_BUMP4" );
+	strcpy( tgen_types[7]  , "GX_TG_BUMP5" );
+	strcpy( tgen_types[8]  , "GX_TG_BUMP6" );
+	strcpy( tgen_types[9]  , "GX_TG_BUMP7" );
+	strcpy( tgen_types[10] , "GX_TG_SRTG" );
+
+	for ( o = 0 ; o < 21 ; o++ )
+		memset( tgen_src[o] , 0 , 20 );
+	strcpy( tgen_src[0]  , "GX_TG_POS" );
+	strcpy( tgen_src[1]  , "GX_TG_NRM" );
+	strcpy( tgen_src[2]  , "GX_TG_BINRM" );
+	strcpy( tgen_src[3]  , "GX_TG_TANGEN" );
+	strcpy( tgen_src[4]  , "GX_TG_TEX0" );
+	strcpy( tgen_src[5]  , "GX_TG_TEX1" );
+	strcpy( tgen_src[6]  , "GX_TG_TEX2" );
+	strcpy( tgen_src[7]  , "GX_TG_TEX3" );
+	strcpy( tgen_src[8]  , "GX_TG_TEX4" );
+	strcpy( tgen_src[9]  , "GX_TG_TEX5" );
+	strcpy( tgen_src[10] , "GX_TG_TEX6" );
+	strcpy( tgen_src[11] , "GX_TG_TEX7" );
+	strcpy( tgen_src[12] , "GX_TG_TEXCOORD0" );
+	strcpy( tgen_src[13] , "GX_TG_TEXCOORD1" );
+	strcpy( tgen_src[14] , "GX_TG_TEXCOORD2" );
+	strcpy( tgen_src[15] , "GX_TG_TEXCOORD3" );
+	strcpy( tgen_src[16] , "GX_TG_TEXCOORD4" );
+	strcpy( tgen_src[17] , "GX_TG_TEXCOORD5" );
+	strcpy( tgen_src[18] , "GX_TG_TEXCOORD6" );
+	strcpy( tgen_src[19] , "GX_TG_COLOR0" );
+	strcpy( tgen_src[20] , "GX_TG_COLOR1" );
+
+	for ( o = 0 ; o < 42 ; o++ )
+		memset( mtxsrc[o] , 0 , 20 );
+	strcpy( mtxsrc[0]  , "GX_PNMTX0" );
+	strcpy( mtxsrc[1]  , "GX_PNMTX1" );
+	strcpy( mtxsrc[2]  , "GX_PNMTX2" );
+	strcpy( mtxsrc[3]  , "GX_PNMTX3" );
+	strcpy( mtxsrc[4]  , "GX_PNMTX4" );
+	strcpy( mtxsrc[5]  , "GX_PNMTX5" );
+	strcpy( mtxsrc[6]  , "GX_PNMTX6" );
+	strcpy( mtxsrc[7]  , "GX_PNMTX7" );
+	strcpy( mtxsrc[8]  , "GX_PNMTX8" );
+	strcpy( mtxsrc[9]  , "GX_PNMTX9" );
+	strcpy( mtxsrc[10] , "GX_TEXMTX0" );
+	strcpy( mtxsrc[11] , "GX_TEXMTX1" );
+	strcpy( mtxsrc[12] , "GX_TEXMTX2" );
+	strcpy( mtxsrc[13] , "GX_TEXMTX3" );
+	strcpy( mtxsrc[14] , "GX_TEXMTX4" );
+	strcpy( mtxsrc[15] , "GX_TEXMTX5" );
+	strcpy( mtxsrc[16] , "GX_TEXMTX6" );
+	strcpy( mtxsrc[17] , "GX_TEXMTX7" );
+	strcpy( mtxsrc[18] , "GX_TEXMTX8" );
+	strcpy( mtxsrc[19] , "GX_TEXMTX9" );
+	strcpy( mtxsrc[20] , "GX_IDENTITY" );
+	strcpy( mtxsrc[21] , "GX_DTTMTX0" );
+	strcpy( mtxsrc[22] , "GX_DTTMTX1" );
+	strcpy( mtxsrc[23] , "GX_DTTMTX2" );
+	strcpy( mtxsrc[24] , "GX_DTTMTX3" );
+	strcpy( mtxsrc[25] , "GX_DTTMTX4" );
+	strcpy( mtxsrc[26] , "GX_DTTMTX5" );
+	strcpy( mtxsrc[27] , "GX_DTTMTX6" );
+	strcpy( mtxsrc[28] , "GX_DTTMTX7" );
+	strcpy( mtxsrc[29] , "GX_DTTMTX8" );
+	strcpy( mtxsrc[30] , "GX_DTTMTX9" );
+	strcpy( mtxsrc[31] , "GX_DTTMTX1" );
+	strcpy( mtxsrc[32] , "GX_DTTMTX1" );
+	strcpy( mtxsrc[33] , "GX_DTTMTX12" );
+	strcpy( mtxsrc[34] , "GX_DTTMTX13" );
+	strcpy( mtxsrc[35] , "GX_DTTMTX14" );
+	strcpy( mtxsrc[36] , "GX_DTTMTX15" );
+	strcpy( mtxsrc[37] , "GX_DTTMTX16" );
+	strcpy( mtxsrc[38] , "GX_DTTMTX17" );
+	strcpy( mtxsrc[39] , "GX_DTTMTX18" );
+	strcpy( mtxsrc[40] , "GX_DTTMTX19" );
+	strcpy( mtxsrc[41] , "GX_DTTIDENTITY" );	// actually 125 not 124
+
+	for ( o = 0 ; o < 4 ; o++ )
+		memset( tevcolor[o] , 0 , 20 );
+	strcpy( tevcolor[0]  , "GX_CH_RED" );
+	strcpy( tevcolor[1]  , "GX_CH_GREEN" );
+	strcpy( tevcolor[2]  , "GX_CH_BLUE" );
+	strcpy( tevcolor[3]  , "GX_CH_ALPHA" );
+
+	for ( o = 0 ; o < 2 ; o++ )
+		memset( matsrc[o] , 0 , 20 );
+	strcpy( matsrc[0]  , "GX_SRC_REG" );
+	strcpy( matsrc[1]  , "GX_SRC_VTX" );
+
+	for ( o = 0 ; o < 10 ; o++ )
+		memset( scale[o] , 0 , 20 );
+	strcpy( scale[0]  , "GX_ITS_1" );
+	strcpy( scale[1]  , "GX_ITS_2" );
+	strcpy( scale[2]  , "GX_ITS_4" );
+	strcpy( scale[3]  , "GX_ITS_8" );
+	strcpy( scale[4]  , "GX_ITS_16" );
+	strcpy( scale[5]  , "GX_ITS_32" );
+	strcpy( scale[6]  , "GX_ITS_64" );
+	strcpy( scale[7]  , "GX_ITS_128" );
+	strcpy( scale[8]  , "GX_ITS_256" );
+	strcpy( scale[9]  , "GX_MAX_ITSCALE" );
+
+	for ( o = 0 ; o < 8 ; o++ )
+		memset( compare[o] , 0 , 20 );
+	strcpy( compare[0]  , "GX_NEVER" );
+	strcpy( compare[1]  , "GX_LESS" );
+	strcpy( compare[2]  , "GX_EQUAL" );
+	strcpy( compare[3]  , "GX_LEQUAL" );
+	strcpy( compare[4]  , "GX_GREATER" );
+	strcpy( compare[5]  , "GX_NEQUAL" );
+	strcpy( compare[6]  , "GX_GEQUAL" );
+	strcpy( compare[7]  , "GX_ALWAYS" );
+
+	for ( o = 0 ; o < 5 ; o++ )
+		memset( aop[o] , 0 , 20 );
+	strcpy( aop[0]  , "GX_AOP_AND" );
+	strcpy( aop[1]  , "GX_AOP_OR" );
+	strcpy( aop[2]  , "GX_AOP_XOR" );
+	strcpy( aop[3]  , "GX_AOP_XNOR" );
+	strcpy( aop[4]  , "GX_MAX_ALPHAOP" );
+
+	for ( o = 0 ; o < 5 ; o++ )
+		memset( blendmode[o] , 0 , 20 );
+	strcpy( blendmode[0]  , "GX_BM_NONE" );
+	strcpy( blendmode[1]  , "GX_BM_BLEND" );
+	strcpy( blendmode[2]  , "GX_BM_LOGIC" );
+	strcpy( blendmode[3]  , "GX_BM_SUBTRACT" );
+	strcpy( blendmode[4]  , "GX_MAX_BLENDMODE" );
+
+	for ( o = 0 ; o < 8 ; o++ )
+		memset( blendfactor[o] , 0 , 20 );
+	strcpy( blendfactor[0]  , "GX_BL_ZERO" );
+	strcpy( blendfactor[1]  , "GX_BL_ONE" );
+	strcpy( blendfactor[2]  , "GX_BL_SRCCLR" );
+	strcpy( blendfactor[3]  , "GX_BL_INVSRCCLR" );
+	strcpy( blendfactor[4]  , "GX_BL_SRCALPHA" );
+	strcpy( blendfactor[5]  , "GX_BL_INVSRCALPHA" );
+	strcpy( blendfactor[6]  , "GX_BL_DSTALPHA" );
+	strcpy( blendfactor[7]  , "GX_BL_INVDSTALPHA" );
+
+	for ( o = 0 ; o < 16 ; o++ )
+		memset( logicop[o] , 0 , 20 );
+	strcpy( logicop[0]   , "GX_LO_CLEAR" );
+	strcpy( logicop[1]   , "GX_LO_AND" );
+	strcpy( logicop[2]   , "GX_LO_REVAND" );
+	strcpy( logicop[3]   , "GX_LO_COPY" );
+	strcpy( logicop[4]   , "GX_LO_INVAND" );
+	strcpy( logicop[5]   , "GX_LO_NOOP" );
+	strcpy( logicop[6]   , "GX_LO_XOR" );
+	strcpy( logicop[7]   , "GX_LO_OR" );
+	strcpy( logicop[8]   , "GX_LO_NOR" );
+	strcpy( logicop[9]   , "GX_LO_EQUIV" );
+	strcpy( logicop[10]  , "GX_LO_INV" );
+	strcpy( logicop[11]  , "GX_LO_REVOR" );
+	strcpy( logicop[12]  , "GX_LO_INVCOPY" );
+	strcpy( logicop[13]  , "GX_LO_INVOR" );
+	strcpy( logicop[14]  , "GX_LO_NAND" );
+	strcpy( logicop[15]  , "GX_LO_SET" );
+
+}
 
 static int FourCCsMatch(fourcc cc1, fourcc cc2)
 {
@@ -302,22 +508,8 @@ void PrintBRLYTEntry_fnl1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 	}
 }
 
-void PrintBRLYTEntry_pan1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
+void PrintPane( brlyt_entry entry , u8* brlyt_file , mxml_node_t * tag )
 {
-	char origins[9][15];
-	int o;
-	for ( o = 0 ; o < 8 ; o++ )
-		memset( origins[o] , 0 , 20 );
-	strcpy( origins[0] , "TOP LEFT" );
-	strcpy( origins[1] , "TOP CENTER" );
-	strcpy( origins[2] , "TOP RIGHT" );
-	strcpy( origins[3] , "MIDDLE LEFT" );
-	strcpy( origins[4] , "MIDDLE CENTER" );
-	strcpy( origins[5] , "MIDDLE RIGHT" );
-	strcpy( origins[6] , "BOTTOM LEFT" );
-	strcpy( origins[7] , "BOTTOM CENTER" );
-	strcpy( origins[8] , "BOTTOM RIGHT" );
-
 	mxml_node_t *flags, *origin, *alpha, *padding;
 	mxml_node_t *translate, *x, *y, *z;
 	mxml_node_t *rotate, *scale;
@@ -331,7 +523,9 @@ void PrintBRLYTEntry_pan1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 	flags = mxmlNewElement(tag, "visible"); mxmlNewTextf(flags, 0, "%02x", data.flag1 & 0x1);
 	flags = mxmlNewElement(tag, "WidescreenAffected"); mxmlNewTextf(flags, 0, "%02x", (data.flag1 & 0x2)>>1);
 	flags = mxmlNewElement(tag, "flag"); mxmlNewTextf(flags, 0, "%02x", (data.flag1 & 0x4)>>2);
-	origin  = mxmlNewElement(tag, "origin");  mxmlNewTextf(origin,0,"%s",origins[data.origin%9]);
+	origin  = mxmlNewElement(tag, "origin");
+		mxmlElementSetAttrf(origin, "x", "%s", originX[data.origin%3]);
+		mxmlElementSetAttrf(origin, "y", "%s", originY[data.origin/3]);
 	alpha   = mxmlNewElement(tag, "alpha");   mxmlNewTextf(alpha, 0, "%02x", data.alpha);
 	padding = mxmlNewElement(tag, "padding"); mxmlNewTextf(padding, 0, "%02x", data.pad);
 	translate = mxmlNewElement(tag, "translate");
@@ -350,54 +544,16 @@ void PrintBRLYTEntry_pan1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 	height = mxmlNewElement(size, "height"); mxmlNewTextf(height, 0, "%f", float_swap_bytes(data.height));
 }
 
+void PrintBRLYTEntry_pan1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
+{
+	PrintPane( entry , brlyt_file , tag );
+}
+
 void PrintBRLYTEntry_wnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
-	char origins[9][15];
-	int o;
-	for ( o = 0 ; o < 8 ; o++ )
-		memset( origins[o] , 0 , 20 );
-	strcpy( origins[0] , "TOP LEFT" );
-	strcpy( origins[1] , "TOP CENTER" );
-	strcpy( origins[2] , "TOP RIGHT" );
-	strcpy( origins[3] , "MIDDLE LEFT" );
-	strcpy( origins[4] , "MIDDLE CENTER" );
-	strcpy( origins[5] , "MIDDLE RIGHT" );
-	strcpy( origins[6] , "BOTTOM LEFT" );
-	strcpy( origins[7] , "BOTTOM CENTER" );
-	strcpy( origins[8] , "BOTTOM RIGHT" );
+	PrintPane( entry , brlyt_file , tag );
 
-	mxml_node_t *flags, *origin, *alpha, *padding;
-	mxml_node_t *translate, *x, *y, *z;
-	mxml_node_t *rotate, *scale;
-	mxml_node_t *size, *width, *height;
-	brlyt_pane_chunk data;
-	BRLYT_fileoffset = entry.data_location;
-	BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_pane_chunk));
-	mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
-	mxmlElementSetAttrf(tag, "name", "%s", data.name);
-	mxmlElementSetAttrf(tag, "userdata", "%s", data.userdata);
-	flags = mxmlNewElement(tag, "visible"); mxmlNewTextf(flags, 0, "%02x", data.flag1 & 0x1);
-	flags = mxmlNewElement(tag, "WidescreenAffected"); mxmlNewTextf(flags, 0, "%02x", (data.flag1 & 0x2)>>1);
-	flags = mxmlNewElement(tag, "flag"); mxmlNewTextf(flags, 0, "%02x", (data.flag1 & 0x4)>>2);
-	origin  = mxmlNewElement(tag, "origin"); mxmlNewTextf(origin,0,"%s", origins[data.origin%9]);
-	alpha   = mxmlNewElement(tag, "alpha");   mxmlNewTextf(alpha, 0, "%02x", data.alpha);
-	padding = mxmlNewElement(tag, "padding"); mxmlNewTextf(padding, 0, "%02x", data.pad);
-	translate = mxmlNewElement(tag, "translate");
-	x = mxmlNewElement(translate, "x"); mxmlNewTextf(x, 0, "%.20f", float_swap_bytes(data.XTrans));
-	y = mxmlNewElement(translate, "y"); mxmlNewTextf(y, 0, "%.20f", float_swap_bytes(data.YTrans));
-	z = mxmlNewElement(translate, "z"); mxmlNewTextf(z, 0, "%.20f", float_swap_bytes(data.ZTrans));
-	rotate = mxmlNewElement(tag, "rotate");
-	x = mxmlNewElement(rotate, "x"); mxmlNewTextf(x, 0, "%.20f", float_swap_bytes(data.XRotate));
-	y = mxmlNewElement(rotate, "y"); mxmlNewTextf(y, 0, "%.20f", float_swap_bytes(data.YRotate));
-	z = mxmlNewElement(rotate, "z"); mxmlNewTextf(z, 0, "%.20f", float_swap_bytes(data.ZRotate));
-	scale = mxmlNewElement(tag, "scale");
-	x = mxmlNewElement(scale, "x"); mxmlNewTextf(x, 0, "%.10f", float_swap_bytes(data.XScale));
-	y = mxmlNewElement(scale, "y"); mxmlNewTextf(y, 0, "%.10f", float_swap_bytes(data.YScale));
-	size = mxmlNewElement(tag, "size");
-	width = mxmlNewElement(size, "width"); mxmlNewTextf(width, 0, "%f", float_swap_bytes(data.width));
-	height = mxmlNewElement(size, "height"); mxmlNewTextf(height, 0, "%f", float_swap_bytes(data.height));
-
-	mxml_node_t *wndd, *unkk, *count, *offset1, *offset2;
+	mxml_node_t *wndd, *unkk, *count, *offset1, *offset2, *padding;
 	int i, j;
 	brlyt_wnd wndy;
 	BRLYT_ReadDataFromMemory(&wndy, brlyt_file, sizeof(brlyt_wnd));
@@ -457,118 +613,45 @@ void PrintBRLYTEntry_wnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 
 void PrintBRLYTEntry_bnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
-	char origins[9][15];
-	int o;
-	for ( o = 0 ; o < 8 ; o++ )
-		memset( origins[o] , 0 , 20 );
-	strcpy( origins[0] , "TOP LEFT" );
-	strcpy( origins[1] , "TOP CENTER" );
-	strcpy( origins[2] , "TOP RIGHT" );
-	strcpy( origins[3] , "MIDDLE LEFT" );
-	strcpy( origins[4] , "MIDDLE CENTER" );
-	strcpy( origins[5] , "MIDDLE RIGHT" );
-	strcpy( origins[6] , "BOTTOM LEFT" );
-	strcpy( origins[7] , "BOTTOM CENTER" );
-	strcpy( origins[8] , "BOTTOM RIGHT" );
-
-	mxml_node_t *flags, *origin, *alpha, *padding;
-	mxml_node_t *translate, *x, *y, *z;
-	mxml_node_t *rotate, *scale;
-	mxml_node_t *size, *width, *height;
-	brlyt_pane_chunk data;
-	BRLYT_fileoffset = entry.data_location;
-	BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_pane_chunk));
-	mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
-	mxmlElementSetAttrf(tag, "name", "%s", data.name);
-	mxmlElementSetAttrf(tag, "userdata", "%s", data.userdata);
-	flags = mxmlNewElement(tag, "visible"); mxmlNewTextf(flags, 0, "%02x", data.flag1 & 0x1);
-	flags = mxmlNewElement(tag, "WidescreenAffected"); mxmlNewTextf(flags, 0, "%02x", (data.flag1 & 0x2)>>1);
-	flags = mxmlNewElement(tag, "flag"); mxmlNewTextf(flags, 0, "%02x", (data.flag1 & 0x4)>>2);
-	origin  = mxmlNewElement(tag, "origin"); mxmlNewTextf(origin,0,"%s", origins[data.origin%9]);
-	alpha   = mxmlNewElement(tag, "alpha");   mxmlNewTextf(alpha, 0, "%02x", data.alpha);
-	padding = mxmlNewElement(tag, "padding"); mxmlNewTextf(padding, 0, "%02x", data.pad);
-	translate = mxmlNewElement(tag, "translate");
-	x = mxmlNewElement(translate, "x"); mxmlNewTextf(x, 0, "%.25f", float_swap_bytes(data.XTrans));
-	y = mxmlNewElement(translate, "y"); mxmlNewTextf(y, 0, "%.25f", float_swap_bytes(data.YTrans));
-	z = mxmlNewElement(translate, "z"); mxmlNewTextf(z, 0, "%.25f", float_swap_bytes(data.ZTrans));
-	rotate = mxmlNewElement(tag, "rotate");
-	x = mxmlNewElement(rotate, "x"); mxmlNewTextf(x, 0, "%.20f", float_swap_bytes(data.XRotate));
-	y = mxmlNewElement(rotate, "y"); mxmlNewTextf(y, 0, "%.20f", float_swap_bytes(data.YRotate));
-	z = mxmlNewElement(rotate, "z"); mxmlNewTextf(z, 0, "%.20f", float_swap_bytes(data.ZRotate));
-	scale = mxmlNewElement(tag, "scale");
-	x = mxmlNewElement(scale, "x"); mxmlNewTextf(x, 0, "%.10f", float_swap_bytes(data.XScale));
-	y = mxmlNewElement(scale, "y"); mxmlNewTextf(y, 0, "%.10f", float_swap_bytes(data.YScale));
-	size = mxmlNewElement(tag, "size");
-	width = mxmlNewElement(size, "width"); mxmlNewTextf(width, 0, "%f", float_swap_bytes(data.width));
-	height = mxmlNewElement(size, "height"); mxmlNewTextf(height, 0, "%f", float_swap_bytes(data.height));
+	PrintPane( entry , brlyt_file , tag );
 }
 
 void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
-	char origins[9][15];
-	int o;
-	for ( o = 0 ; o < 8 ; o++ )
-		memset( origins[o] , 0 , 20 );
-	strcpy( origins[0] , "TOP LEFT" );
-	strcpy( origins[1] , "TOP CENTER" );
-	strcpy( origins[2] , "TOP RIGHT" );
-	strcpy( origins[3] , "MIDDLE LEFT" );
-	strcpy( origins[4] , "MIDDLE CENTER" );
-	strcpy( origins[5] , "MIDDLE RIGHT" );
-	strcpy( origins[6] , "BOTTOM LEFT" );
-	strcpy( origins[7] , "BOTTOM CENTER" );
-	strcpy( origins[8] , "BOTTOM RIGHT" );
+	PrintPane( entry , brlyt_file , tag );
 
-	mxml_node_t *flags, *origin, *alpha, *padding;
-	mxml_node_t *translate, *x, *y, *z;
-	mxml_node_t *rotate, *scale;
-	mxml_node_t *size, *width, *height;
-	brlyt_pane_chunk data;
-	BRLYT_fileoffset = entry.data_location;
-	BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_pane_chunk));
 	brlyt_pic_chunk data2;
 	BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_pic_chunk));
-	mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
-	mxmlElementSetAttrf(tag, "name", "%s", data.name);
-	mxmlElementSetAttrf(tag, "userdata", "%s", data.userdata);
-	flags = mxmlNewElement(tag, "visible"); mxmlNewTextf(flags, 0, "%02x", data.flag1 & 0x1);
-	flags = mxmlNewElement(tag, "WidescreenAffected"); mxmlNewTextf(flags, 0, "%02x", (data.flag1 & 0x2)>>1);
-	flags = mxmlNewElement(tag, "flag"); mxmlNewTextf(flags, 0, "%02x", (data.flag1 & 0x4)>>2);
-	origin  = mxmlNewElement(tag, "origin"); mxmlNewTextf(origin,0,"%s", origins[data.origin%9]);
-	alpha   = mxmlNewElement(tag, "alpha");   mxmlNewTextf(alpha, 0, "%02x", data.alpha);
-	padding = mxmlNewElement(tag, "padding"); mxmlNewTextf(padding, 0, "%02x", data.pad);
-	translate = mxmlNewElement(tag, "translate");
-	x = mxmlNewElement(translate, "x"); mxmlNewTextf(x, 0, "%.20f", float_swap_bytes(data.XTrans));
-	y = mxmlNewElement(translate, "y"); mxmlNewTextf(y, 0, "%.20f", float_swap_bytes(data.YTrans));
-	z = mxmlNewElement(translate, "z"); mxmlNewTextf(z, 0, "%.20f", float_swap_bytes(data.ZTrans
-				));
-	rotate = mxmlNewElement(tag, "rotate");
-	x = mxmlNewElement(rotate, "x"); mxmlNewTextf(x, 0, "%.20f", float_swap_bytes(data.XRotate));
-	y = mxmlNewElement(rotate, "y"); mxmlNewTextf(y, 0, "%.20f", float_swap_bytes(data.YRotate));
-	z = mxmlNewElement(rotate, "z"); mxmlNewTextf(z, 0, "%.20f", float_swap_bytes(data.ZRotate));
-	scale = mxmlNewElement(tag, "scale");
-	x = mxmlNewElement(scale, "x"); mxmlNewTextf(x, 0, "%.10f", float_swap_bytes(data.XScale));
-	y = mxmlNewElement(scale, "y"); mxmlNewTextf(y, 0, "%.10f", float_swap_bytes(data.YScale));
-	size = mxmlNewElement(tag, "size");
-	width = mxmlNewElement(size, "width"); mxmlNewTextf(width, 0, "%f", float_swap_bytes(data.width));
-	height = mxmlNewElement(size, "height"); mxmlNewTextf(height, 0, "%f", float_swap_bytes(data.height));
-	mxml_node_t *material, *color, *vtx, *attr, *coordinates, *set, *coord;
+	mxml_node_t *material, *color, *vtx, *coordinates, *set, *coord;
 	material = mxmlNewElement(tag, "material"); mxmlElementSetAttrf(material, "name", "%s", getMaterial(short_swap_bytes(data2.mat_num)));
 	color = mxmlNewElement(tag, "colors");
-	int n; for (n=0;n<4;n++)
-	{
-		vtx = mxmlNewElement(color, "vtx");
-		attr = mxmlNewElement(vtx, "red");
-		mxmlNewTextf( attr , 0 , "%02x" , ( be32(data2.vtx_colors[n]) >> 24 ) & 0xff );
-		attr = mxmlNewElement(vtx, "green");
-		mxmlNewTextf( attr , 0 , "%02x" , ( be32(data2.vtx_colors[n]) >> 16 ) & 0xff );
-		attr = mxmlNewElement(vtx, "blue");
-		mxmlNewTextf( attr , 0 , "%02x" , ( be32(data2.vtx_colors[n]) >>  8 ) & 0xff );
-		attr = mxmlNewElement(vtx, "alpha");
-		mxmlNewTextf( attr , 0 , "%02x" , ( be32(data2.vtx_colors[n]) >>  0 ) & 0xff );
 
-	}
+	vtx = mxmlNewElement(color, "vtxColorTL");
+	mxmlElementSetAttrf( vtx , "r" , "%02x" , ( be32(data2.vtx_colors[0]) >> 24 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "g" , "%02x" , ( be32(data2.vtx_colors[0]) >> 16 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "b" , "%02x" , ( be32(data2.vtx_colors[0]) >>  8 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "a" , "%02x" , ( be32(data2.vtx_colors[0]) >>  0 ) & 0xff );
+
+	vtx = mxmlNewElement(color, "vtxColorTR");
+	mxmlElementSetAttrf( vtx , "r" , "%02x" , ( be32(data2.vtx_colors[1]) >> 24 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "g" , "%02x" , ( be32(data2.vtx_colors[1]) >> 16 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "b" , "%02x" , ( be32(data2.vtx_colors[1]) >>  8 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "a" , "%02x" , ( be32(data2.vtx_colors[1]) >>  0 ) & 0xff );
+
+	vtx = mxmlNewElement(color, "vtxColorBL");
+	mxmlElementSetAttrf( vtx , "r" , "%02x" , ( be32(data2.vtx_colors[2]) >> 24 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "g" , "%02x" , ( be32(data2.vtx_colors[2]) >> 16 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "b" , "%02x" , ( be32(data2.vtx_colors[2]) >>  8 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "a" , "%02x" , ( be32(data2.vtx_colors[2]) >>  0 ) & 0xff );
+
+	vtx = mxmlNewElement(color, "vtxColorBR");
+	mxmlElementSetAttrf( vtx , "r" , "%02x" , ( be32(data2.vtx_colors[3]) >> 24 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "g" , "%02x" , ( be32(data2.vtx_colors[3]) >> 16 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "b" , "%02x" , ( be32(data2.vtx_colors[3]) >>  8 ) & 0xff );
+	mxmlElementSetAttrf( vtx , "a" , "%02x" , ( be32(data2.vtx_colors[3]) >>  0 ) & 0xff );
+
 	coordinates = mxmlNewElement(tag, "coordinates");
+	int n;
 	for (n=0;n<data2.num_texcoords;n++)
 	{
 		float texcoords[8];
@@ -584,63 +667,8 @@ void PrintBRLYTEntry_pic1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 
 void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
-	char origins[9][15];
-	int o;
-	for ( o = 0 ; o < 8 ; o++ )
-		memset( origins[o] , 0 , 20 );
-	strcpy( origins[0] , "TOP LEFT" );
-	strcpy( origins[1] , "TOP CENTER" );
-	strcpy( origins[2] , "TOP RIGHT" );
-	strcpy( origins[3] , "MIDDLE LEFT" );
-	strcpy( origins[4] , "MIDDLE CENTER" );
-	strcpy( origins[5] , "MIDDLE RIGHT" );
-	strcpy( origins[6] , "BOTTOM LEFT" );
-	strcpy( origins[7] , "BOTTOM CENTER" );
-	strcpy( origins[8] , "BOTTOM RIGHT" );
+	PrintPane( entry , brlyt_file , tag );
 
-	char alignments[9][15];
-	for ( o = 0 ; o < 8 ; o++ )
-		memset( alignments[o] , 0 , 20 );
-	strcpy( alignments[0] , "TOP LEFT" );
-	strcpy( alignments[1] , "TOP CENTER" );
-	strcpy( alignments[2] , "TOP RIGHT" );
-	strcpy( alignments[3] , "MIDDLE LEFT" );
-	strcpy( alignments[4] , "MIDDLE CENTER" );
-	strcpy( alignments[5] , "MIDDLE RIGHT" );
-	strcpy( alignments[6] , "BOTTOM LEFT" );
-	strcpy( alignments[7] , "BOTTOM CENTER" );
-	strcpy( alignments[8] , "BOTTOM RIGHT" );
-
-	mxml_node_t *flags, *origin, *alpha, *padding;
-	mxml_node_t *translate, *x, *y, *z;
-	mxml_node_t *rotate, *scale;
-	mxml_node_t *size, *width, *height;
-	brlyt_pane_chunk data;
-	BRLYT_fileoffset = entry.data_location;
-	BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_pane_chunk));
-	mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
-	mxmlElementSetAttrf(tag, "name", "%s", data.name);
-	mxmlElementSetAttrf(tag, "userdata", "%s", data.userdata);
-	flags = mxmlNewElement(tag, "visible"); mxmlNewTextf(flags, 0, "%02x", data.flag1 & 0x1);
-	flags = mxmlNewElement(tag, "WidescreenAffected"); mxmlNewTextf(flags, 0, "%02x", (data.flag1 & 0x2)>>1);
-	flags = mxmlNewElement(tag, "flag"); mxmlNewTextf(flags, 0, "%02x", (data.flag1 & 0x4)>>2);
-	origin  = mxmlNewElement(tag, "origin"); mxmlNewTextf(origin,0,"%s", origins[data.origin%9]);
-	alpha   = mxmlNewElement(tag, "alpha");   mxmlNewTextf(alpha, 0, "%02x", data.alpha);
-	padding = mxmlNewElement(tag, "padding"); mxmlNewTextf(padding, 0, "%02x", data.pad);
-	translate = mxmlNewElement(tag, "translate");
-	x = mxmlNewElement(translate, "x"); mxmlNewTextf(x, 0, "%.16f", float_swap_bytes(data.XTrans));
-	y = mxmlNewElement(translate, "y"); mxmlNewTextf(y, 0, "%.16f", float_swap_bytes(data.YTrans));
-	z = mxmlNewElement(translate, "z"); mxmlNewTextf(z, 0, "%.16f", float_swap_bytes(data.ZTrans));
-	rotate = mxmlNewElement(tag, "rotate");
-	x = mxmlNewElement(rotate, "x"); mxmlNewTextf(x, 0, "%.20f", float_swap_bytes(data.XRotate));
-	y = mxmlNewElement(rotate, "y"); mxmlNewTextf(y, 0, "%.20f", float_swap_bytes(data.YRotate));
-	z = mxmlNewElement(rotate, "z"); mxmlNewTextf(z, 0, "%.20f", float_swap_bytes(data.ZRotate));
-	scale = mxmlNewElement(tag, "scale");
-	x = mxmlNewElement(scale, "x"); mxmlNewTextf(x, 0, "%.10f", float_swap_bytes(data.XScale));
-	y = mxmlNewElement(scale, "y"); mxmlNewTextf(y, 0, "%.10f", float_swap_bytes(data.YScale));
-	size = mxmlNewElement(tag, "size");
-	width = mxmlNewElement(size, "width"); mxmlNewTextf(width, 0, "%.20f", float_swap_bytes(data.width));
-	height = mxmlNewElement(size, "height"); mxmlNewTextf(height, 0, "%.20f", float_swap_bytes(data.height));
 	mxml_node_t *length, *font, *xsize, *ysize, *charsize, *linesize, *alignment, *color1, *color2, *text;
 	brlyt_text_chunk data2;
 	BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_text_chunk));
@@ -652,9 +680,19 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 	ysize = mxmlNewElement(font, "ysize"); mxmlNewTextf(ysize, 0, "%f", float_swap_bytes(data2.font_size_y));
 	charsize = mxmlNewElement(font, "charsize"); mxmlNewTextf(charsize, 0, "%f", float_swap_bytes(data2.char_space));
 	linesize = mxmlNewElement(font, "linesize"); mxmlNewTextf(linesize, 0, "%f", float_swap_bytes(data2.line_space));
-	alignment = mxmlNewElement(font, "alignment"); mxmlNewTextf(alignment, 0, "%s", alignments[data2.alignment%9]);
-	color1 = mxmlNewElement(tag, "color1"); mxmlNewTextf(color1, 0, "%08x", be32(data2.color1) );
-	color2 = mxmlNewElement(tag, "color2"); mxmlNewTextf(color2, 0, "%08x", be32(data2.color2) );
+	alignment = mxmlNewElement(font, "alignment");
+		mxmlElementSetAttrf(alignment, "x", "%s", originX[data2.alignment%3]);
+		mxmlElementSetAttrf(alignment, "y", "%s", originY[data2.alignment/3]);
+	color1 = mxmlNewElement(tag, "topcolor");// mxmlNewTextf(color1, 0, "%08x", be32(data2.color1) );
+		mxmlElementSetAttrf(color1, "r", "%02x", ( be32(data2.color1) >> 24 ) & 0xff );
+		mxmlElementSetAttrf(color1, "g", "%02x", ( be32(data2.color1) >> 16 ) & 0xff );
+		mxmlElementSetAttrf(color1, "b", "%02x", ( be32(data2.color1) >>  8 ) & 0xff );
+		mxmlElementSetAttrf(color1, "a", "%02x", ( be32(data2.color1) >>  0 ) & 0xff );
+	color2 = mxmlNewElement(tag, "bottomcolor");// mxmlNewTextf(color2, 0, "%08x", be32(data2.color2) );
+		mxmlElementSetAttrf(color2, "r", "%02x", ( be32(data2.color2) >> 24 ) & 0xff );
+		mxmlElementSetAttrf(color2, "g", "%02x", ( be32(data2.color2) >> 16 ) & 0xff );
+		mxmlElementSetAttrf(color2, "b", "%02x", ( be32(data2.color2) >>  8 ) & 0xff );
+		mxmlElementSetAttrf(color2, "a", "%02x", ( be32(data2.color2) >>  0 ) & 0xff );
 //	int q; for(q=0;q<short_swap_bytes(data2.len2);q++) printf("%02x", texty[q]);	// S T U P I D   U T F 1 6	T E X T
 	u8 textbuffer[4096];
 	int q; for(q=0;q<short_swap_bytes(data2.len2);q++) sprintf((char*)&textbuffer[q*2], "%02x", texty[q]);
@@ -663,7 +701,8 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 
 void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
-	mxml_node_t *entries, *colors, *forecolor, *backcolor, *unk2, *tev_k, *flags;
+	mxml_node_t *entries, *colors, *forecolor, *backcolor, *unk2, *tev_k;
+	// mxml_node_t * flags;
 	brlyt_numoffs_chunk data;
 	BRLYT_fileoffset = entry.data_location;
 	BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_numoffs_chunk));
@@ -681,26 +720,48 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 		u32 flaggs = be32(data3.flags);
 		entries = mxmlNewElement(tag, "entries"); mxmlElementSetAttrf(entries, "name",  "%s", data3.name);
 		colors = mxmlNewElement(entries, "colors");
-		int i; for (i=0;i<4;i++)
-		{
-			forecolor = mxmlNewElement(colors, "forecolor");
-			mxmlNewTextf(forecolor, 0, "%d", short_swap_bytes(data3.forecolor[i]));
-		}
-		for (i=0;i<4;i++)
-		{
-			backcolor = mxmlNewElement(colors, "backcolor");
-			mxmlNewTextf(backcolor, 0, "%d", short_swap_bytes(data3.backcolor[i]));
-		}
-		for (i=0;i<4;i++)
-		{
-			unk2 = mxmlNewElement(colors, "colorReg3");
-			mxmlNewTextf(unk2, 0, "%d", short_swap_bytes(data3.colorReg3[i]));
-		}
-		for (i=0;i<4;i++)
-		{
-			tev_k = mxmlNewElement(colors, "tev_k");
-			mxmlNewTextf(tev_k, 0, "%08x", be32(data3.tev_kcolor[i]));
-		}
+
+		forecolor = mxmlNewElement(colors, "forecolor");
+		mxmlElementSetAttrf(forecolor, "r", "%d", short_swap_bytes(data3.forecolor[0]));
+		mxmlElementSetAttrf(forecolor, "g", "%d", short_swap_bytes(data3.forecolor[1]));
+		mxmlElementSetAttrf(forecolor, "b", "%d", short_swap_bytes(data3.forecolor[2]));
+		mxmlElementSetAttrf(forecolor, "a", "%d", short_swap_bytes(data3.forecolor[3]));
+
+		backcolor = mxmlNewElement(colors, "backcolor");
+		mxmlElementSetAttrf(backcolor, "r", "%d", short_swap_bytes(data3.backcolor[0]));
+		mxmlElementSetAttrf(backcolor, "g", "%d", short_swap_bytes(data3.backcolor[1]));
+		mxmlElementSetAttrf(backcolor, "b", "%d", short_swap_bytes(data3.backcolor[2]));
+		mxmlElementSetAttrf(backcolor, "a", "%d", short_swap_bytes(data3.backcolor[3]));
+
+		unk2 = mxmlNewElement(colors, "colorReg3");
+		mxmlElementSetAttrf(unk2, "r", "%d", short_swap_bytes(data3.colorReg3[0]));
+		mxmlElementSetAttrf(unk2, "g", "%d", short_swap_bytes(data3.colorReg3[1]));
+		mxmlElementSetAttrf(unk2, "b", "%d", short_swap_bytes(data3.colorReg3[2]));
+		mxmlElementSetAttrf(unk2, "a", "%d", short_swap_bytes(data3.colorReg3[3]));
+
+		tev_k = mxmlNewElement(colors, "tev_k1");
+		mxmlElementSetAttrf(tev_k, "r", "%02x", ( be32(data3.tev_kcolor[0]) >> 24 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "g", "%02x", ( be32(data3.tev_kcolor[0]) >> 16 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "b", "%02x", ( be32(data3.tev_kcolor[0]) >>  8 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "a", "%02x", ( be32(data3.tev_kcolor[0]) >>  0 ) & 0xff );
+
+		tev_k = mxmlNewElement(colors, "tev_k2");
+		mxmlElementSetAttrf(tev_k, "r", "%02x", ( be32(data3.tev_kcolor[1]) >> 24 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "g", "%02x", ( be32(data3.tev_kcolor[1]) >> 16 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "b", "%02x", ( be32(data3.tev_kcolor[1]) >>  8 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "a", "%02x", ( be32(data3.tev_kcolor[1]) >>  0 ) & 0xff );
+
+		tev_k = mxmlNewElement(colors, "tev_k3");
+		mxmlElementSetAttrf(tev_k, "r", "%02x", ( be32(data3.tev_kcolor[2]) >> 24 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "g", "%02x", ( be32(data3.tev_kcolor[2]) >> 16 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "b", "%02x", ( be32(data3.tev_kcolor[2]) >>  8 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "a", "%02x", ( be32(data3.tev_kcolor[2]) >>  0 ) & 0xff );
+
+		tev_k = mxmlNewElement(colors, "tev_k4");
+		mxmlElementSetAttrf(tev_k, "r", "%02x", ( be32(data3.tev_kcolor[3]) >> 24 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "g", "%02x", ( be32(data3.tev_kcolor[3]) >> 16 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "b", "%02x", ( be32(data3.tev_kcolor[3]) >>  8 ) & 0xff );
+		mxmlElementSetAttrf(tev_k, "a", "%02x", ( be32(data3.tev_kcolor[3]) >>  0 ) & 0xff );
 
 		//flags = mxmlNewElement(entries, "flags"); mxmlNewTextf(flags, 0, "%08x", be32(data3.flags));
 
@@ -718,15 +779,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 			BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_texref_chunk));
 			int tplOffset = short_swap_bytes(data4.tex_offs);
 			texture = mxmlNewElement(entries, "texture"); mxmlElementSetAttrf(texture, "name", "%s", getTexture(tplOffset));
-
-			char wraps[4][20];
-			int l;
-			for ( l = 0 ; l < 4 ; l++ )
-				memset( wraps , 0 , 20 );
-			strcpy( wraps[0] , "GX_CLAMP" );
-			strcpy( wraps[1] , "GX_REPEAT" );
-			strcpy( wraps[2] , "GX_MIRROR" );
-			strcpy( wraps[3] , "GX_MAXTEXWRAPMODE" );
 
 			wrap_s = mxmlNewElement(texture, "wrap_s");
 			mxmlNewTextf(wrap_s, 0, "%s", wraps[data4.wrap_s]);
@@ -752,93 +804,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 		//# 4*flags[20-23], followed by
 				for (n=0;n<bit_extract(flaggs, 20,23);n++)
 				{
-						char tgen_types[11][20];
-						int l;
-						for ( l = 0 ; l < 11 ; l++ )
-							memset( tgen_types[l] , 0 , 20 );
-						strcpy( tgen_types[0]  , "GX_TG_MTX3x4" );
-						strcpy( tgen_types[1]  , "GX_TG_MTX2x4" );
-						strcpy( tgen_types[2]  , "GX_TG_BUMP0" );
-						strcpy( tgen_types[3]  , "GX_TG_BUMP1" );
-						strcpy( tgen_types[4]  , "GX_TG_BUMP2" );
-						strcpy( tgen_types[5]  , "GX_TG_BUMP3" );
-						strcpy( tgen_types[6]  , "GX_TG_BUMP4" );
-						strcpy( tgen_types[7]  , "GX_TG_BUMP5" );
-						strcpy( tgen_types[8]  , "GX_TG_BUMP6" );
-						strcpy( tgen_types[9]  , "GX_TG_BUMP7" );
-						strcpy( tgen_types[10] , "GX_TG_SRTG" );
-
-						char tgen_src[21][20];
-						for ( l = 0 ; l < 21 ; l++ )
-							memset( tgen_src[l] , 0 , 20 );
-						strcpy( tgen_src[0]  , "GX_TG_POS" );
-						strcpy( tgen_src[1]  , "GX_TG_NRM" );
-						strcpy( tgen_src[2]  , "GX_TG_BINRM" );
-						strcpy( tgen_src[3]  , "GX_TG_TANGEN" );
-						strcpy( tgen_src[4]  , "GX_TG_TEX0" );
-						strcpy( tgen_src[5]  , "GX_TG_TEX1" );
-						strcpy( tgen_src[6]  , "GX_TG_TEX2" );
-						strcpy( tgen_src[7]  , "GX_TG_TEX3" );
-						strcpy( tgen_src[8]  , "GX_TG_TEX4" );
-						strcpy( tgen_src[9]  , "GX_TG_TEX5" );
-						strcpy( tgen_src[10] , "GX_TG_TEX6" );
-						strcpy( tgen_src[11] , "GX_TG_TEX7" );
-						strcpy( tgen_src[12] , "GX_TG_TEXCOORD0" );
-						strcpy( tgen_src[13] , "GX_TG_TEXCOORD1" );
-						strcpy( tgen_src[14] , "GX_TG_TEXCOORD2" );
-						strcpy( tgen_src[15] , "GX_TG_TEXCOORD3" );
-						strcpy( tgen_src[16] , "GX_TG_TEXCOORD4" );
-						strcpy( tgen_src[17] , "GX_TG_TEXCOORD5" );
-						strcpy( tgen_src[18] , "GX_TG_TEXCOORD6" );
-						strcpy( tgen_src[19] , "GX_TG_COLOR0" );
-						strcpy( tgen_src[20] , "GX_TG_COLOR1" );
-
-						char mtxsrc[42][20];
-						for ( l = 0 ; l < 42 ; l++ )
-							memset( mtxsrc[l] , 0 , 20 );
-						strcpy( mtxsrc[0]  , "GX_PNMTX0" );
-						strcpy( mtxsrc[1]  , "GX_PNMTX1" );
-						strcpy( mtxsrc[2]  , "GX_PNMTX2" );
-						strcpy( mtxsrc[3]  , "GX_PNMTX3" );
-						strcpy( mtxsrc[4]  , "GX_PNMTX4" );
-						strcpy( mtxsrc[5]  , "GX_PNMTX5" );
-						strcpy( mtxsrc[6]  , "GX_PNMTX6" );
-						strcpy( mtxsrc[7]  , "GX_PNMTX7" );
-						strcpy( mtxsrc[8]  , "GX_PNMTX8" );
-						strcpy( mtxsrc[9]  , "GX_PNMTX9" );
-						strcpy( mtxsrc[10] , "GX_TEXMTX0" );
-						strcpy( mtxsrc[11] , "GX_TEXMTX1" );
-						strcpy( mtxsrc[12] , "GX_TEXMTX2" );
-						strcpy( mtxsrc[13] , "GX_TEXMTX3" );
-						strcpy( mtxsrc[14] , "GX_TEXMTX4" );
-						strcpy( mtxsrc[15] , "GX_TEXMTX5" );
-						strcpy( mtxsrc[16] , "GX_TEXMTX6" );
-						strcpy( mtxsrc[17] , "GX_TEXMTX7" );
-						strcpy( mtxsrc[18] , "GX_TEXMTX8" );
-						strcpy( mtxsrc[19] , "GX_TEXMTX9" );
-						strcpy( mtxsrc[20] , "GX_IDENTITY" );
-						strcpy( mtxsrc[21] , "GX_DTTMTX0" );
-						strcpy( mtxsrc[22] , "GX_DTTMTX1" );
-						strcpy( mtxsrc[23] , "GX_DTTMTX2" );
-						strcpy( mtxsrc[24] , "GX_DTTMTX3" );
-						strcpy( mtxsrc[25] , "GX_DTTMTX4" );
-						strcpy( mtxsrc[26] , "GX_DTTMTX5" );
-						strcpy( mtxsrc[27] , "GX_DTTMTX6" );
-						strcpy( mtxsrc[28] , "GX_DTTMTX7" );
-						strcpy( mtxsrc[29] , "GX_DTTMTX8" );
-						strcpy( mtxsrc[30] , "GX_DTTMTX9" );
-						strcpy( mtxsrc[31] , "GX_DTTMTX1" );
-						strcpy( mtxsrc[32] , "GX_DTTMTX1" );
-						strcpy( mtxsrc[33] , "GX_DTTMTX12" );
-						strcpy( mtxsrc[34] , "GX_DTTMTX13" );
-						strcpy( mtxsrc[35] , "GX_DTTMTX14" );
-						strcpy( mtxsrc[36] , "GX_DTTMTX15" );
-						strcpy( mtxsrc[37] , "GX_DTTMTX16" );
-						strcpy( mtxsrc[38] , "GX_DTTMTX17" );
-						strcpy( mtxsrc[39] , "GX_DTTMTX18" );
-						strcpy( mtxsrc[40] , "GX_DTTMTX19" );
-						strcpy( mtxsrc[41] , "GX_DTTIDENTITY" );	// actually 125 not 124
-
 						brlyt_tex_coordgen data4;
 						BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_tex_coordgen));
 						ua3 = mxmlNewElement(entries, "CoordGen");
@@ -856,13 +821,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 		//# 4 * flags[6]
 				for (n=0;n<bit_extract(flaggs, 6,100);n++)
 				{
-						char matsrc[2][20];
-						int l;
-						for ( l = 0 ; l < 2 ; l++ )
-							memset( matsrc[l] , 0 , 20 );
-						strcpy( matsrc[0]  , "GX_SRC_REG" );
-						strcpy( matsrc[1]  , "GX_SRC_VTX" );
-
 						brlyt_tex_chanctrl data4;
 						BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_tex_chanctrl));
 						ua4 = mxmlNewElement(entries, "ChanControl");
@@ -896,15 +854,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 		//# 4 * flags[19]
 				for (n=0;n<bit_extract(flaggs, 19,100);n++)
 				{
-						char tevcolor[4][20];
-						int l;
-						for ( l = 0 ; l < 4 ; l++ )
-							memset( tevcolor[l] , 0 , 20 );
-						strcpy( tevcolor[0]  , "GX_CH_RED" );
-						strcpy( tevcolor[1]  , "GX_CH_GREEN" );
-						strcpy( tevcolor[2]  , "GX_CH_BLUE" );
-						strcpy( tevcolor[3]  , "GX_CH_ALPHA" );
-
 						brlyt_tev_swapmodetable data4;
 						BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_tev_swapmodetable));
 
@@ -965,21 +914,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 		//# 4 * flags[14-16]
 				for (n=0;n<bit_extract(flaggs, 14,16);n++)
 				{
-						char scale[10][20];
-						int l;
-						for ( l = 0 ; l < 10 ; l++ )
-							memset( scale[l] , 0 , 20 );
-						strcpy( scale[0]  , "GX_ITS_1" );
-						strcpy( scale[1]  , "GX_ITS_2" );
-						strcpy( scale[2]  , "GX_ITS_4" );
-						strcpy( scale[3]  , "GX_ITS_8" );
-						strcpy( scale[4]  , "GX_ITS_16" );
-						strcpy( scale[5]  , "GX_ITS_32" );
-						strcpy( scale[6]  , "GX_ITS_64" );
-						strcpy( scale[7]  , "GX_ITS_128" );
-						strcpy( scale[8]  , "GX_ITS_256" );
-						strcpy( scale[9]  , "GX_MAX_ITSCALE" );
-
 						brlyt_indtex_order data4;
 						BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_indtex_order));
 						ua8 = mxmlNewElement(entries, "IndTextureOrder");
@@ -1120,28 +1054,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 		//# 4 * flags[8]
 				for (n=0;n<bit_extract(flaggs, 8,8);n++)
 				{
-						char compare[8][20];
-						int l;
-						for ( l = 0 ; l < 8 ; l++ )
-							memset( compare[l] , 0 , 20 );
-						strcpy( compare[0]  , "GX_NEVER" );
-						strcpy( compare[1]  , "GX_LESS" );
-						strcpy( compare[2]  , "GX_EQUAL" );
-						strcpy( compare[3]  , "GX_LEQUAL" );
-						strcpy( compare[4]  , "GX_GREATER" );
-						strcpy( compare[5]  , "GX_NEQUAL" );
-						strcpy( compare[6]  , "GX_GEQUAL" );
-						strcpy( compare[7]  , "GX_ALWAYS" );
-
-						char aop[5][20];
-						for ( l = 0 ; l < 5 ; l++ )
-							memset( aop[l] , 0 , 20 );
-						strcpy( aop[0]  , "GX_AOP_AND" );
-						strcpy( aop[1]  , "GX_AOP_OR" );
-						strcpy( aop[2]  , "GX_AOP_XOR" );
-						strcpy( aop[3]  , "GX_AOP_XNOR" );
-						strcpy( aop[4]  , "GX_MAX_ALPHAOP" );
-
 						brlyt_alpha_compare data4;
 						BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_alpha_compare));
 						uaa = mxmlNewElement(entries, "AlphaCompare");
@@ -1159,48 +1071,6 @@ void PrintBRLYTEntry_mat1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 		//# 4 * flags[7]
 				for (n=0;n<bit_extract(flaggs, 7,7);n++)
 				{
-						char blendmode[5][20];
-						int l;
-						for ( l = 0 ; l < 5 ; l++ )
-							memset( blendmode[l] , 0 , 20 );
-						strcpy( blendmode[0]  , "GX_BM_NONE" );
-						strcpy( blendmode[1]  , "GX_BM_BLEND" );
-						strcpy( blendmode[2]  , "GX_BM_LOGIC" );
-						strcpy( blendmode[3]  , "GX_BM_SUBTRACT" );
-						strcpy( blendmode[4]  , "GX_MAX_BLENDMODE" );
-
-						char blendfactor[8][20];
-						for ( l = 0 ; l < 8 ; l++ )
-							memset( blendfactor[l] , 0 , 20 );
-						strcpy( blendfactor[0]  , "GX_BL_ZERO" );
-						strcpy( blendfactor[1]  , "GX_BL_ONE" );
-						strcpy( blendfactor[2]  , "GX_BL_SRCCLR" );
-						strcpy( blendfactor[3]  , "GX_BL_INVSRCCLR" );
-						strcpy( blendfactor[4]  , "GX_BL_SRCALPHA" );
-						strcpy( blendfactor[5]  , "GX_BL_INVSRCALPHA" );
-						strcpy( blendfactor[6]  , "GX_BL_DSTALPHA" );
-						strcpy( blendfactor[7]  , "GX_BL_INVDSTALPHA" );
-
-						char logicop[16][20];
-						for ( l = 0 ; l < 16 ; l++ )
-							memset( logicop[l] , 0 , 20 );
-						strcpy( logicop[0]   , "GX_LO_CLEAR" );
-						strcpy( logicop[1]   , "GX_LO_AND" );
-						strcpy( logicop[2]   , "GX_LO_REVAND" );
-						strcpy( logicop[3]   , "GX_LO_COPY" );
-						strcpy( logicop[4]   , "GX_LO_INVAND" );
-						strcpy( logicop[5]   , "GX_LO_NOOP" );
-						strcpy( logicop[6]   , "GX_LO_XOR" );
-						strcpy( logicop[7]   , "GX_LO_OR" );
-						strcpy( logicop[8]   , "GX_LO_NOR" );
-						strcpy( logicop[9]   , "GX_LO_EQUIV" );
-						strcpy( logicop[10]  , "GX_LO_INV" );
-						strcpy( logicop[11]  , "GX_LO_REVOR" );
-						strcpy( logicop[12]  , "GX_LO_INVCOPY" );
-						strcpy( logicop[13]  , "GX_LO_INVOR" );
-						strcpy( logicop[14]  , "GX_LO_NAND" );
-						strcpy( logicop[15]  , "GX_LO_SET" );
-
 						brlyt_blend_mode data4;
 						BRLYT_ReadDataFromMemory(&data4, brlyt_file, sizeof(brlyt_blend_mode));
 						uab = mxmlNewElement(entries, "BlendMode");
@@ -1280,6 +1150,8 @@ void PrintBRLYTEntries(brlyt_entry *entries, int entrycnt, u8* brlyt_file, mxml_
 
 void parse_brlyt(char *filename, char *filenameout)
 {
+	SetupConstants();
+
 	materials = (char*)malloc(12);
 	numberOfMaterials = 0;
 	lengthOfMaterials = 0;
@@ -1304,6 +1176,7 @@ void parse_brlyt(char *filename, char *filenameout)
 	brlyt_entry *entries;
 	BRLYT_fileoffset = short_swap_bytes(header.lyt_offset);
 	brlyt_entry_header tempentry;
+
 	int i;
 	for(i = 0; BRLYT_fileoffset < file_size; i++) {
 		BRLYT_ReadDataFromMemoryX(&tempentry, brlyt_file, sizeof(brlyt_entry_header));
@@ -1342,7 +1215,186 @@ void parse_brlyt(char *filename, char *filenameout)
 	free(textures);
 }
 
-void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* blobsize, char temp[4], FILE* fp, u32 *fileOffset)
+void WritePane( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u32 * blobsize , FILE * fp , u32 * fileOffset )
+{
+		brlyt_pane_chunk chunk;
+		char temp[256];
+		if(mxmlElementGetAttr(node, "name") != NULL)
+			strcpy(temp, mxmlElementGetAttr(node, "name"));
+		else{
+			printf("No name attribute found!\nQuitting!\n");
+			exit(1);
+		}
+		memset(chunk.name, 0, 24);
+		strcpy(chunk.name, temp);
+
+		mxml_node_t *subnode = mxmlFindElement(node, node, "translate", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			mxml_node_t *valnode;
+			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.XTrans = float_swap_bytes(atof(tempCoord));
+			}
+			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.YTrans = float_swap_bytes(atof(tempCoord));
+			}
+			valnode = mxmlFindElement(subnode, subnode, "z", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.ZTrans = float_swap_bytes(atof(tempCoord));
+			}
+		}
+		subnode = mxmlFindElement(node, node, "rotate", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			mxml_node_t *valnode;
+			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.XRotate = float_swap_bytes(atof(tempCoord));
+			}
+			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.YRotate = float_swap_bytes(atof(tempCoord));
+			}
+			valnode = mxmlFindElement(subnode, subnode, "z", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.ZRotate = float_swap_bytes(atof(tempCoord));
+			}
+		}
+		subnode = mxmlFindElement(node, node, "scale", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			mxml_node_t *valnode;
+			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.XScale = float_swap_bytes(atof(tempCoord));
+			}
+			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.YScale = float_swap_bytes(atof(tempCoord));
+			}
+		}
+		subnode = mxmlFindElement(node, node, "size", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			mxml_node_t *valnode;
+			valnode = mxmlFindElement(subnode, subnode, "width", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.width = float_swap_bytes(atof(tempCoord));
+			}
+			valnode = mxmlFindElement(subnode, subnode, "height", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk.height = float_swap_bytes(atof(tempCoord));
+			}
+		}
+
+		u8 flag1 = 0;
+		subnode = mxmlFindElement(node, node, "visible", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			char tempCoord[256];
+			get_value(subnode, tempCoord, 256);
+			flag1 |= strtol(tempCoord, NULL, 16);
+		}
+		subnode = mxmlFindElement(node, node, "WidescreenAffected", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			char tempCoord[256];
+			get_value(subnode, tempCoord, 256);
+			flag1 |= ( strtol(tempCoord, NULL, 16) << 1 );
+		}
+		subnode = mxmlFindElement(node, node, "flag", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			char tempCoord[256];
+			get_value(subnode, tempCoord, 256);
+			flag1 |= ( strtol(tempCoord, NULL, 16) << 2 );
+		}
+		chunk.flag1 = flag1;
+		subnode = mxmlFindElement(node, node, "origin", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			int i;
+			char originL , originH;
+			char temp[256];
+			memset( temp , 0 , 256 );
+			if(mxmlElementGetAttr(subnode, "x") != NULL)
+				strcpy(temp, mxmlElementGetAttr(subnode, "x"));
+			else{
+				printf("No x attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			for ( i = 0 ; i < 3 ; i++ ) {
+				if ( strncmp( originX[i] , temp , 15 ) == 0 ) {
+					originL = i;
+					break;
+				}
+			}
+			memset( temp , 0 , 256 );
+			if(mxmlElementGetAttr(subnode, "y") != NULL)
+				strcpy(temp, mxmlElementGetAttr(subnode, "y"));
+			else{
+				printf("No y attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			for ( i = 0 ; i < 3 ; i++ ) {
+				if ( strncmp( originY[i] , temp , 15 ) == 0 ) {
+					originH = i;
+					break;
+				}
+			}
+			chunk.origin = ( originH * 3 ) + ( originL );
+		}
+		subnode = mxmlFindElement(node, node, "alpha", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			char tempCoord[256];
+			get_value(subnode, tempCoord, 256);
+			chunk.alpha = strtol(tempCoord, NULL, 16);
+		}
+		subnode = mxmlFindElement(node, node, "padding", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			char tempCoord[256];
+			get_value(subnode, tempCoord, 256);
+			chunk.pad = strtol(tempCoord, NULL, 16);
+		}
+		fwrite(&chunk, sizeof(chunk), 1, fp);
+		*fileOffset = *fileOffset + sizeof(chunk);
+}
+
+void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u32 * blobsize , char temp[4] , FILE * fp , u32 * fileOffset )
 {
 	u32 startOfChunk = *fileOffset;
 
@@ -1607,46 +1659,174 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 			if (setnode != NULL)
 			{
 				mxml_node_t *valnode;
-				int colorNumber = 0;
-				for (valnode=mxmlFindElement(setnode, setnode, "forecolor", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "forecolor", NULL, NULL, MXML_DESCEND) )
+				valnode=mxmlFindElement(setnode, setnode, "forecolor", NULL, NULL, MXML_DESCEND);
+				if ( valnode != NULL )
 				{
 					char tempCoord[256];
-					get_value(valnode, tempCoord, 256);
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "r") );
+					chunk.forecolor[0] = strtol(tempCoord, NULL, 10);
+					chunk.forecolor[0] = short_swap_bytes(chunk.forecolor[0]);
 
-					chunk.forecolor[colorNumber] = strtol(tempCoord, NULL, 10);
-					chunk.forecolor[colorNumber] = short_swap_bytes(chunk.forecolor[colorNumber]);
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "g") );
+					chunk.forecolor[1] = strtol(tempCoord, NULL, 10);
+					chunk.forecolor[1] = short_swap_bytes(chunk.forecolor[1]);
 
-					colorNumber+=1;
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "b") );
+					chunk.forecolor[2] = strtol(tempCoord, NULL, 10);
+					chunk.forecolor[2] = short_swap_bytes(chunk.forecolor[2]);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "a") );
+					chunk.forecolor[3] = strtol(tempCoord, NULL, 10);
+					chunk.forecolor[3] = short_swap_bytes(chunk.forecolor[3]);
 				}
-				colorNumber = 0;
-				for (valnode=mxmlFindElement(setnode, setnode, "backcolor", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "backcolor", NULL, NULL, MXML_DESCEND) )
+				valnode=mxmlFindElement(setnode, setnode, "backcolor", NULL, NULL, MXML_DESCEND);
+				if ( valnode != NULL )
 				{
 					char tempCoord[256];
-					get_value(valnode, tempCoord, 256);
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "r") );
+					chunk.backcolor[0] = strtol(tempCoord, NULL, 10);
+					chunk.backcolor[0] = short_swap_bytes(chunk.backcolor[0]);
 
-					chunk.backcolor[colorNumber] = strtol(tempCoord, NULL, 10);
-					chunk.backcolor[colorNumber] = short_swap_bytes(chunk.backcolor[colorNumber]);
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "g") );
+					chunk.backcolor[1] = strtol(tempCoord, NULL, 10);
+					chunk.backcolor[1] = short_swap_bytes(chunk.backcolor[1]);
 
-					colorNumber+=1;
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "b") );
+					chunk.backcolor[2] = strtol(tempCoord, NULL, 10);
+					chunk.backcolor[2] = short_swap_bytes(chunk.backcolor[2]);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "a") );
+					chunk.backcolor[3] = strtol(tempCoord, NULL, 10);
+					chunk.backcolor[3] = short_swap_bytes(chunk.backcolor[3]);
 				}
-				colorNumber = 0;
-				for (valnode=mxmlFindElement(setnode, setnode, "colorReg3", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "colorReg3", NULL, NULL, MXML_DESCEND) )
+				valnode=mxmlFindElement(setnode, setnode, "colorReg3", NULL, NULL, MXML_DESCEND);
+				if ( valnode != NULL )
 				{
 					char tempCoord[256];
-					get_value(valnode, tempCoord, 256);
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "r") );
+					chunk.colorReg3[0] = strtol(tempCoord, NULL, 10);
+					chunk.colorReg3[0] = short_swap_bytes(chunk.colorReg3[0]);
 
-					chunk.colorReg3[colorNumber] = strtol(tempCoord, NULL, 10);
-					chunk.colorReg3[colorNumber] = short_swap_bytes(chunk.colorReg3[colorNumber]);
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "g") );
+					chunk.colorReg3[1] = strtol(tempCoord, NULL, 10);
+					chunk.colorReg3[1] = short_swap_bytes(chunk.colorReg3[1]);
 
-					colorNumber+=1;
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "b") );
+					chunk.colorReg3[2] = strtol(tempCoord, NULL, 10);
+					chunk.colorReg3[2] = short_swap_bytes(chunk.colorReg3[2]);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy( tempCoord , mxmlElementGetAttr( valnode , "a") );
+					chunk.colorReg3[3] = strtol(tempCoord, NULL, 10);
+					chunk.colorReg3[3] = short_swap_bytes(chunk.colorReg3[3]);
 				}
-				colorNumber = 0;
-				for (valnode=mxmlFindElement(setnode, setnode, "tev_k", NULL, NULL, MXML_DESCEND) ; valnode != NULL  ; valnode=mxmlFindElement(valnode, setnode, "tev_k", NULL, NULL, MXML_DESCEND) )
+
+				valnode=mxmlFindElement(setnode, setnode, "tev_k1", NULL, NULL, MXML_DESCEND);
 				{
+					u32 red, green, blue, alpha;
 					char tempCoord[256];
-					get_value(valnode, tempCoord, 256);
-					chunk.tev_kcolor[colorNumber] = be32(strtoul(tempCoord, NULL, 16));
-					colorNumber+=1;
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "r"));
+					red = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "g"));
+					green = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "b"));
+					blue = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "a"));
+					alpha = strtoul(tempCoord, NULL, 16);
+
+					chunk.tev_kcolor[0] = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+					chunk.tev_kcolor[0] = int_swap_bytes( chunk.tev_kcolor[0] );
+				}
+				valnode=mxmlFindElement(setnode, setnode, "tev_k2", NULL, NULL, MXML_DESCEND);
+				{
+					u32 red, green, blue, alpha;
+					char tempCoord[256];
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "r"));
+					red = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "g"));
+					green = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "b"));
+					blue = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "a"));
+					alpha = strtoul(tempCoord, NULL, 16);
+
+					chunk.tev_kcolor[1] = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+					chunk.tev_kcolor[1] = int_swap_bytes( chunk.tev_kcolor[1] );
+				}
+				valnode=mxmlFindElement(setnode, setnode, "tev_k3", NULL, NULL, MXML_DESCEND);
+				{
+					u32 red, green, blue, alpha;
+					char tempCoord[256];
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "r"));
+					red = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "g"));
+					green = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "b"));
+					blue = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "a"));
+					alpha = strtoul(tempCoord, NULL, 16);
+
+					chunk.tev_kcolor[2] = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+					chunk.tev_kcolor[2] = int_swap_bytes( chunk.tev_kcolor[2] );
+				}
+				valnode=mxmlFindElement(setnode, setnode, "tev_k4", NULL, NULL, MXML_DESCEND);
+				{
+					u32 red, green, blue, alpha;
+					char tempCoord[256];
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "r"));
+					red = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "g"));
+					green = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "b"));
+					blue = strtoul(tempCoord, NULL, 16);
+
+					memset( tempCoord , 0 , 256 );
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "a"));
+					alpha = strtoul(tempCoord, NULL, 16);
+
+					chunk.tev_kcolor[3] = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+					chunk.tev_kcolor[3] = int_swap_bytes( chunk.tev_kcolor[3] );
 				}
 			}
 			/*
@@ -1671,6 +1851,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 			brlyt_texref_chunk chunkTexRef;
 			for(setnode = mxmlFindElement(subnode, subnode, "texture", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "texture", NULL, NULL, MXML_DESCEND))
 			{
+				int l;
 				mxml_node_t *valnode;
 				char temp[256];
 				if(mxmlElementGetAttr(setnode, "name") != NULL)
@@ -1682,15 +1863,6 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 				chunkTexRef.tex_offs = short_swap_bytes(findTexOffset(temp));
 
 				valnode=mxmlFindElement(setnode, setnode, "wrap_s", NULL, NULL, MXML_DESCEND);
-
-				char wraps[4][20];
-				int l;
-				for ( l = 0 ; l < 4 ; l++ )
-					memset( wraps , 0 , 20 );
-				strcpy( wraps[0] , "GX_CLAMP" );
-				strcpy( wraps[1] , "GX_REPEAT" );
-				strcpy( wraps[2] , "GX_MIRROR" );
-				strcpy( wraps[3] , "GX_MAXTEXWRAPMODE" );
 
 				char tempCoord[256];
 				get_value(valnode, tempCoord, 256);
@@ -1756,93 +1928,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 			brlyt_tex_coordgen chunkUa3;
 			for(setnode = mxmlFindElement(subnode, subnode, "CoordGen", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "CoordGen", NULL, NULL, MXML_DESCEND))
 			{
-				char tgen_types[4][20];
 				int l;
-				for ( l = 0 ; l < 4 ; l++ )
-					memset( tgen_types , 0 , 20 );
-				strcpy( tgen_types[0]  , "GX_TG_MTX3x4" );
-				strcpy( tgen_types[1]  , "GX_TG_MTX2x4" );
-				strcpy( tgen_types[2]  , "GX_TG_BUMP0" );
-				strcpy( tgen_types[3]  , "GX_TG_BUMP1" );
-				strcpy( tgen_types[4]  , "GX_TG_BUMP2" );
-				strcpy( tgen_types[5]  , "GX_TG_BUMP3" );
-				strcpy( tgen_types[6]  , "GX_TG_BUMP4" );
-				strcpy( tgen_types[7]  , "GX_TG_BUMP5" );
-				strcpy( tgen_types[8]  , "GX_TG_BUMP6" );
-				strcpy( tgen_types[9]  , "GX_TG_BUMP7" );
-				strcpy( tgen_types[10] , "GX_TG_SRTG" );
-
-				char tgen_src[21][20];
-				for ( l = 0 ; l < 21 ; l++ )
-					memset( tgen_src[l] , 0 , 20 );
-				strcpy( tgen_src[0]  , "GX_TG_POS" );
-				strcpy( tgen_src[1]  , "GX_TG_NRM" );
-				strcpy( tgen_src[2]  , "GX_TG_BINRM" );
-				strcpy( tgen_src[3]  , "GX_TG_TANGEN" );
-				strcpy( tgen_src[4]  , "GX_TG_TEX0" );
-				strcpy( tgen_src[5]  , "GX_TG_TEX1" );
-				strcpy( tgen_src[6]  , "GX_TG_TEX2" );
-				strcpy( tgen_src[7]  , "GX_TG_TEX3" );
-				strcpy( tgen_src[8]  , "GX_TG_TEX4" );
-				strcpy( tgen_src[9]  , "GX_TG_TEX5" );
-				strcpy( tgen_src[10] , "GX_TG_TEX6" );
-				strcpy( tgen_src[11] , "GX_TG_TEX7" );
-				strcpy( tgen_src[12] , "GX_TG_TEXCOORD0" );
-				strcpy( tgen_src[13] , "GX_TG_TEXCOORD1" );
-				strcpy( tgen_src[14] , "GX_TG_TEXCOORD2" );
-				strcpy( tgen_src[15] , "GX_TG_TEXCOORD3" );
-				strcpy( tgen_src[16] , "GX_TG_TEXCOORD4" );
-				strcpy( tgen_src[17] , "GX_TG_TEXCOORD5" );
-				strcpy( tgen_src[18] , "GX_TG_TEXCOORD6" );
-				strcpy( tgen_src[19] , "GX_TG_COLOR0" );
-				strcpy( tgen_src[20] , "GX_TG_COLOR1" );
-
-				char mtxsrc[42][20];
-				for ( l = 0 ; l < 42 ; l++ )
-					memset( mtxsrc[l] , 0 , 20 );
-				strcpy( mtxsrc[0]  , "GX_PNMTX0" );
-				strcpy( mtxsrc[1]  , "GX_PNMTX1" );
-				strcpy( mtxsrc[2]  , "GX_PNMTX2" );
-				strcpy( mtxsrc[3]  , "GX_PNMTX3" );
-				strcpy( mtxsrc[4]  , "GX_PNMTX4" );
-				strcpy( mtxsrc[5]  , "GX_PNMTX5" );
-				strcpy( mtxsrc[6]  , "GX_PNMTX6" );
-				strcpy( mtxsrc[7]  , "GX_PNMTX7" );
-				strcpy( mtxsrc[8]  , "GX_PNMTX8" );
-				strcpy( mtxsrc[9]  , "GX_PNMTX9" );
-				strcpy( mtxsrc[10] , "GX_TEXMTX0" );
-				strcpy( mtxsrc[11] , "GX_TEXMTX1" );
-				strcpy( mtxsrc[12] , "GX_TEXMTX2" );
-				strcpy( mtxsrc[13] , "GX_TEXMTX3" );
-				strcpy( mtxsrc[14] , "GX_TEXMTX4" );
-				strcpy( mtxsrc[15] , "GX_TEXMTX5" );
-				strcpy( mtxsrc[16] , "GX_TEXMTX6" );
-				strcpy( mtxsrc[17] , "GX_TEXMTX7" );
-				strcpy( mtxsrc[18] , "GX_TEXMTX8" );
-				strcpy( mtxsrc[19] , "GX_TEXMTX9" );
-				strcpy( mtxsrc[20] , "GX_IDENTITY" );
-				strcpy( mtxsrc[21] , "GX_DTTMTX0" );
-				strcpy( mtxsrc[22] , "GX_DTTMTX1" );
-				strcpy( mtxsrc[23] , "GX_DTTMTX2" );
-				strcpy( mtxsrc[24] , "GX_DTTMTX3" );
-				strcpy( mtxsrc[25] , "GX_DTTMTX4" );
-				strcpy( mtxsrc[26] , "GX_DTTMTX5" );
-				strcpy( mtxsrc[27] , "GX_DTTMTX6" );
-				strcpy( mtxsrc[28] , "GX_DTTMTX7" );
-				strcpy( mtxsrc[29] , "GX_DTTMTX8" );
-				strcpy( mtxsrc[30] , "GX_DTTMTX9" );
-				strcpy( mtxsrc[31] , "GX_DTTMTX1" );
-				strcpy( mtxsrc[32] , "GX_DTTMTX1" );
-				strcpy( mtxsrc[33] , "GX_DTTMTX12" );
-				strcpy( mtxsrc[34] , "GX_DTTMTX13" );
-				strcpy( mtxsrc[35] , "GX_DTTMTX14" );
-				strcpy( mtxsrc[36] , "GX_DTTMTX15" );
-				strcpy( mtxsrc[37] , "GX_DTTMTX16" );
-				strcpy( mtxsrc[38] , "GX_DTTMTX17" );
-				strcpy( mtxsrc[39] , "GX_DTTMTX18" );
-				strcpy( mtxsrc[40] , "GX_DTTMTX19" );
-				strcpy( mtxsrc[41] , "GX_DTTIDENTITY" );	// actually 125 not 124
-
 				mxml_node_t *valnode;
 				char tempCoord[256];
 
@@ -1897,13 +1983,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 			brlyt_tex_chanctrl chunkUa4;
 			for(setnode = mxmlFindElement(subnode, subnode, "ChanControl", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "ChanControl", NULL, NULL, MXML_DESCEND))
 			{
-				char matsrc[2][20];
 				int l;
-				for ( l = 0 ; l < 2 ; l++ )
-					memset( matsrc[l] , 0 , 20 );
-				strcpy( matsrc[0]  , "GX_SRC_REG" );
-				strcpy( matsrc[1]  , "GX_SRC_VTX" );
-
 				mxml_node_t *valnode;
 				char tempCoord[256];
 
@@ -1985,15 +2065,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 			brlyt_tev_swapmodetable chunkUa6;
 			for(setnode = mxmlFindElement(subnode, subnode, "TevSwapModeTable", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "TevSwapModeTable", NULL, NULL, MXML_DESCEND))
 			{
-				char tevcolor[4][20];
 				int l;
-				for ( l = 0 ; l < 4 ; l++ )
-					memset( tevcolor[l] , 0 , 20 );
-				strcpy( tevcolor[0]  , "GX_CH_RED" );
-				strcpy( tevcolor[1]  , "GX_CH_GREEN" );
-				strcpy( tevcolor[2]  , "GX_CH_BLUE" );
-				strcpy( tevcolor[3]  , "GX_CH_ALPHA" );
-
 				mxml_node_t *valnode;
 				char tempCoord[256];
 
@@ -2237,21 +2309,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 			brlyt_indtex_order chunkUa8;
 			for(setnode = mxmlFindElement(subnode, subnode, "IndTextureOrder", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "IndTextureOrder", NULL, NULL, MXML_DESCEND))
 			{
-				char scale[10][20];
 				int l;
-				for ( l = 0 ; l < 10 ; l++ )
-					memset( scale[l] , 0 , 20 );
-				strcpy( scale[0]  , "GX_ITS_1" );
-				strcpy( scale[1]  , "GX_ITS_2" );
-				strcpy( scale[2]  , "GX_ITS_4" );
-				strcpy( scale[3]  , "GX_ITS_8" );
-				strcpy( scale[4]  , "GX_ITS_16" );
-				strcpy( scale[5]  , "GX_ITS_32" );
-				strcpy( scale[6]  , "GX_ITS_64" );
-				strcpy( scale[7]  , "GX_ITS_128" );
-				strcpy( scale[8]  , "GX_ITS_256" );
-				strcpy( scale[9]  , "GX_MAX_ITSCALE" );
-
 				mxml_node_t *valnode;
 				char tempCoord[256];
 
@@ -2506,28 +2564,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 			brlyt_alpha_compare chunkUaa;
 			for(setnode = mxmlFindElement(subnode, subnode, "AlphaCompare", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "AlphaCompare", NULL, NULL, MXML_DESCEND))
 			{
-				char compare[8][20];
 				int l;
-				for ( l = 0 ; l < 8 ; l++ )
-					memset( compare[l] , 0 , 20 );
-				strcpy( compare[0]  , "GX_NEVER" );
-				strcpy( compare[1]  , "GX_LESS" );
-				strcpy( compare[2]  , "GX_EQUAL" );
-				strcpy( compare[3]  , "GX_LEQUAL" );
-				strcpy( compare[4]  , "GX_GREATER" );
-				strcpy( compare[5]  , "GX_NEQUAL" );
-				strcpy( compare[6]  , "GX_GEQUAL" );
-				strcpy( compare[7]  , "GX_ALWAYS" );
-
-				char aop[5][20];
-				for ( l = 0 ; l < 5 ; l++ )
-					memset( aop[l] , 0 , 20 );
-				strcpy( aop[0]  , "GX_AOP_AND" );
-				strcpy( aop[1]  , "GX_AOP_OR" );
-				strcpy( aop[2]  , "GX_AOP_XOR" );
-				strcpy( aop[3]  , "GX_AOP_XNOR" );
-				strcpy( aop[4]  , "GX_MAX_ALPHAOP" );
-
 				mxml_node_t *valnode;
 				char tempCoord[256];
 
@@ -2584,48 +2621,7 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 			brlyt_blend_mode chunkUab;
 			for(setnode = mxmlFindElement(subnode, subnode, "BlendMode", NULL, NULL, MXML_DESCEND); setnode != NULL; setnode = mxmlFindElement(setnode, subnode, "BlendMode", NULL, NULL, MXML_DESCEND))
 			{
-				char blendmode[5][20];
 				int l;
-				for ( l = 0 ; l < 5 ; l++ )
-					memset( blendmode[l] , 0 , 20 );
-				strcpy( blendmode[0]  , "GX_BM_NONE" );
-				strcpy( blendmode[1]  , "GX_BM_BLEND" );
-				strcpy( blendmode[2]  , "GX_BM_LOGIC" );
-				strcpy( blendmode[3]  , "GX_BM_SUBTRACT" );
-				strcpy( blendmode[4]  , "GX_MAX_BLENDMODE" );
-
-				char blendfactor[8][20];
-				for ( l = 0 ; l < 8 ; l++ )
-					memset( blendfactor[l] , 0 , 20 );
-				strcpy( blendfactor[0]  , "GX_BL_ZERO" );
-				strcpy( blendfactor[1]  , "GX_BL_ONE" );
-				strcpy( blendfactor[2]  , "GX_BL_SRCCLR" );
-				strcpy( blendfactor[3]  , "GX_BL_INVSRCCLR" );
-				strcpy( blendfactor[4]  , "GX_BL_SRCALPHA" );
-				strcpy( blendfactor[5]  , "GX_BL_INVSRCALPHA" );
-				strcpy( blendfactor[6]  , "GX_BL_DSTALPHA" );
-				strcpy( blendfactor[7]  , "GX_BL_INVDSTALPHA" );
-
-				char logicop[16][20];
-				for ( l = 0 ; l < 16 ; l++ )
-					memset( logicop[l] , 0 , 20 );
-				strcpy( logicop[0]   , "GX_LO_CLEAR" );
-				strcpy( logicop[1]   , "GX_LO_AND" );
-				strcpy( logicop[2]   , "GX_LO_REVAND" );
-				strcpy( logicop[3]   , "GX_LO_COPY" );
-				strcpy( logicop[4]   , "GX_LO_INVAND" );
-				strcpy( logicop[5]   , "GX_LO_NOOP" );
-				strcpy( logicop[6]   , "GX_LO_XOR" );
-				strcpy( logicop[7]   , "GX_LO_OR" );
-				strcpy( logicop[8]   , "GX_LO_NOR" );
-				strcpy( logicop[9]   , "GX_LO_EQUIV" );
-				strcpy( logicop[10]  , "GX_LO_INV" );
-				strcpy( logicop[11]  , "GX_LO_REVOR" );
-				strcpy( logicop[12]  , "GX_LO_INVCOPY" );
-				strcpy( logicop[13]  , "GX_LO_INVOR" );
-				strcpy( logicop[14]  , "GX_LO_NAND" );
-				strcpy( logicop[15]  , "GX_LO_SET" );
-
 				mxml_node_t *valnode;
 				char tempCoord[256];
 
@@ -2702,522 +2698,19 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 	}
 	if ( memcmp(temp, pan1, sizeof(pan1)) == 0)
 	{
-		brlyt_pane_chunk chunk;
-		char temp[256];
-		if(mxmlElementGetAttr(node, "name") != NULL)
-			strcpy(temp, mxmlElementGetAttr(node, "name"));
-		else{
-			printf("No name attribute found!\nQuitting!\n");
-			exit(1);
-		}
-		memset(chunk.name, 0, 24);
-		strcpy(chunk.name, temp);
-
-		mxml_node_t *subnode = mxmlFindElement(node, node, "translate", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.XTrans = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.YTrans = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "z", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.ZTrans = float_swap_bytes(atof(tempCoord));
-			}
-		}
-		subnode = mxmlFindElement(node, node, "rotate", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.XRotate = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.YRotate = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "z", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.ZRotate = float_swap_bytes(atof(tempCoord));
-			}
-		}
-		subnode = mxmlFindElement(node, node, "scale", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.XScale = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.YScale = float_swap_bytes(atof(tempCoord));
-			}
-		}
-		subnode = mxmlFindElement(node, node, "size", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "width", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.width = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "height", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.height = float_swap_bytes(atof(tempCoord));
-			}
-		}
-
-		u8 flag1 = 0;
-		subnode = mxmlFindElement(node, node, "visible", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			flag1 |= strtol(tempCoord, NULL, 16);
-		}
-		subnode = mxmlFindElement(node, node, "WidescreenAffected", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			flag1 |= ( strtol(tempCoord, NULL, 16) << 1 );
-		}
-		subnode = mxmlFindElement(node, node, "flag", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			flag1 |= ( strtol(tempCoord, NULL, 16) << 2 );
-		}
-		chunk.flag1 = flag1;
-		subnode = mxmlFindElement(node, node, "origin", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char origins[9][15];
-			int o;
-			for ( o = 0 ; o < 8 ; o++ )
-				memset( origins[o] , 0 , 20 );
-			strcpy( origins[0] , "TOP LEFT" );
-			strcpy( origins[1] , "TOP CENTER" );
-			strcpy( origins[2] , "TOP RIGHT" );
-			strcpy( origins[3] , "MIDDLE LEFT" );
-			strcpy( origins[4] , "MIDDLE CENTER" );
-			strcpy( origins[5] , "MIDDLE RIGHT" );
-			strcpy( origins[6] , "BOTTOM LEFT" );
-			strcpy( origins[7] , "BOTTOM CENTER" );
-			strcpy( origins[8] , "BOTTOM RIGHT" );
-
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk.origin = strtol(tempCoord, NULL, 16);
-			int i;
-			for ( i = 0 ; i < 9 ; i++ ) {
-				if ( strncmp( origins[i] , tempCoord , 15 ) == 0 ) {
-					chunk.origin = i;
-					break;
-				}
-			}
-		}
-		subnode = mxmlFindElement(node, node, "alpha", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk.alpha = strtol(tempCoord, NULL, 16);
-		}
-		subnode = mxmlFindElement(node, node, "padding", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk.pad = strtol(tempCoord, NULL, 16);
-		}
-		fwrite(&chunk, sizeof(chunk), 1, fp);
-		*fileOffset = *fileOffset + sizeof(chunk);
+		WritePane( tree, node, tagblob, blobsize, fp, fileOffset );
 	}
 	if ( memcmp(temp, bnd1, sizeof(bnd1)) == 0)
 	{
-		brlyt_pane_chunk chunk;
-		char temp[256];
-		if(mxmlElementGetAttr(node, "name") != NULL)
-			strcpy(temp, mxmlElementGetAttr(node, "name"));
-		else{
-			printf("No name attribute found!\nQuitting!\n");
-			exit(1);
-		}
-		memset(chunk.name, 0, 24 * sizeof(char));
-		strcpy(chunk.name, temp);
-
-		mxml_node_t *subnode = mxmlFindElement(node, node, "translate", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.XTrans = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.YTrans = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "z", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.ZTrans = float_swap_bytes(atof(tempCoord));
-			}
-		}
-		subnode = mxmlFindElement(node, node, "rotate", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.XRotate = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.YRotate = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "z", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.ZRotate = float_swap_bytes(atof(tempCoord));
-			}
-		}
-		subnode = mxmlFindElement(node, node, "scale", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.XScale = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.YScale = float_swap_bytes(atof(tempCoord));
-			}
-		}
-		subnode = mxmlFindElement(node, node, "size", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "width", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.width = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "height", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.height = float_swap_bytes(atof(tempCoord));
-			}
-		}
-
-		u8 flag1 = 0;
-		subnode = mxmlFindElement(node, node, "visible", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			flag1 |= strtol(tempCoord, NULL, 16);
-		}
-		subnode = mxmlFindElement(node, node, "WidescreenAffected", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			flag1 |= ( strtol(tempCoord, NULL, 16) << 1 );
-		}
-		subnode = mxmlFindElement(node, node, "flag", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			flag1 |= ( strtol(tempCoord, NULL, 16) << 2 );
-		}
-		chunk.flag1 = flag1;
-		subnode = mxmlFindElement(node, node, "origin", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char origins[9][15];
-			int o;
-			for ( o = 0 ; o < 8 ; o++ )
-				memset( origins[o] , 0 , 20 );
-			strcpy( origins[0] , "TOP LEFT" );
-			strcpy( origins[1] , "TOP CENTER" );
-			strcpy( origins[2] , "TOP RIGHT" );
-			strcpy( origins[3] , "MIDDLE LEFT" );
-			strcpy( origins[4] , "MIDDLE CENTER" );
-			strcpy( origins[5] , "MIDDLE RIGHT" );
-			strcpy( origins[6] , "BOTTOM LEFT" );
-			strcpy( origins[7] , "BOTTOM CENTER" );
-			strcpy( origins[8] , "BOTTOM RIGHT" );
-
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk.origin = strtol(tempCoord, NULL, 16);
-			int i;
-			for ( i = 0 ; i < 9 ; i++ ) {
-				if ( strncmp( origins[i] , tempCoord , 15 ) == 0 ) {
-					chunk.origin = i;
-					break;
-				}
-			}
-		}
-		subnode = mxmlFindElement(node, node, "alpha", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk.alpha = strtol(tempCoord, NULL, 16);
-		}
-		subnode = mxmlFindElement(node, node, "padding", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk.pad = strtol(tempCoord, NULL, 16);
-		}
-		fwrite(&chunk, sizeof(chunk), 1, fp);
-		*fileOffset = *fileOffset + sizeof(chunk);
+		WritePane( tree, node, tagblob, blobsize, fp, fileOffset );
 	}
 	if ( memcmp(temp, wnd1, sizeof(wnd1)) == 0)
 	{
-		brlyt_pane_chunk chunk;
-		char temp[256];
-		if(mxmlElementGetAttr(node, "name") != NULL)
-			strcpy(temp, mxmlElementGetAttr(node, "name"));
-		else{
-			printf("No name attribute found!\nQuitting!\n");
-			exit(1);
-		}
-		memset(chunk.name, 0, 24 * sizeof(char));
-		strcpy(chunk.name, temp);
-
-		mxml_node_t *subnode = mxmlFindElement(node, node, "translate", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.XTrans = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.YTrans = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "z", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.ZTrans = float_swap_bytes(atof(tempCoord));
-			}
-		}
-		subnode = mxmlFindElement(node, node, "rotate", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.XRotate = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.YRotate = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "z", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.ZRotate = float_swap_bytes(atof(tempCoord));
-			}
-		}
-		subnode = mxmlFindElement(node, node, "scale", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.XScale = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.YScale = float_swap_bytes(atof(tempCoord));
-			}
-		}
-		subnode = mxmlFindElement(node, node, "size", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "width", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.width = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "height", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.height = float_swap_bytes(atof(tempCoord));
-			}
-		}
-
-		u8 flag1 = 0;
-		subnode = mxmlFindElement(node, node, "visible", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			flag1 |= strtol(tempCoord, NULL, 16);
-		}
-		subnode = mxmlFindElement(node, node, "WidescreenAffected", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			flag1 |= ( strtol(tempCoord, NULL, 16) << 1 );
-		}
-		subnode = mxmlFindElement(node, node, "flag", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			flag1 |= ( strtol(tempCoord, NULL, 16) << 2 );
-		}
-		chunk.flag1 = flag1;
-		subnode = mxmlFindElement(node, node, "origin", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char origins[9][15];
-			int o;
-			for ( o = 0 ; o < 8 ; o++ )
-				memset( origins[o] , 0 , 20 );
-			strcpy( origins[0] , "TOP LEFT" );
-			strcpy( origins[1] , "TOP CENTER" );
-			strcpy( origins[2] , "TOP RIGHT" );
-			strcpy( origins[3] , "MIDDLE LEFT" );
-			strcpy( origins[4] , "MIDDLE CENTER" );
-			strcpy( origins[5] , "MIDDLE RIGHT" );
-			strcpy( origins[6] , "BOTTOM LEFT" );
-			strcpy( origins[7] , "BOTTOM CENTER" );
-			strcpy( origins[8] , "BOTTOM RIGHT" );
-
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk.origin = strtol(tempCoord, NULL, 16);
-			int i;
-			for ( i = 0 ; i < 9 ; i++ ) {
-				if ( strncmp( origins[i] , tempCoord , 15 ) == 0 ) {
-					chunk.origin = i;
-					break;
-				}
-			}
-		}
-		subnode = mxmlFindElement(node, node, "alpha", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk.alpha = strtol(tempCoord, NULL, 16);
-		}
-		subnode = mxmlFindElement(node, node, "padding", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk.pad = strtol(tempCoord, NULL, 16);
-		}
-		fwrite(&chunk, sizeof(chunk), 1, fp);
-		*fileOffset = *fileOffset + sizeof(chunk);
+		WritePane( tree, node, tagblob, blobsize, fp, fileOffset );
 
 		int i;
 		brlyt_wnd wndy;
+		mxml_node_t * subnode;
 		subnode = mxmlFindElement(node, node, "wnd", NULL, NULL, MXML_DESCEND);
 		if (subnode != NULL)
 		{
@@ -3366,176 +2859,10 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 	}
 	if ( memcmp(temp, txt1, sizeof(txt1)) == 0)
 	{
-		brlyt_pane_chunk chunk;
+		WritePane( tree, node, tagblob, blobsize, fp, fileOffset );
+
 		brlyt_text_chunk chunk2;
-		char temp[256];
-		if(mxmlElementGetAttr(node, "name") != NULL)
-			strcpy(temp, mxmlElementGetAttr(node, "name"));
-		else{
-			printf("No name attribute found!\nQuitting!\n");
-			exit(1);
-		}
-		memset(chunk.name, 0, 24 * sizeof(char));
-		strcpy(chunk.name, temp);
-		chunk2.mat_num = short_swap_bytes(findMatOffset(temp));
-
-		mxml_node_t *subnode = mxmlFindElement(node, node, "translate", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.XTrans = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.YTrans = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "z", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.ZTrans = float_swap_bytes(atof(tempCoord));
-			}
-		}
-		subnode = mxmlFindElement(node, node, "rotate", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.XRotate = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.YRotate = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "z", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.ZRotate = float_swap_bytes(atof(tempCoord));
-			}
-		}
-		subnode = mxmlFindElement(node, node, "scale", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.XScale = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.YScale = float_swap_bytes(atof(tempCoord));
-			}
-		}
-		subnode = mxmlFindElement(node, node, "size", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "width", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.width = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "height", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.height = float_swap_bytes(atof(tempCoord));
-			}
-		}
-
-		u8 flag1 = 0;
-		subnode = mxmlFindElement(node, node, "visible", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			flag1 |= strtol(tempCoord, NULL, 16);
-		}
-		subnode = mxmlFindElement(node, node, "WidescreenAffected", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			flag1 |= ( strtol(tempCoord, NULL, 16) << 1 );
-		}
-		subnode = mxmlFindElement(node, node, "flag", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			flag1 |= ( strtol(tempCoord, NULL, 16) << 2 );
-		}
-		chunk.flag1 = flag1;
-		subnode = mxmlFindElement(node, node, "origin", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char origins[9][15];
-			int o;
-			for ( o = 0 ; o < 8 ; o++ )
-				memset( origins[o] , 0 , 20 );
-			strcpy( origins[0] , "TOP LEFT" );
-			strcpy( origins[1] , "TOP CENTER" );
-			strcpy( origins[2] , "TOP RIGHT" );
-			strcpy( origins[3] , "MIDDLE LEFT" );
-			strcpy( origins[4] , "MIDDLE CENTER" );
-			strcpy( origins[5] , "MIDDLE RIGHT" );
-			strcpy( origins[6] , "BOTTOM LEFT" );
-			strcpy( origins[7] , "BOTTOM CENTER" );
-			strcpy( origins[8] , "BOTTOM RIGHT" );
-
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk.origin = strtol(tempCoord, NULL, 16);
-			int i;
-			for ( i = 0 ; i < 9 ; i++ ) {
-				if ( strncmp( origins[i] , tempCoord , 15 ) == 0 ) {
-					chunk.origin = i;
-					break;
-				}
-			}
-		}
-		subnode = mxmlFindElement(node, node, "alpha", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk.alpha = strtol(tempCoord, NULL, 16);
-		}
-		subnode = mxmlFindElement(node, node, "padding", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk.pad = strtol(tempCoord, NULL, 16);
-		}
-
+		mxml_node_t * subnode;
 		subnode = mxmlFindElement(node, node, "font", NULL, NULL, MXML_DESCEND);
 		if (subnode != NULL)
 		{
@@ -3581,30 +2908,36 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 			valnode = mxmlFindElement(subnode, subnode, "alignment", NULL, NULL, MXML_DESCEND);
 			if (valnode != NULL)
 			{
-				char alignments[9][15];
-				int o;
-				for ( o = 0 ; o < 8 ; o++ )
-					memset( alignments[o] , 0 , 20 );
-				strcpy( alignments[0] , "TOP LEFT" );
-				strcpy( alignments[1] , "TOP CENTER" );
-				strcpy( alignments[2] , "TOP RIGHT" );
-				strcpy( alignments[3] , "MIDDLE LEFT" );
-				strcpy( alignments[4] , "MIDDLE CENTER" );
-				strcpy( alignments[5] , "MIDDLE RIGHT" );
-				strcpy( alignments[6] , "BOTTOM LEFT" );
-				strcpy( alignments[7] , "BOTTOM CENTER" );
-				strcpy( alignments[8] , "BOTTOM RIGHT" );
-
-				char tempCoord[256];
-				get_value(subnode, tempCoord, 256);
-				chunk2.alignment = strtol(tempCoord, NULL, 16);
 				int i;
-				for ( i = 0 ; i < 9 ; i++ ) {
-					if ( strncmp( alignments[i] , tempCoord , 15 ) == 0 ) {
-						chunk2.alignment = i;
+				char originL , originH;
+				char temp[256];
+				memset( temp , 0 , 256 );
+				if(mxmlElementGetAttr(valnode, "x") != NULL)
+					strcpy(temp, mxmlElementGetAttr(valnode, "x"));
+				else{
+					printf("No x attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				for ( i = 0 ; i < 3 ; i++ ) {
+					if ( strncmp( originX[i] , temp , 15 ) == 0 ) {
+						originL = i;
 						break;
 					}
 				}
+				memset( temp , 0 , 256 );
+				if(mxmlElementGetAttr(valnode, "y") != NULL)
+					strcpy(temp, mxmlElementGetAttr(valnode, "y"));
+				else{
+					printf("No y attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				for ( i = 0 ; i < 3 ; i++ ) {
+					if ( strncmp( originY[i] , temp , 15 ) == 0 ) {
+						originH = i;
+						break;
+					}
+				}
+				chunk2.alignment = ( originH * 3 ) + ( originL );
 			}
 		}
 
@@ -3618,19 +2951,85 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 			chunk2.len2 = strtoul(tempCoord+5, NULL, 16);
 			chunk2.len2 = short_swap_bytes(chunk2.len2);
 		}
-		subnode = mxmlFindElement(node, node, "color1", NULL, NULL, MXML_DESCEND);
+		subnode = mxmlFindElement(node, node, "topcolor", NULL, NULL, MXML_DESCEND);
 		if (subnode != NULL)
 		{
+			u32 red, green, blue, alpha;
 			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk2.color1 = be32(strtoul(tempCoord, NULL, 16));
+			memset( tempCoord , 0 , 256 );
+			if ( mxmlElementGetAttr(subnode, "r") != NULL)
+				strcpy(tempCoord, mxmlElementGetAttr(subnode, "r"));
+			else {
+				printf("No r attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			red = strtoul(tempCoord, NULL, 16);
+			memset( tempCoord , 0 , 256 );
+			if ( mxmlElementGetAttr(subnode, "g") != NULL)
+				strcpy(tempCoord, mxmlElementGetAttr(subnode, "g"));
+			else {
+				printf("No g attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			green = strtoul(tempCoord, NULL, 16);
+			memset( tempCoord , 0 , 256 );
+			if ( mxmlElementGetAttr(subnode, "b") != NULL)
+				strcpy(tempCoord, mxmlElementGetAttr(subnode, "b"));
+			else {
+				printf("No b attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			blue = strtoul(tempCoord, NULL, 16);
+			memset( tempCoord , 0 , 256 );
+			if ( mxmlElementGetAttr(subnode, "a") != NULL)
+				strcpy(tempCoord, mxmlElementGetAttr(subnode, "a"));
+			else {
+				printf("No a attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			alpha = strtoul(tempCoord, NULL, 16);
+			chunk2.color1 = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+			chunk2.color1 = be32( chunk2.color1 );
 		}
-		subnode = mxmlFindElement(node, node, "color2", NULL, NULL, MXML_DESCEND);
+		subnode = mxmlFindElement(node, node, "bottomcolor", NULL, NULL, MXML_DESCEND);
 		if (subnode != NULL)
 		{
+			u32 red, green, blue, alpha;
 			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk2.color2 = be32(strtoul(tempCoord, NULL, 16));
+			memset( tempCoord , 0 , 256 );
+			if ( mxmlElementGetAttr(subnode, "r") != NULL)
+				strcpy(tempCoord, mxmlElementGetAttr(subnode, "r"));
+			else {
+				printf("No r attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			red = strtoul(tempCoord, NULL, 16);
+			memset( tempCoord , 0 , 256 );
+			if ( mxmlElementGetAttr(subnode, "g") != NULL)
+				strcpy(tempCoord, mxmlElementGetAttr(subnode, "g"));
+			else {
+				printf("No g attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			green = strtoul(tempCoord, NULL, 16);
+			memset( tempCoord , 0 , 256 );
+			if ( mxmlElementGetAttr(subnode, "b") != NULL)
+				strcpy(tempCoord, mxmlElementGetAttr(subnode, "b"));
+			else {
+				printf("No b attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			blue = strtoul(tempCoord, NULL, 16);
+			memset( tempCoord , 0 , 256 );
+			if ( mxmlElementGetAttr(subnode, "a") != NULL)
+				strcpy(tempCoord, mxmlElementGetAttr(subnode, "a"));
+			else {
+				printf("No a attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			alpha = strtoul(tempCoord, NULL, 16);
+			chunk2.color2 = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+			chunk2.color2 = be32( chunk2.color2 );
 		}
 		u16 textyLength = short_swap_bytes(chunk2.len2);
 		if ((textyLength % 4) != 0)
@@ -3653,8 +3052,6 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 				texty[w] = (u8)strtoul((char*)temp, NULL, 16);
 			}
 		}
-		fwrite(&chunk, sizeof(chunk), 1, fp);
-		*fileOffset = *fileOffset + sizeof(chunk);
 
 		chunk2.name_offs=be32(0x74);
 		chunk2.pad[0]= 0;chunk2.pad[1]=0;chunk2.pad[2]=0;
@@ -3671,175 +3068,10 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 	}
 	if ( memcmp(temp, pic1, sizeof(pic1)) == 0)
 	{
-		brlyt_pane_chunk chunk;
-		char temp[256];
-		if(mxmlElementGetAttr(node, "name") != NULL)
-			strcpy(temp, mxmlElementGetAttr(node, "name"));
-		else{
-			printf("No name attribute found!\nQuitting!\n");
-			exit(1);
-		}
-		memset(chunk.name, 0, 24 * sizeof(char));
-		strcpy(chunk.name, temp);
-
-		mxml_node_t *subnode = mxmlFindElement(node, node, "translate", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.XTrans = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.YTrans = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "z", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.ZTrans = float_swap_bytes(atof(tempCoord));
-			}
-		}
-		subnode = mxmlFindElement(node, node, "rotate", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.XRotate = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.YRotate = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "z", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.ZRotate = float_swap_bytes(atof(tempCoord));
-			}
-		}
-		subnode = mxmlFindElement(node, node, "scale", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "x", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.XScale = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "y", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.YScale = float_swap_bytes(atof(tempCoord));
-			}
-		}
-		subnode = mxmlFindElement(node, node, "size", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			mxml_node_t *valnode;
-			valnode = mxmlFindElement(subnode, subnode, "width", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.width = float_swap_bytes(atof(tempCoord));
-			}
-			valnode = mxmlFindElement(subnode, subnode, "height", NULL, NULL, MXML_DESCEND);
-			if (valnode != NULL)
-			{
-				char tempCoord[256];
-				get_value(valnode, tempCoord, 256);
-				chunk.height = float_swap_bytes(atof(tempCoord));
-			}
-		}
-
-		u8 flag1 = 0;
-		subnode = mxmlFindElement(node, node, "visible", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			flag1 |= strtol(tempCoord, NULL, 16);
-		}
-		subnode = mxmlFindElement(node, node, "WidescreenAffected", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			flag1 |= ( strtol(tempCoord, NULL, 16) << 1 );
-		}
-		subnode = mxmlFindElement(node, node, "flag", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			flag1 |= ( strtol(tempCoord, NULL, 16) << 2 );
-		}
-		chunk.flag1 = flag1;
-		subnode = mxmlFindElement(node, node, "origin", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char origins[9][15];
-			int o;
-			for ( o = 0 ; o < 8 ; o++ )
-				memset( origins[o] , 0 , 20 );
-			strcpy( origins[0] , "TOP LEFT" );
-			strcpy( origins[1] , "TOP CENTER" );
-			strcpy( origins[2] , "TOP RIGHT" );
-			strcpy( origins[3] , "MIDDLE LEFT" );
-			strcpy( origins[4] , "MIDDLE CENTER" );
-			strcpy( origins[5] , "MIDDLE RIGHT" );
-			strcpy( origins[6] , "BOTTOM LEFT" );
-			strcpy( origins[7] , "BOTTOM CENTER" );
-			strcpy( origins[8] , "BOTTOM RIGHT" );
-
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk.origin = strtol(tempCoord, NULL, 16);
-			int i;
-			for ( i = 0 ; i < 9 ; i++ ) {
-				if ( strncmp( origins[i] , tempCoord , 15 ) == 0 ) {
-					chunk.origin = i;
-					break;
-				}
-			}
-		}
-		subnode = mxmlFindElement(node, node, "alpha", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk.alpha = strtol(tempCoord, NULL, 16);
-		}
-		subnode = mxmlFindElement(node, node, "padding", NULL, NULL, MXML_DESCEND);
-		if (subnode != NULL)
-		{
-			char tempCoord[256];
-			get_value(subnode, tempCoord, 256);
-			chunk.pad = strtol(tempCoord, NULL, 16);
-		}
+		WritePane( tree, node, tagblob, blobsize, fp, fileOffset );
 
 		brlyt_pic_chunk chunk2;
+		mxml_node_t * subnode;
 		subnode = mxmlFindElement(node, node, "material", NULL, NULL, MXML_DESCEND);
 		if (subnode != NULL)
 		{
@@ -3857,39 +3089,168 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 		{
 			mxml_node_t *valnode;
 			int i=0;
-			for(valnode = mxmlFindElement(subnode, subnode, "vtx", NULL, NULL, MXML_DESCEND); valnode != NULL; valnode = mxmlFindElement(valnode, subnode, "vtx", NULL, NULL, MXML_DESCEND))
+			valnode = mxmlFindElement(subnode, subnode, "vtxColorTL", NULL, NULL, MXML_DESCEND);
+			if ( valnode != NULL )
 			{
 				u32 red, green, blue, alpha;
-				mxml_node_t *subvalnode;
-				subvalnode = mxmlFindElement( valnode, valnode, "red", NULL, NULL, MXML_DESCEND);
-				if ( subvalnode != NULL ) {
-
-					char tempCoord[256];
-					get_value(valnode, tempCoord, 256);
-					red = strtoul(tempCoord, NULL, 16);
+				char tempCoord[256];
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "r") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "r"));
+				else {
+					printf("No r attribute found!\nQuitting!\n");
+					exit(1);
 				}
-				subvalnode = mxmlFindElement( valnode,valnode,"green", NULL, NULL, MXML_DESCEND);
-				if ( subvalnode != NULL ) {
-
-					char tempCoord[256];
-					get_value(valnode, tempCoord, 256);
-					green = strtoul(tempCoord, NULL, 16);
+				red = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "g") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "g"));
+				else {
+					printf("No g attribute found!\nQuitting!\n");
+					exit(1);
 				}
-				subvalnode = mxmlFindElement( valnode, valnode, "blue",NULL, NULL, MXML_DESCEND);
-				if ( subvalnode != NULL ) {
-
-					char tempCoord[256];
-					get_value(valnode, tempCoord, 256);
-					blue = strtoul(tempCoord, NULL, 16);
+				green = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "b") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "b"));
+				else {
+					printf("No b attribute found!\nQuitting!\n");
+					exit(1);
 				}
-				subvalnode = mxmlFindElement( valnode, valnode, "alpha",NULL,NULL, MXML_DESCEND);
-				if ( subvalnode != NULL ) {
-
-					char tempCoord[256];
-					get_value(valnode, tempCoord, 256);
-					alpha = strtoul(tempCoord, NULL, 16);
+				blue = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "a") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "a"));
+				else {
+					printf("No a attribute found!\nQuitting!\n");
+					exit(1);
 				}
+				alpha = strtoul(tempCoord, NULL, 16);
 				chunk2.vtx_colors[i] = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+				chunk2.vtx_colors[i] = int_swap_bytes( chunk2.vtx_colors[i] );
+				i++;
+			}
+			valnode = mxmlFindElement(subnode, subnode, "vtxColorTR", NULL, NULL, MXML_DESCEND);
+			if ( valnode != NULL )
+			{
+				u32 red, green, blue, alpha;
+				char tempCoord[256];
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "r") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "r"));
+				else {
+					printf("No r attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				red = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "g") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "g"));
+				else {
+					printf("No g attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				green = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "b") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "b"));
+				else {
+					printf("No b attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				blue = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "a") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "a"));
+				else {
+					printf("No a attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				alpha = strtoul(tempCoord, NULL, 16);
+				chunk2.vtx_colors[i] = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+				chunk2.vtx_colors[i] = int_swap_bytes( chunk2.vtx_colors[i] );
+				i++;
+			}
+			valnode = mxmlFindElement(subnode, subnode, "vtxColorBL", NULL, NULL, MXML_DESCEND);
+			if ( valnode != NULL )
+			{
+				u32 red, green, blue, alpha;
+				char tempCoord[256];
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "r") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "r"));
+				else {
+					printf("No r attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				red = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "g") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "g"));
+				else {
+					printf("No g attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				green = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "b") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "b"));
+				else {
+					printf("No b attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				blue = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "a") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "a"));
+				else {
+					printf("No a attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				alpha = strtoul(tempCoord, NULL, 16);
+				chunk2.vtx_colors[i] = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+				chunk2.vtx_colors[i] = int_swap_bytes( chunk2.vtx_colors[i] );
+				i++;
+			}
+			valnode = mxmlFindElement(subnode, subnode, "vtxColorBR", NULL, NULL, MXML_DESCEND);
+			if ( valnode != NULL )
+			{
+				u32 red, green, blue, alpha;
+				char tempCoord[256];
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "r") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "r"));
+				else {
+					printf("No r attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				red = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "g") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "g"));
+				else {
+					printf("No g attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				green = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "b") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "b"));
+				else {
+					printf("No b attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				blue = strtoul(tempCoord, NULL, 16);
+				memset( tempCoord , 0 , 256 );
+				if ( mxmlElementGetAttr(valnode, "a") != NULL)
+					strcpy(tempCoord, mxmlElementGetAttr(valnode, "a"));
+				else {
+					printf("No a attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				alpha = strtoul(tempCoord, NULL, 16);
+				chunk2.vtx_colors[i] = ( red << 24 ) | ( green << 16 ) | ( blue << 8 ) | alpha;
+				chunk2.vtx_colors[i] = int_swap_bytes( chunk2.vtx_colors[i] );
 				i++;
 			}
 		}
@@ -3918,8 +3279,6 @@ void WriteBRLYTEntry(mxml_node_t *tree, mxml_node_t *node, u8** tagblob, u32* bl
 				sets++;
 			}
 		}
-		fwrite(&chunk, sizeof(chunk), 1, fp);
-		*fileOffset = *fileOffset + sizeof(chunk);
 		chunk2.num_texcoords = (sets - 1);
 		chunk2.padding = 0;
 		fwrite(&chunk2, sizeof(chunk2), 1, fp);
@@ -4008,6 +3367,8 @@ void WriteBRLYTHeader(brlyt_header rlythead, FILE* fp)
 
 void write_brlyt(char *infile, char *outfile)
 {
+	SetupConstants();
+
 	u32 fileOffset = 0;
 	FILE* fpx = fopen(infile, "r");
 	if(fpx == NULL) {
