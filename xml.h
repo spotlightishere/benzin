@@ -1,9 +1,14 @@
-/******************************************************************************\
-*  xml.h                                                                       *
-*  Part of Benzin                                                              *
-*  Handles some XML stuff.                                                     *
-*  Copyright (c)2009 HACKERCHANNEL Team                                        *
-\******************************************************************************/
+/******************************************************************************
+ *  xml.h                                                                     *
+ *  Part of Benzin                                                            *
+ *  Handles some XML stuff.                                                   *
+ *  Copyright (C)2009 SquidMan (Alex Marshall)        <SquidMan72@gmail.com>  *
+ *  Copyright (C)2009 megazig  (Stephen Simpson)       <megazig@hotmail.com>  *
+ *  Copyright (C)2009 Matt_P   (Matthew Parlane)                              *
+ *  Copyright (C)2009 comex                                                   *
+ *  Copyright (C)2009 booto                                                   *
+ *  All Rights Reserved, HACKERCHANNEL.                                       *
+ ******************************************************************************/
 
 #ifndef _XML_H_
 #define _XML_H_

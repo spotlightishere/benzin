@@ -1,9 +1,6 @@
 On linux you will need to have libmxml-dev
-
 For Debian-based systems (or if you've got Aptitude), in a terminal type ``sudo apt-get install libmxml-dev''
-
 If you get more errors that are thread related, you may need to add -lpthread to the end of the LIBS line
-
 
 Credits:
 -----------------------------
@@ -16,8 +13,12 @@ comex    - Did lots of python shiz back in the day
 
 License:
 -----------------------------
-Benzin is licensed under the HACKERCHANNEL License.
-For more information, see LICENSE
+Copyright (C)2009 SquidMan (Alex Marshall)   <SquidMan72@gmail.com>
+Copyright (C)2009 megazig  (Stephen Simpson) <megazig@hotmail.com>
+Copyright (C)2009 Matt_P   (Matthew Parlane)
+Copyright (C)2009 comex
+Copyright (C)2009 booto
+All Rights Reserved, HACKERCHANNEL.
+
 If you wish to use code from Benzin in your project, please ask permission from one of the authors.
-Benzin's sub-projects may not be licensed under this same license, so check each sub-projects README and LICENSE before using them.
-Benzin's code may not be used in applications which launch games from backup mediums.
+Benzin's sub-projects may not be licensed the same, so check each sub-projects README and LICENSE (if it exists) before using them.

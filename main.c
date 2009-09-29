@@ -1,9 +1,14 @@
-/******************************************************************************\
-*  main.c                                                                      *
-*  Part of Benzin                                                              *
-*  The main stuff.                                                             *
-*  Copyright (c)2009 HACKERCHANNEL Team                                        *
-\******************************************************************************/
+/******************************************************************************
+ *  main.c                                                                    *
+ *  Part of Benzin                                                            *
+ *  The main stuff.                                                           *
+ *  Copyright (C)2009 SquidMan (Alex Marshall)        <SquidMan72@gmail.com>  *
+ *  Copyright (C)2009 megazig  (Stephen Simpson)       <megazig@hotmail.com>  *
+ *  Copyright (C)2009 Matt_P   (Matthew Parlane)                              *
+ *  Copyright (C)2009 comex                                                   *
+ *  Copyright (C)2009 booto                                                   *
+ *  All Rights Reserved, HACKERCHANNEL.                                       *
+ ******************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>

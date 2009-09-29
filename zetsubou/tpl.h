@@ -1,10 +1,15 @@
-/******************************************************************************\
-*  tpl.h                                                                       *
-*  Part of Zetsubou                                                            *
-*  Part of Benzin                                                              *
-*  The TPL handling shiz.                                                      *
-*  Copyright (c)2009 HACKERCHANNEL Team                                        *
-\******************************************************************************/
+/*****************************************************************************
+ *  tpl.h                                                                    *
+ *  Part of Zetsubou                                                         *
+ *  Part of Benzin                                                           *
+ *  The TPL handling shiz.                                                   *
+ *  Copyright (C)2009 SquidMan (Alex Marshall)       <SquidMan72@gmail.com>  *
+ *  Copyright (C)2009 megazig  (Stephen Simpson)      <megazig@hotmail.com>  *
+ *  Copyright (C)2009 Matt_P   (Matthew Parlane)                             *
+ *  Copyright (C)2009 comex                                                  *
+ *  Copyright (C)2009 booto                                                  *
+ *  Licensed under the GNU GPLv2.                                            *
+ *****************************************************************************/
 
 #ifndef _TPL_H_
 #define _TPL_H_

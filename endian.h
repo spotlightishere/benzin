@@ -1,9 +1,14 @@
-/******************************************************************************\
-*  endian.h                                                                    *
-*  Part of Benzin                                                              *
-*  Handles endianness.                                                         *
-*  Copyright (c)2009 HACKERCHANNEL Team                                        *
-\******************************************************************************/
+/******************************************************************************
+ *  endian.h                                                                  *
+ *  Part of Benzin                                                            *
+ *  Handles endianness.                                                       *
+ *  Copyright (C)2009 SquidMan (Alex Marshall)        <SquidMan72@gmail.com>  *
+ *  Copyright (C)2009 megazig  (Stephen Simpson)       <megazig@hotmail.com>  *
+ *  Copyright (C)2009 Matt_P   (Matthew Parlane)                              *
+ *  Copyright (C)2009 comex                                                   *
+ *  Copyright (C)2009 booto                                                   *
+ *  All Rights Reserved, HACKERCHANNEL.                                       *
+ ******************************************************************************/
 
 #ifndef _ENDIAN_H_
 #define _ENDIAN_H_

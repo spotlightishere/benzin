@@ -5,8 +5,7 @@
  *  Created by Alex Marshall on 09/03/17.
  *  Copyright 2009 HACKERCHANNEL. All rights reserved.
  *
- *  Licensed under the terms of the GNU GPLv2.
- *
+ *  Licensed under the GNU GPLv2.
  */
 
 #ifndef _ENDIAN_H_

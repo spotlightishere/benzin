@@ -1,9 +1,14 @@
-/******************************************************************************\
-*  types.h                                                                     *
-*  Part of Benzin                                                              *
-*  Handles typedefs.                                                           *
-*  Copyright (c)2009 HACKERCHANNEL Team                                        *
-\******************************************************************************/
+/******************************************************************************
+ *  types.h                                                                   *
+ *  Part of Benzin                                                            *
+ *  Handles typedefs.                                                         *
+ *  Copyright (C)2009 SquidMan (Alex Marshall)        <SquidMan72@gmail.com>  *
+ *  Copyright (C)2009 megazig  (Stephen Simpson)       <megazig@hotmail.com>  *
+ *  Copyright (C)2009 Matt_P   (Matthew Parlane)                              *
+ *  Copyright (C)2009 comex                                                   *
+ *  Copyright (C)2009 booto                                                   *
+ *  All Rights Reserved, HACKERCHANNEL.                                       *
+ ******************************************************************************/
 
 #ifndef __TYPEDEFS_H_
 #define __TYPEDEFS_H_
@@ -17,7 +22,7 @@ typedef signed short s16;
 typedef signed int s32;
 typedef signed long long s64;
 
-#ifndef uint9_t
+#ifndef uint8_t
 typedef unsigned char uint8_t;
 #endif
 #ifndef uint16_t
@@ -29,7 +34,7 @@ typedef unsigned int uint32_t;
 #ifndef uint64_t
 typedef unsigned long long uint64_t;
 #endif
-#ifndef int9_t
+#ifndef int8_t
 typedef signed char int8_t;
 #endif
 #ifndef int16_t

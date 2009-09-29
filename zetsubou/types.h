@@ -1,10 +1,15 @@
-/******************************************************************************\
-*  types.h                                                                     *
-*  Part of Zetsubou                                                            *
-*  Part of Benzin                                                              *
-*  The typedefs stuff.                                                         *
-*  Copyright (c)2009 HACKERCHANNEL Team                                        *
-\******************************************************************************/
+/*****************************************************************************
+ *  types.h                                                                  *
+ *  Part of Zetsubou                                                         *
+ *  Part of Benzin                                                           *
+ *  The typedefs stuff.                                                      *
+ *  Copyright (C)2009 SquidMan (Alex Marshall)       <SquidMan72@gmail.com>  *
+ *  Copyright (C)2009 megazig  (Stephen Simpson)      <megazig@hotmail.com>  *
+ *  Copyright (C)2009 Matt_P   (Matthew Parlane)                             *
+ *  Copyright (C)2009 comex                                                  *
+ *  Copyright (C)2009 booto                                                  *
+ *  Licensed under the GNU GPLv2.                                            *
+ *****************************************************************************/
 
 #ifndef __TYPEDEFS_H_
 #define __TYPEDEFS_H_

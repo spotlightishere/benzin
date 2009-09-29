@@ -1,9 +1,14 @@
-/******************************************************************************\
-*  brlan.h                                                                     *
-*  Part of Benzin                                                              *
-*  Handles BRLAN banner datas.                                                 *
-*  Copyright (c)2009 HACKERCHANNEL Team                                        *
-\******************************************************************************/
+/******************************************************************************
+ *  brlan.h                                                                   *
+ *  Part of Benzin                                                            *
+ *  Handles BRLAN banner datas.                                               *
+ *  Copyright (C)2009 SquidMan (Alex Marshall)        <SquidMan72@gmail.com>  *
+ *  Copyright (C)2009 megazig  (Stephen Simpson)       <megazig@hotmail.com>  *
+ *  Copyright (C)2009 Matt_P   (Matthew Parlane)                              *
+ *  Copyright (C)2009 comex                                                   *
+ *  Copyright (C)2009 booto                                                   *
+ *  All Rights Reserved, HACKERCHANNEL.                                       *
+ ******************************************************************************/
 
 #ifndef BRLAN_H_
 #define BRLAN_H_

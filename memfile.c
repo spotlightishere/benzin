@@ -1,9 +1,14 @@
-/******************************************************************************\
-*  memfile.c                                                                   *
-*  Part of Benzin                                                              *
-*  Handles memory like files.                                                  *
-*  Copyright (c)2009 HACKERCHANNEL Team                                        *
-\******************************************************************************/
+/******************************************************************************
+ *  memfile.c                                                                 *
+ *  Part of Benzin                                                            *
+ *  Handles memory like files.                                                *
+ *  Copyright (C)2009 SquidMan (Alex Marshall)        <SquidMan72@gmail.com>  *
+ *  Copyright (C)2009 megazig  (Stephen Simpson)       <megazig@hotmail.com>  *
+ *  Copyright (C)2009 Matt_P   (Matthew Parlane)                              *
+ *  Copyright (C)2009 comex                                                   *
+ *  Copyright (C)2009 booto                                                   *
+ *  All Rights Reserved, HACKERCHANNEL.                                       *
+ ******************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>

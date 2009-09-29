@@ -1,10 +1,15 @@
-/******************************************************************************\
-*  main.c                                                                      *
-*  Part of Zetsubou                                                            *
-*  Part of Benzin                                                              *
-*  The Main Code.                                                              *
-*  Copyright (c)2009 HACKERCHANNEL Team                                        *
-\******************************************************************************/
+/*****************************************************************************
+ *  main.c                                                                   *
+ *  Part of Zetsubou                                                         *
+ *  Part of Benzin                                                           *
+ *  The Main Code.                                                           *
+ *  Copyright (C)2009 SquidMan (Alex Marshall)       <SquidMan72@gmail.com>  *
+ *  Copyright (C)2009 megazig  (Stephen Simpson)      <megazig@hotmail.com>  *
+ *  Copyright (C)2009 Matt_P   (Matthew Parlane)                             *
+ *  Copyright (C)2009 comex                                                  *
+ *  Copyright (C)2009 booto                                                  *
+ *  Licensed under the GNU GPLv2.                                            *
+ *****************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
