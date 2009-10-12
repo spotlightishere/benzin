@@ -656,7 +656,7 @@ void PrintBRLYTEntry_wnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 	{
 		BRLYT_ReadDataFromMemory(&wndy4mat, brlyt_file, sizeof(brlyt_wnd4_mat));
 		wndmat = mxmlNewElement(tag, "wnd4mat");
-		matrl = mxmlNewElement(wndmat, "material"); mxmlNewTextf(matrl, 0, "%04x", be16(wndy4mat.material));
+		matrl = mxmlNewElement(wndmat, "material"); mxmlElementSetAttrf(matrl, "name", "%s", getMaterial(short_swap_bytes(wndy4mat.material)));
 		matrl = mxmlNewElement(wndmat, "index"); mxmlNewTextf(matrl, 0, "%02x", wndy4mat.index);
 		matrl = mxmlNewElement(wndmat, "padding"); mxmlNewTextf(matrl, 0, "%02x", wndy4mat.padding);
 	}
@@ -2963,12 +2963,16 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 			i=0;
 			mxml_node_t *subsubnode;
 			subsubnode = mxmlFindElement(subnode, subnode, "material", NULL, NULL, MXML_DESCEND);
-			if (subsubnode != NULL)
+			if (subnode != NULL)
 			{
-				char tempCoord[256];
-				get_value(subsubnode, tempCoord, 256);
-				wndy4mat.material = be16(strtoul(tempCoord, NULL, 16));
-				i++;
+				char temp[256];
+				if(mxmlElementGetAttr(subsubnode, "name") != NULL)
+					strcpy(temp, mxmlElementGetAttr(subsubnode, "name"));
+				else{
+					printf("No name attribute found!\nQuitting!\n");
+					exit(1);
+				}
+				wndy4mat.material = short_swap_bytes(findMatOffset(temp));
 			}
 			subsubnode = mxmlFindElement(subnode, subnode, "index", NULL, NULL, MXML_DESCEND);
 			if (subsubnode != NULL)
