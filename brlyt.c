@@ -733,12 +733,13 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
 	PrintPane( entry , brlyt_file , tag );
 
-	mxml_node_t *length, *font, *xsize, *ysize, *charsize, *linesize, *alignment, *color1, *color2, *text;
+	mxml_node_t *length, *material, *font, *xsize, *ysize, *charsize, *linesize, *alignment, *color1, *color2, *text;
 	brlyt_text_chunk data2;
 	BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_text_chunk));
 	u8 texty[short_swap_bytes(data2.len2)];
 	memcpy(texty, &brlyt_file[BRLYT_fileoffset], short_swap_bytes(data2.len2));
 	length = mxmlNewElement(tag, "length"); mxmlNewTextf(length, 0, "%04x-%04x", short_swap_bytes(data2.len2), short_swap_bytes(data2.len2));
+	material = mxmlNewElement(tag, "material"); mxmlElementSetAttrf(material, "name", "%s", getMaterial(short_swap_bytes(data2.mat_num)));
 	font = mxmlNewElement(tag, "font"); mxmlElementSetAttrf(font, "index", "%d", short_swap_bytes(data2.font_idx));
 	xsize = mxmlNewElement(font, "xsize"); mxmlNewTextf(xsize, 0, "%f", float_swap_bytes(data2.font_size_x));
 	ysize = mxmlNewElement(font, "ysize"); mxmlNewTextf(ysize, 0, "%f", float_swap_bytes(data2.font_size_y));
@@ -2988,6 +2989,18 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 
 		brlyt_text_chunk chunk2;
 		mxml_node_t * subnode;
+		subnode = mxmlFindElement(node, node, "material", NULL, NULL, MXML_DESCEND);
+		if (subnode != NULL)
+		{
+			char temp[256];
+			if(mxmlElementGetAttr(subnode, "name") != NULL)
+				strcpy(temp, mxmlElementGetAttr(subnode, "name"));
+			else{
+				printf("No name attribute found!\nQuitting!\n");
+				exit(1);
+			}
+			chunk2.mat_num = short_swap_bytes(findMatOffset(temp));
+		}
 		subnode = mxmlFindElement(node, node, "font", NULL, NULL, MXML_DESCEND);
 		if (subnode != NULL)
 		{
