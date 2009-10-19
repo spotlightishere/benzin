@@ -410,6 +410,11 @@ u16 findMatOffset(char *mats)
 		isEqual = strcmp(mats, mat);
 		if (isEqual != 0) i++;
 		mat = mat + strlen(mat) + 1;
+		if( i == numberOfMaterials )
+		{
+			printf("ERROR: material not found: %s\n", mats);
+			exit(-1);
+		}
 	}
 	return i;
 }
@@ -424,6 +429,11 @@ u16 findTexOffset(char *tex)
 		isEqual = strcmp(tex, texs);
 		if (isEqual != 0) i++;
 		texs = texs + strlen(texs) + 1;
+		if( i == numberOfTextures )
+		{
+			printf("ERROR: texture not found: %s\n", tex);
+			exit(-1);
+		}
 	}
 	return i;
 }
