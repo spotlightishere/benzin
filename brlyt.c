@@ -1543,6 +1543,7 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 		char *names;
 		names = malloc(sizeof(names));
 		int lengthOfNames = 0;
+		numberOfTextures = 0;
 		mxml_node_t *subnode = mxmlFindElement(node, node, "entries", NULL, NULL, MXML_DESCEND);
 		if (subnode != NULL)
 		{
@@ -1574,6 +1575,7 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 
 					*fileOffset = *fileOffset + sizeof(chunk2);
 					numEntries++;
+					numberOfTextures++;
 
 					baseOffset += (strlen(tempSub) + 1);
 
@@ -1691,6 +1693,7 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 	}
 	if ( memcmp(temp, mat1, sizeof(mat1)) == 0)
 	{
+		numberOfMaterials = 0;
 		int numberOfEntries = 0;
 		int actualNumber = 0;
 		brlyt_numoffs_chunk numchunk;
@@ -1719,6 +1722,7 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 		for(subnode=mxmlFindElement(node,node,"entries",NULL,NULL,MXML_DESCEND);subnode!=NULL;subnode=mxmlFindElement(subnode,node,"entries",NULL,NULL,MXML_DESCEND))
 		{
 			numberOfEntries += 1;
+			numberOfMaterials++;
 			char temp[256];
 			if(mxmlElementGetAttr(subnode, "name") != NULL)
 				strcpy(temp, mxmlElementGetAttr(subnode, "name"));
