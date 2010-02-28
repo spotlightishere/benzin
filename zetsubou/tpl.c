@@ -828,10 +828,9 @@ int TPL_ConvertToGD(u8* tplbuf, u32 tplsize, char basename[], u32 format)
 				u32 rgba = ((u32*)bitmapdata)[x + (y * be16(h.width))];
 				rgba = be32(rgba);
 				u8 r = (rgba >> 8)  & 0xFF;
-				u8 g = (rgba >> 16)  & 0xFF;
+				u8 g = (rgba >> 16) & 0xFF;
 				u8 b = (rgba >> 24) & 0xFF;
-				u8 a = 254 - 2*((rgba >> 0) & 0xFF);
-				if(a == 254) a++;
+				u8 a = (255 - ((rgba >> 0) & 0xFF)) / 2;
 				int clr = gdTrueColorAlpha(r, g, b, a);
 				gdImageSetPixel(im, x, y, clr);
 			}
@@ -917,7 +916,7 @@ int TPL_ConvertFromGDs(const u32 count, char *gds[], char outname[], u32 format,
 					p = 0;
 				else
 					p = gdImageGetPixel(im, x, y);
-				u8 a = 254 - 2*((u8)gdImageAlpha(im, p));
+				u8 a = 254 - (2 * ((u8)gdImageAlpha(im, p)));
 				if(a == 254) a++;
 				u8 r = (u8)gdImageRed(im, p);
 				u8 g = (u8)gdImageGreen(im, p);
