@@ -45,6 +45,7 @@ char gre1_magic[] = "gre1";
 char grs1_magic[] = "grs1";
 char pae1_magic[] = "pae1";
 char pas1_magic[] = "pas1";
+char usd1_magic[] = "usd1";
 
 // CONSTANTS
 char originX[3][15];
@@ -450,7 +451,7 @@ void BRLYT_CheckHeaderSanity(brlyt_header header, size_t filesize)
 		printf("magic: %.4s\n", header.magic);
 		exit(1);
 	}
-	if(header.version != be32(0xfeff0008) ){
+	if((header.version != be32(0xfeff0008) )&&(header.version != be32(0xfeff000a))){
 		printf("BRLYT version not right\n");
 		printf("version: %08x\n", be32(header.version) );
 		exit(1);
@@ -672,6 +673,37 @@ void PrintBRLYTEntry_wnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 	}
 }
 
+void PrintBRLYTEntry_usd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
+{
+	// DO SOMETHING COOL
+	mxml_node_t *usd, *val, *isworking, *stringg;
+	brlyt_usdstart_chunk data;
+	BRLYT_fileoffset = entry.data_location;
+	BRLYT_ReadDataFromMemory(&data, brlyt_file, sizeof(brlyt_numoffs_chunk));
+	mxmlElementSetAttrf(tag, "type", "%.4s", entry.magic);
+	int n = 0;
+	for (n=0;n<short_swap_bytes(data.string_count);n++)
+	{
+		u32 tempOffset = BRLYT_fileoffset;
+		brlyt_usdmain_chunk data2;
+		BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_usdmain_chunk));
+		usd = mxmlNewElement(tag, "usdentry");
+		val = mxmlNewElement(usd, "unk5"); mxmlNewTextf(val, 0, "%04x", short_swap_bytes(data2.unk5));
+		val = mxmlNewElement(usd, "unk6"); mxmlNewTextf(val, 0, "%02x", data2.unk6);
+		val = mxmlNewElement(usd, "unk7"); mxmlNewTextf(val, 0, "%02x", data2.unk7);
+		BRLYT_fileoffset = tempOffset + be32(data2.is_working_offset);
+		u32 working;
+		BRLYT_ReadDataFromMemoryX(&working, brlyt_file, sizeof(u32));
+		isworking = mxmlNewElement(usd, "isWorking"); mxmlNewTextf(isworking, 0, "%08x", be32(working));
+		BRLYT_fileoffset = tempOffset + be32(data2.string_offset);
+		char string_name[8];
+		BRLYT_ReadDataFromMemoryX(string_name, brlyt_file, sizeof(char) * 8);
+		stringg = mxmlNewElement(usd, "string"); mxmlNewTextf(stringg, 0, "%s", string_name);
+		BRLYT_fileoffset = tempOffset + 0xC;
+
+	}
+}
+
 void PrintBRLYTEntry_bnd1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
 	PrintPane( entry , brlyt_file , tag );
@@ -743,7 +775,7 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 {
 	PrintPane( entry , brlyt_file , tag );
 
-	mxml_node_t *length, *material, *font, *xsize, *ysize, *charsize, *linesize, *alignment, *color1, *color2, *text;
+	mxml_node_t *length, *material, *font, *xsize, *ysize, *charsize, *linesize, *alignment, *unkk, *color1, *color2, *text;
 	brlyt_text_chunk data2;
 	BRLYT_ReadDataFromMemory(&data2, brlyt_file, sizeof(brlyt_text_chunk));
 	u8 texty[short_swap_bytes(data2.len2)];
@@ -758,6 +790,7 @@ void PrintBRLYTEntry_txt1(brlyt_entry entry, u8* brlyt_file, mxml_node_t *tag)
 	alignment = mxmlNewElement(font, "alignment");
 		mxmlElementSetAttrf(alignment, "x", "%s", originX[data2.alignment%3]);
 		mxmlElementSetAttrf(alignment, "y", "%s", originY[data2.alignment/3]);
+	unkk = mxmlNewElement(font, "whatAmI"); mxmlNewTextf(unkk, 0, "%02x", data2.unk_char);
 	color1 = mxmlNewElement(tag, "topcolor");// mxmlNewTextf(color1, 0, "%08x", be32(data2.color1) );
 		mxmlElementSetAttrf(color1, "r", "%02x", ( be32(data2.color1) >> 24 ) & 0xff );
 		mxmlElementSetAttrf(color1, "g", "%02x", ( be32(data2.color1) >> 16 ) & 0xff );
@@ -1204,6 +1237,8 @@ void PrintBRLYTEntries(brlyt_entry *entries, int entrycnt, u8* brlyt_file, mxml_
 			PrintBRLYTEntry_wnd1(entries[i], brlyt_file, tag);
 		}else if((FourCCsMatch(entries[i].magic, bnd1_magic) == 1)) {
 			PrintBRLYTEntry_bnd1(entries[i], brlyt_file, tag);
+		}else if((FourCCsMatch(entries[i].magic, usd1_magic) == 1)) {
+			PrintBRLYTEntry_usd1(entries[i], brlyt_file, tag);
 		}else if((FourCCsMatch(entries[i].magic, lyt1_magic) == 1)) {
 			PrintBRLYTEntry_lyt1(entries[i], brlyt_file, tag);
 		}else if((FourCCsMatch(entries[i].magic, grp1_magic) == 1)) {
@@ -1285,6 +1320,7 @@ void parse_brlyt(char *filename, char *filenameout)
 	xml = mxmlNewXML("1.0");
 	xmlyt = mxmlNewElement(xml, "xmlyt");
 	mxmlElementSetAttrf(xmlyt, "version", "%d.%d.%d%s", BENZIN_VERSION_MAJOR, BENZIN_VERSION_MINOR, BENZIN_VERSION_BUILD, BENZIN_VERSION_OTHER);
+	mxmlElementSetAttrf(xmlyt, "brlyt_version", "%08x", be32(header.version));
 	PrintBRLYTEntries(entries, entrycount, brlyt_file, xmlyt);
 	mxmlSaveFile(xml, xmlFile, whitespace_cb);
 	fclose(xmlFile);
@@ -1299,14 +1335,24 @@ void WritePane( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u32 * b
 {
 		brlyt_pane_chunk chunk;
 		char temp[256];
+		memset(temp, 0, 256);
 		if(mxmlElementGetAttr(node, "name") != NULL)
 			strcpy(temp, mxmlElementGetAttr(node, "name"));
 		else{
 			printf("No name attribute found!\nQuitting!\n");
 			exit(1);
 		}
-		memset(chunk.name, 0, 24);
+		memset(chunk.name, 0, 16);
 		strcpy(chunk.name, temp);
+		memset(temp, 0, 256);
+		if(mxmlElementGetAttr(node, "userdata") != NULL)
+			strcpy(temp, mxmlElementGetAttr(node, "userdata"));
+		else{
+			printf("No userdata attribute found!\nQuitting!\n");
+			exit(1);
+		}
+		memset(chunk.userdata, 0, 8);
+		strcpy(chunk.userdata, temp);
 
 		mxml_node_t *subnode = mxmlFindElement(node, node, "translate", NULL, NULL, MXML_DESCEND);
 		if (subnode != NULL)
@@ -1492,6 +1538,7 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 	char gre1[4] = {'g', 'r', 'e', '1'};
 	char pas1[4] = {'p', 'a', 's', '1'};
 	char pae1[4] = {'p', 'a', 'e', '1'};
+	char usd1[4] = {'u', 's', 'd', '1'};
 
 	if ( memcmp(temp, lyt1, sizeof(lyt1)) == 0)
 	{
@@ -1500,7 +1547,7 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 		mxml_node_t *subnode = mxmlFindElement(node , node , "drawnFromMiddle", NULL, NULL, MXML_DESCEND);
 		if (subnode != NULL)
 		{
-			char tempChar[4];
+			char tempChar[256];
 			get_value(subnode, tempChar, 256);
 			lytheader.drawnFromMiddle = atoi(tempChar);
 			lytheader.pad[0]=0;lytheader.pad[1]=0;lytheader.pad[2]=0;
@@ -1511,14 +1558,14 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 			mxml_node_t *valnode = mxmlFindElement(subnode , subnode , "width", NULL, NULL, MXML_DESCEND);
 			if (valnode != NULL)
 			{
-				char tempChar[4];
+				char tempChar[256];
 				get_value(valnode, tempChar, 256);
 				*(float*)(&(lytheader.width)) = atof(tempChar);
 			}
 			valnode = mxmlFindElement(subnode , subnode ,"height", NULL, NULL, MXML_DESCEND);
 			if (valnode != NULL)
 			{
-				char tempChar[4];
+				char tempChar[256];
 				get_value(valnode, tempChar, 256);
 
 				*(float*)(&(lytheader.height)) = atof(tempChar);
@@ -3100,6 +3147,13 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 				}
 				chunk2.alignment = ( originH * 3 ) + ( originL );
 			}
+			valnode = mxmlFindElement(subnode, subnode, "whatAmI", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempCoord[256];
+				get_value(valnode, tempCoord, 256);
+				chunk2.unk_char = strtoul(tempCoord, NULL,16);
+			}
 		}
 
 		subnode = mxmlFindElement(node, node, "length", NULL, NULL, MXML_DESCEND);
@@ -3215,7 +3269,7 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 		}
 
 		chunk2.name_offs=be32(0x74);
-		chunk2.pad[0]= 0;chunk2.pad[1]=0;chunk2.pad[2]=0;
+		chunk2.pad[0]= 0;chunk2.pad[1]=0;
 		fwrite(&chunk2, sizeof(chunk2), 1, fp);
 		*fileOffset = *fileOffset + sizeof(chunk2);
 
@@ -3513,6 +3567,95 @@ void WriteBRLYTEntry( mxml_node_t * tree , mxml_node_t * node , u8** tagblob , u
 		*fileOffset = *fileOffset + (sizeof(float) * numberOfPicCoords);
 		free(picCoords);
 	}
+	if ( memcmp(temp, usd1, sizeof(usd1)) == 0)
+	{
+		// DO SOMETHING COOL
+		brlyt_usdstart_chunk chunk;
+		chunk.string_count = 0;
+		chunk.unk2 = 0;		// offset = 0
+
+		brlyt_usdmain_chunk chunk2;
+		chunk2.string_offset = 0x10;
+		chunk2.is_working_offset = 0xC;
+		chunk2.unk5 = 0;
+		chunk2.unk6 = 0;
+		chunk2.unk7 = 0;
+
+		mxml_node_t* subnode;
+		for (subnode = mxmlFindElement(node, node, "usdentry", NULL, NULL, MXML_DESCEND); subnode != NULL; subnode = mxmlFindElement(subnode, node, "usdentry", NULL, NULL, MXML_DESCEND))
+		{
+			chunk.string_count++;
+		}
+		chunk.string_count = short_swap_bytes(chunk.string_count);
+		fwrite(&chunk, sizeof(brlyt_usdstart_chunk), 1, fp);
+		*fileOffset = *fileOffset + sizeof(chunk);
+
+		u32 * working = malloc(sizeof(u32) * short_swap_bytes(chunk.string_count));
+		char * stringg = malloc(sizeof(char) * 8 * short_swap_bytes(chunk.string_count));
+		memset(stringg, 0, sizeof(char) * 8 * short_swap_bytes(chunk.string_count));
+		char * stringg_temp = stringg;
+		u32 index = 0;
+
+		u32 big_offs = (0xC * short_swap_bytes(chunk.string_count)) + (0x4 * short_swap_bytes(chunk.string_count));
+		u32 little_offs = (0xC * short_swap_bytes(chunk.string_count));
+
+		for (subnode = mxmlFindElement(node, node, "usdentry", NULL, NULL, MXML_DESCEND); subnode != NULL; subnode = mxmlFindElement(subnode, node, "usdentry", NULL, NULL, MXML_DESCEND))
+		{
+			mxml_node_t *valnode = mxmlFindElement(subnode , subnode , "unk5", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempChar[256];
+				get_value(valnode, tempChar, 256);
+				chunk2.unk5 = strtoul(tempChar, NULL, 16);
+				chunk2.unk5 = short_swap_bytes(chunk2.unk5);
+			}
+			valnode = mxmlFindElement(subnode , subnode , "unk6", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempChar[256];
+				get_value(valnode, tempChar, 256);
+				chunk2.unk6 = strtoul(tempChar, NULL, 16);
+			}
+			valnode = mxmlFindElement(subnode , subnode , "unk7", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempChar[256];
+				get_value(valnode, tempChar, 256);
+				chunk2.unk7 = strtoul(tempChar, NULL, 16);
+			}
+			valnode = mxmlFindElement(subnode , subnode , "isWorking", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempChar[256];
+				get_value(valnode, tempChar, 256);
+				working[index] = strtoul(tempChar, NULL, 16);
+				working[index] = be32(working[index]);
+			}
+			valnode = mxmlFindElement(subnode , subnode , "string", NULL, NULL, MXML_DESCEND);
+			if (valnode != NULL)
+			{
+				char tempChar[256];
+				memset(tempChar, 0, 256);
+				get_value(valnode, tempChar, 256);
+				memcpy(stringg_temp, tempChar, 8);
+			}
+			chunk2.string_offset = be32(big_offs);
+			chunk2.is_working_offset = be32(little_offs);
+			fwrite(&chunk2, sizeof(brlyt_usdmain_chunk),1,fp);
+			*fileOffset = *fileOffset + sizeof(chunk2);
+			big_offs -= 0x4; // -0xC +0x8
+			little_offs -=8; // -0xC +0x4
+			index++;
+			stringg_temp+=8;
+		}
+		fwrite(working, sizeof(u32) * short_swap_bytes(chunk.string_count), 1, fp);
+		*fileOffset = *fileOffset + (sizeof(u32) * short_swap_bytes(chunk.string_count));
+		fwrite(stringg, sizeof(char) * 8 * short_swap_bytes(chunk.string_count), 1, fp);
+		*fileOffset = *fileOffset + (sizeof(char) * 8 * short_swap_bytes(chunk.string_count));
+
+		free(working);
+		free(stringg);
+	}
 	if ( memcmp(temp, grp1, sizeof(grp1)) == 0)
 	{
 		brlyt_group_chunk chunk;
@@ -3611,6 +3754,15 @@ void write_brlyt(char *infile, char *outfile)
 		printf("Couldn't get tree!\n");
 		exit(1);
 	}
+	char tempVersion[9];
+	if(mxmlElementGetAttr(tree, "brlyt_version") != NULL)
+		strcpy(tempVersion, mxmlElementGetAttr(tree, "brlyt_version"));
+	else{
+		printf("No brlyt_version attribute found!\n");
+		exit(1);
+	}
+	u32 versionn = strtoul(tempVersion, NULL, 16);
+
 	mxml_node_t *node;
 	FILE* fp = fopen(outfile, "wb+");
 	if(fp == NULL) {
@@ -3626,7 +3778,8 @@ void write_brlyt(char *infile, char *outfile)
 	rlythead.magic[1] = 'L';
 	rlythead.magic[2] = 'Y';
 	rlythead.magic[3] = 'T';
-	rlythead.version = 0xFEFF0008;
+	//rlythead.version = 0xFEFF0008;
+	rlythead.version = versionn;
 	rlythead.filesize = 0;
 	rlythead.lyt_offset = sizeof(brlyt_header);
 	rlythead.sections = 1;

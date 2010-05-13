@@ -10,9 +10,9 @@
  *  All Rights Reserved, HACKERCHANNEL.                                       *
  ******************************************************************************/
 
-#define BENZIN_VERSION_MAJOR        1
-#define BENZIN_VERSION_MINOR        9
-#define BENZIN_VERSION_BUILD        9
+#define BENZIN_VERSION_MAJOR        2
+#define BENZIN_VERSION_MINOR        1
+#define BENZIN_VERSION_BUILD        3
 #define BENZIN_VERSION_OTHER        "BETA"
 
 #define INFORMATION_TEXT        \

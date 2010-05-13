@@ -64,7 +64,8 @@ typedef struct
 	u16			mat_num;
 	u16			font_idx;
 	u8			alignment;
-	u8			pad[3];
+	u8			unk_char;
+	u8			pad[2];
 	u32			name_offs;
 	u32			color1;
 	u32			color2;
@@ -130,6 +131,22 @@ typedef struct
 	u16			numsubs;
 	u16			unk;
 } brlyt_group_chunk;
+
+typedef struct
+{
+	/* possible a numoffs */
+	u16			string_count;
+	u16			unk2;
+} brlyt_usdstart_chunk;
+
+typedef struct
+{
+	u32			string_offset;
+	u32			is_working_offset;
+	u16			unk5;
+	u8			unk6;
+	u8			unk7;
+} brlyt_usdmain_chunk;
 
 typedef struct
 {
