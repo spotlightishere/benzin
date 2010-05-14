@@ -392,10 +392,48 @@ void parse_brlan(char* filename, char *filenameout)
 		printf("length: %08x\n", be32(*(u32*)(data+BRLAN_fileoffset+4)));
 		if (!memcmp(pat1_tag, data+BRLAN_fileoffset, 4)){
 			u32 pat1_offset = BRLAN_fileoffset;
-			BRLAN_fileoffset += be32(*(u32*)(data+BRLAN_fileoffset+4));
+			brlan_pat1_universal pathead;
+			BRLAN_ReadDataFromMemory(&pathead, data, sizeof(brlan_pat1_universal));
+
+			mxml_node_t * pat_node;
+			pat_node = mxmlNewElement(xmlan, "pat1");
+			mxml_node_t *unk1, *unk2, *unk5, *unk6;
+			unk1 = mxmlNewElement(pat_node, "unk1");
+			mxmlNewTextf(unk1, 0, "%04x", short_swap_bytes(pathead.unk1));
+			unk2 = mxmlNewElement(pat_node, "unk2");
+			mxmlNewTextf(unk2, 0, "%04x", short_swap_bytes(pathead.unk2));
+			unk5 = mxmlNewElement(pat_node, "unk5");
+			mxmlNewTextf(unk5, 0, "%08x", be32(pathead.unk5));
+			unk6 = mxmlNewElement(pat_node, "unk6");
+			mxmlNewTextf(unk6, 0, "%02x", pathead.unk6);
+
+			mxml_node_t *strngs1, *strngs2;
+
+			u32 ofs = pat1_offset+ be32(pathead.unk3_offset);
+			char str[0x10];
+			memcpy(str, data+ofs, 0x10);
+			strngs1 = mxmlNewElement(pat_node, "first");
+			mxmlNewTextf(strngs1, 0, "%s", str);
+
+			u32 offs = pat1_offset+ be32(pathead.unk4_offset);
+			strngs2 = mxmlNewElement(pat_node, "seconds");
+			u16 seconds = 0;
+			for(seconds = 0; seconds < short_swap_bytes(pathead.unk2); seconds++)
+			{
+				mxml_node_t *info;
+				char strng[0x14];
+				memcpy(strng, data+offs, 0x14);
+				info = mxmlNewElement(strngs2, "string");
+				mxmlNewTextf(info, 0, "%s", strng);
+				offs += 0x14;
+			}
+
+			BRLAN_fileoffset = pat1_offset+be32(pathead.size);
 
 		}else if(!memcmp(pah1_tag, data+BRLAN_fileoffset, 4)){
 			u32 pah1_offset = BRLAN_fileoffset;
+			mxml_node_t * pah_node;
+			pah_node = mxmlNewElement(xmlan, "pah1");
 			BRLAN_fileoffset += be32(*(u32*)(data+BRLAN_fileoffset+4));
 
 		}else if(!memcmp(pai1_tag, data+BRLAN_fileoffset, 4)){
@@ -914,6 +952,108 @@ void write_brlan(char *infile, char* outfile)
 	WriteBRLANHeader(rlanhead, fp);
 
 
+	mxml_node_t * pat1_node;
+	for(pat1_node = mxmlFindElement(tree, tree, "pat1", NULL, NULL, MXML_DESCEND); pat1_node != NULL; pat1_node = mxmlFindElement(pat1_node, tree, "pat1", NULL, NULL, MXML_DESCEND))
+	{
+		u32 pat1_offset = ftell(fp);
+		brlan_pat1_universal pathead;
+		pathead.magic[0] = 'p';
+		pathead.magic[1] = 'a';
+		pathead.magic[2] = 't';
+		pathead.magic[3] = '1';
+		pathead.size = 0;
+		pathead.unk1 = 5;
+		pathead.unk2 = 4;
+		pathead.unk3_offset = be32(0x1c);
+		pathead.unk4_offset = be32(0x2c);
+		pathead.unk5 = 0x008c00a0;
+		pathead.unk6 = 0;
+		pathead.padding = 0;
+		fwrite(&pathead, sizeof(brlan_pat1_universal), 1,fp);
+
+		mxml_node_t *unk1, *unk2, *unk5, *unk6;
+		mxml_node_t *first, *second;
+		unk1 = mxmlFindElement(pat1_node, pat1_node, "unk1", NULL, NULL, MXML_DESCEND);
+		if ( unk1 != NULL )
+		{
+			char temp[256];
+			get_value(unk1, temp, 256);
+			pathead.unk1 = strtoul(temp, NULL, 16);
+			pathead.unk1 = short_swap_bytes(pathead.unk1);
+		}
+		unk2 = mxmlFindElement(pat1_node, pat1_node, "unk2", NULL, NULL, MXML_DESCEND);
+		if ( unk2 != NULL )
+		{
+			char temp[256];
+			get_value(unk2, temp, 256);
+			pathead.unk2 = strtoul(temp, NULL, 16);
+			pathead.unk2 = short_swap_bytes(pathead.unk2);
+		}
+		unk5 = mxmlFindElement(pat1_node, pat1_node, "unk5", NULL, NULL, MXML_DESCEND);
+		if ( unk5 != NULL )
+		{
+			char temp[256];
+			get_value(unk5, temp, 256);
+			pathead.unk5 = strtoul(temp, NULL, 16);
+			pathead.unk5 = be32(pathead.unk5);
+		}
+		unk6 = mxmlFindElement(pat1_node, pat1_node, "unk6", NULL, NULL, MXML_DESCEND);
+		if ( unk6 != NULL )
+		{
+			char temp[256];
+			get_value(unk6, temp, 256);
+			pathead.unk6 = strtoul(temp, NULL, 16);
+			pathead.unk6 = short_swap_bytes(pathead.unk6);
+		}
+
+		u32 cnt1 = 1;
+		char * temp1 = malloc(sizeof(char) * cnt1 * 0x10);
+		memset(temp1, 0, sizeof(char) * cnt1 * 0x10);
+		first = mxmlFindElement(pat1_node, pat1_node, "first", NULL, NULL, MXML_DESCEND);
+		if ( first != NULL )
+			get_value(first, temp1, 0x10);
+		fwrite(temp1, 0x10, 1, fp);
+		free(temp1);
+
+		u32 cnt2 = 0;
+		second = mxmlFindElement(pat1_node, pat1_node, "seconds", NULL, NULL, MXML_DESCEND);
+		if ( second != NULL )
+		{
+			printf("second\n");
+			mxml_node_t *str_node;
+			for(str_node = mxmlFindElement(second, second, "string", NULL, NULL, MXML_DESCEND); str_node != NULL; str_node = mxmlFindElement(str_node, second, "string", NULL, NULL, MXML_DESCEND))
+			{
+				cnt2++;
+			}
+			u32 tmp2_size = sizeof(char) * cnt2 * 0x14;
+			printf("size: %d\n", tmp2_size);
+			char * temp2 = malloc(sizeof(char) * cnt2 * 0x14);
+			memset(temp2, 0, sizeof(char) * cnt2 * 0x14);
+			char * ofs = temp2;
+			for(str_node = mxmlFindElement(second, second, "string", NULL, NULL, MXML_DESCEND); str_node != NULL; str_node = mxmlFindElement(str_node, second, "string", NULL, NULL, MXML_DESCEND))
+			{
+				printf("loopy\n");
+				char tempp[256];
+				memset(tempp, 0, 256);
+				get_value(str_node, tempp, 256);
+				memcpy(ofs, tempp, 0x14);
+				ofs += 0x14;
+			}
+			fwrite(temp2, tmp2_size, 1, fp);
+			free(temp2);
+		}
+		pathead.unk2 = cnt2;
+		pathead.unk2 = short_swap_bytes(pathead.unk2);
+		u32 temp_offs = ftell(fp);
+		pathead.size = temp_offs - pat1_offset;
+		pathead.size = be32(pathead.size);
+		fseek(fp, pat1_offset, SEEK_SET);
+		fwrite(&pathead, sizeof(brlan_pat1_universal), 1,fp);
+		fseek(fp, temp_offs, SEEK_SET);
+		fileSize = ftell(fp);
+		chunk_count++;
+	}
+
 	mxml_node_t * pai1_node;
 	for(pai1_node = mxmlFindElement(tree, tree, "pai1", NULL, NULL, MXML_DESCEND); pai1_node != NULL; pai1_node = mxmlFindElement(pai1_node, tree, "pai1", NULL, NULL, MXML_DESCEND))
 	{
@@ -993,7 +1133,8 @@ void write_brlan(char *infile, char* outfile)
 		}
 		u32 paneoffsets[panecount];
 		u32 tagoffset = ftell(fp);
-		for(i = 0; i < panecount; i++) paneoffsets[i] = 0x10;
+		for(i = 0; i < panecount; i++)
+			paneoffsets[i] = pai1_offset;
 		WriteBRLANOffsets(paneoffsets, panecount, fp);
 
 		for(node = mxmlFindElement(pai1_node, pai1_node, "pane", NULL, NULL, MXML_DESCEND); node != NULL; node = mxmlFindElement(node, pai1_node, "pane", NULL, NULL, MXML_DESCEND))
