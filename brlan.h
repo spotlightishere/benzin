@@ -85,7 +85,8 @@ typedef struct
 	u32			unk4_offset;		// 802b5c40 offs from pat1
 							// offset to second string
 							// every 0x14 from here
-	u32			unk5;
+	u16			unk5a;
+	u16			unk5b;
 	u8			unk6;				// 802b5c60
 	u8			padding;
 } brlan_pat1_universal;

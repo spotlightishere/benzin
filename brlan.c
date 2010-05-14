@@ -387,9 +387,9 @@ void parse_brlan(char* filename, char *filenameout)
 	u16 pa_counter = 0;
 	for(pa_counter = 0; pa_counter < short_swap_bytes(header.pai1_count); pa_counter++)
 	{
-		printf("Loop\n");
-		printf("%.4s\n", data+BRLAN_fileoffset);
-		printf("length: %08x\n", be32(*(u32*)(data+BRLAN_fileoffset+4)));
+		dbgprintf("Loop\n");
+		dbgprintf("%.4s\n", data+BRLAN_fileoffset);
+		dbgprintf("length: %08x\n", be32(*(u32*)(data+BRLAN_fileoffset+4)));
 		if (!memcmp(pat1_tag, data+BRLAN_fileoffset, 4)){
 			u32 pat1_offset = BRLAN_fileoffset;
 			brlan_pat1_universal pathead;
@@ -400,18 +400,23 @@ void parse_brlan(char* filename, char *filenameout)
 			mxml_node_t *unk1, *unk2, *unk5, *unk6;
 			unk1 = mxmlNewElement(pat_node, "unk1");
 			mxmlNewTextf(unk1, 0, "%04x", short_swap_bytes(pathead.unk1));
-			unk2 = mxmlNewElement(pat_node, "unk2");
-			mxmlNewTextf(unk2, 0, "%04x", short_swap_bytes(pathead.unk2));
-			unk5 = mxmlNewElement(pat_node, "unk5");
-			mxmlNewTextf(unk5, 0, "%08x", be32(pathead.unk5));
+			//unk2 = mxmlNewElement(pat_node, "unk2");
+			//mxmlNewTextf(unk2, 0, "%04x", short_swap_bytes(pathead.unk2));
+			unk5 = mxmlNewElement(pat_node, "unk5a");
+			mxmlNewTextf(unk5, 0, "%04x", short_swap_bytes(pathead.unk5a));
+			unk5 = mxmlNewElement(pat_node, "unk5b");
+			mxmlNewTextf(unk5, 0, "%04x", short_swap_bytes(pathead.unk5b));
 			unk6 = mxmlNewElement(pat_node, "unk6");
 			mxmlNewTextf(unk6, 0, "%02x", pathead.unk6);
+			unk6 = mxmlNewElement(pat_node, "padding");
+			mxmlNewTextf(unk6, 0, "%02x", pathead.padding);
 
 			mxml_node_t *strngs1, *strngs2;
 
 			u32 ofs = pat1_offset+ be32(pathead.unk3_offset);
-			char str[0x10];
-			memcpy(str, data+ofs, 0x10);
+			char str[0x40];
+			memset(str, 0, 0x40);
+			strncpy(str, data+ofs, 0x3f);
 			strngs1 = mxmlNewElement(pat_node, "first");
 			mxmlNewTextf(strngs1, 0, "%s", str);
 
@@ -438,7 +443,7 @@ void parse_brlan(char* filename, char *filenameout)
 
 		}else if(!memcmp(pai1_tag, data+BRLAN_fileoffset, 4)){
 			u32 pai1_offset = BRLAN_fileoffset;
-			printf("In pai1 tag\n");
+			dbgprintf("In pai1 tag\n");
 			mxml_node_t * pai_node;
 			pai_node = mxmlNewElement(xmlan, "pai1");
 
@@ -966,13 +971,14 @@ void write_brlan(char *infile, char* outfile)
 		pathead.unk2 = 4;
 		pathead.unk3_offset = be32(0x1c);
 		pathead.unk4_offset = be32(0x2c);
-		pathead.unk5 = 0x008c00a0;
+		pathead.unk5a = 0x008c;
+		pathead.unk5b = 0x00a0;
 		pathead.unk6 = 0;
 		pathead.padding = 0;
 		fwrite(&pathead, sizeof(brlan_pat1_universal), 1,fp);
 
-		mxml_node_t *unk1, *unk2, *unk5, *unk6;
-		mxml_node_t *first, *second;
+		mxml_node_t *unk1, *unk2, *unk5a, *unk5b, *unk6;
+		mxml_node_t *first, *second, *pad;
 		unk1 = mxmlFindElement(pat1_node, pat1_node, "unk1", NULL, NULL, MXML_DESCEND);
 		if ( unk1 != NULL )
 		{
@@ -981,6 +987,7 @@ void write_brlan(char *infile, char* outfile)
 			pathead.unk1 = strtoul(temp, NULL, 16);
 			pathead.unk1 = short_swap_bytes(pathead.unk1);
 		}
+		/*
 		unk2 = mxmlFindElement(pat1_node, pat1_node, "unk2", NULL, NULL, MXML_DESCEND);
 		if ( unk2 != NULL )
 		{
@@ -989,13 +996,22 @@ void write_brlan(char *infile, char* outfile)
 			pathead.unk2 = strtoul(temp, NULL, 16);
 			pathead.unk2 = short_swap_bytes(pathead.unk2);
 		}
-		unk5 = mxmlFindElement(pat1_node, pat1_node, "unk5", NULL, NULL, MXML_DESCEND);
-		if ( unk5 != NULL )
+		*/
+		unk5a = mxmlFindElement(pat1_node, pat1_node, "unk5a", NULL, NULL, MXML_DESCEND);
+		if ( unk5a != NULL )
 		{
 			char temp[256];
-			get_value(unk5, temp, 256);
-			pathead.unk5 = strtoul(temp, NULL, 16);
-			pathead.unk5 = be32(pathead.unk5);
+			get_value(unk5a, temp, 256);
+			pathead.unk5a = strtoul(temp, NULL, 16);
+			pathead.unk5a = short_swap_bytes(pathead.unk5a);
+		}
+		unk5b = mxmlFindElement(pat1_node, pat1_node, "unk5b", NULL, NULL, MXML_DESCEND);
+		if ( unk5b != NULL )
+		{
+			char temp[256];
+			get_value(unk5b, temp, 256);
+			pathead.unk5b = strtoul(temp, NULL, 16);
+			pathead.unk5b = short_swap_bytes(pathead.unk5b);
 		}
 		unk6 = mxmlFindElement(pat1_node, pat1_node, "unk6", NULL, NULL, MXML_DESCEND);
 		if ( unk6 != NULL )
@@ -1003,36 +1019,48 @@ void write_brlan(char *infile, char* outfile)
 			char temp[256];
 			get_value(unk6, temp, 256);
 			pathead.unk6 = strtoul(temp, NULL, 16);
-			pathead.unk6 = short_swap_bytes(pathead.unk6);
+			//pathead.unk6 = short_swap_bytes(pathead.unk6);
+		}
+		pad = mxmlFindElement(pat1_node, pat1_node, "padding", NULL, NULL, MXML_DESCEND);
+		if ( pad != NULL )
+		{
+			char temp[256];
+			get_value(unk6, temp, 256);
+			pathead.padding = strtoul(temp, NULL, 16);
+			//pathead.padding = short_swap_bytes(pathead.padding);
 		}
 
 		u32 cnt1 = 1;
-		char * temp1 = malloc(sizeof(char) * cnt1 * 0x10);
-		memset(temp1, 0, sizeof(char) * cnt1 * 0x10);
+		char temp1[0x40];
+		memset(temp1, 0, 0x40);
 		first = mxmlFindElement(pat1_node, pat1_node, "first", NULL, NULL, MXML_DESCEND);
 		if ( first != NULL )
 			get_value(first, temp1, 0x10);
-		fwrite(temp1, 0x10, 1, fp);
-		free(temp1);
+		u32 temp1_len = strlen(temp1);
+		if ( temp1_len % 8 )
+			temp1_len += (8 - (temp1_len % 8));
+		fwrite(temp1, temp1_len, 1, fp);
+		//pathead.unk4_offset = be32(be32(pathead.unk3_offset) + temp1_len);
+		pathead.unk4_offset = be32(0x1C + temp1_len);
 
 		u32 cnt2 = 0;
 		second = mxmlFindElement(pat1_node, pat1_node, "seconds", NULL, NULL, MXML_DESCEND);
 		if ( second != NULL )
 		{
-			printf("second\n");
+			dbgprintf("second\n");
 			mxml_node_t *str_node;
 			for(str_node = mxmlFindElement(second, second, "string", NULL, NULL, MXML_DESCEND); str_node != NULL; str_node = mxmlFindElement(str_node, second, "string", NULL, NULL, MXML_DESCEND))
 			{
 				cnt2++;
 			}
 			u32 tmp2_size = sizeof(char) * cnt2 * 0x14;
-			printf("size: %d\n", tmp2_size);
+			dbgprintf("size: %d\n", tmp2_size);
 			char * temp2 = malloc(sizeof(char) * cnt2 * 0x14);
 			memset(temp2, 0, sizeof(char) * cnt2 * 0x14);
 			char * ofs = temp2;
 			for(str_node = mxmlFindElement(second, second, "string", NULL, NULL, MXML_DESCEND); str_node != NULL; str_node = mxmlFindElement(str_node, second, "string", NULL, NULL, MXML_DESCEND))
 			{
-				printf("loopy\n");
+				dbgprintf("loopy\n");
 				char tempp[256];
 				memset(tempp, 0, 256);
 				get_value(str_node, tempp, 256);
