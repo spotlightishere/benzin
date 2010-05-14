@@ -596,9 +596,9 @@ void PrintPane( brlyt_entry entry , u8* brlyt_file , mxml_node_t * tag )
 	alpha   = mxmlNewElement(tag, "alpha");   mxmlNewTextf(alpha, 0, "%02x", data.alpha);
 	padding = mxmlNewElement(tag, "padding"); mxmlNewTextf(padding, 0, "%02x", data.pad);
 	translate = mxmlNewElement(tag, "translate");
-	x = mxmlNewElement(translate, "x"); mxmlNewTextf(x, 0, "%.20f", float_swap_bytes(data.XTrans));
-	y = mxmlNewElement(translate, "y"); mxmlNewTextf(y, 0, "%.20f", float_swap_bytes(data.YTrans));
-	z = mxmlNewElement(translate, "z"); mxmlNewTextf(z, 0, "%.20f", float_swap_bytes(data.ZTrans));
+	x = mxmlNewElement(translate, "x"); mxmlNewTextf(x, 0, "%.25f", float_swap_bytes(data.XTrans));
+	y = mxmlNewElement(translate, "y"); mxmlNewTextf(y, 0, "%.25f", float_swap_bytes(data.YTrans));
+	z = mxmlNewElement(translate, "z"); mxmlNewTextf(z, 0, "%.25f", float_swap_bytes(data.ZTrans));
 	rotate = mxmlNewElement(tag, "rotate");
 	x = mxmlNewElement(rotate, "x"); mxmlNewTextf(x, 0, "%.20f", float_swap_bytes(data.XRotate));
 	y = mxmlNewElement(rotate, "y"); mxmlNewTextf(y, 0, "%.20f", float_swap_bytes(data.YRotate));
@@ -1325,7 +1325,7 @@ void parse_brlyt(char *filename, char *filenameout)
 	xml = mxmlNewXML("1.0");
 	xmlyt = mxmlNewElement(xml, "xmlyt");
 	mxmlElementSetAttrf(xmlyt, "version", "%d.%d.%d%s", BENZIN_VERSION_MAJOR, BENZIN_VERSION_MINOR, BENZIN_VERSION_BUILD, BENZIN_VERSION_OTHER);
-	mxmlElementSetAttrf(xmlyt, "brlyt_version", "%04x", be32(header.version));
+	mxmlElementSetAttrf(xmlyt, "brlyt_version", "%04x", short_swap_bytes(header.version));
 	PrintBRLYTEntries(entries, entrycount, brlyt_file, xmlyt);
 	mxmlSaveFile(xml, xmlFile, whitespace_cb);
 	fclose(xmlFile);
