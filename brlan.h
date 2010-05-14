@@ -61,9 +61,34 @@ typedef struct
 	u16			endian;				// Always 0xFEFF. Tells endian.
 	u16			version;			// Always 0x0008. Version of brlan format
 	u32			file_size;			// Size of whole file, including the header.
-	u16			pai1_offset;		// The offset to the pai1 header from the start of file.
-	u16			pai1_count;			// How many pai1 sections there are (duh, only 1... wtf?)
+	u16			pai1_offset;		// The offset to the pa*1 header from the start of file.
+	u16			pai1_count;			// How many pa*1 sections there are
 } brlan_header;
+
+typedef struct
+{
+	fourcc		magic;				// "pah1" in ASCII.
+	u32			size;
+	u32			unk1_offset;		// 802b5ca0 offs from pah1
+	u16			unk2;				// 802b5c80
+} brlan_pah1_universal;
+
+typedef struct
+{
+	fourcc		magic;				// "pat1" in ASCII.
+	u32			size;
+	u16			unk1;
+	u16			unk2;				// 802b5c20
+							// number of second strings
+	u32			unk3_offset;		// offs from pat1
+							// offset to first string
+	u32			unk4_offset;		// 802b5c40 offs from pat1
+							// offset to second string
+							// every 0x14 from here
+	u32			unk5;
+	u8			unk6;				// 802b5c60
+	u8			padding;
+} brlan_pat1_universal;
 
 typedef struct
 {
