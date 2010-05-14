@@ -451,9 +451,14 @@ void BRLYT_CheckHeaderSanity(brlyt_header header, size_t filesize)
 		printf("magic: %.4s\n", header.magic);
 		exit(1);
 	}
-	if((header.version != be32(0xfeff0008) )&&(header.version != be32(0xfeff000a))){
+	if(header.endian != short_swap_bytes(0xFEFF)){
+		printf("BRLYT endian is not set for big\n");
+		printf("endian: %04x\n", short_swap_bytes(header.endian) );
+		exit(1);
+	}
+	if((header.version != short_swap_bytes(0x0008) )&&(header.version != short_swap_bytes(0x000a))){
 		printf("BRLYT version not right\n");
-		printf("version: %08x\n", be32(header.version) );
+		printf("version: %04x\n", short_swap_bytes(header.version) );
 		exit(1);
 	}
 	if(filesize != be32(header.filesize)) {
@@ -1320,7 +1325,7 @@ void parse_brlyt(char *filename, char *filenameout)
 	xml = mxmlNewXML("1.0");
 	xmlyt = mxmlNewElement(xml, "xmlyt");
 	mxmlElementSetAttrf(xmlyt, "version", "%d.%d.%d%s", BENZIN_VERSION_MAJOR, BENZIN_VERSION_MINOR, BENZIN_VERSION_BUILD, BENZIN_VERSION_OTHER);
-	mxmlElementSetAttrf(xmlyt, "brlyt_version", "%08x", be32(header.version));
+	mxmlElementSetAttrf(xmlyt, "brlyt_version", "%04x", be32(header.version));
 	PrintBRLYTEntries(entries, entrycount, brlyt_file, xmlyt);
 	mxmlSaveFile(xml, xmlFile, whitespace_cb);
 	fclose(xmlFile);
@@ -3726,7 +3731,8 @@ void WriteBRLYTHeader(brlyt_header rlythead, FILE* fp)
 	writehead.magic[1] = rlythead.magic[1];
 	writehead.magic[2] = rlythead.magic[2];
 	writehead.magic[3] = rlythead.magic[3];
-	writehead.version = be32(rlythead.version);
+	writehead.endian = short_swap_bytes(rlythead.endian);
+	writehead.version = short_swap_bytes(rlythead.version);
 	writehead.filesize = be32(rlythead.filesize);
 	writehead.lyt_offset = short_swap_bytes(rlythead.lyt_offset);
 	writehead.sections = short_swap_bytes(rlythead.sections);
@@ -3779,6 +3785,7 @@ void write_brlyt(char *infile, char *outfile)
 	rlythead.magic[2] = 'Y';
 	rlythead.magic[3] = 'T';
 	//rlythead.version = 0xFEFF0008;
+	rlythead.endian = 0xFEFF;
 	rlythead.version = versionn;
 	rlythead.filesize = 0;
 	rlythead.lyt_offset = sizeof(brlyt_header);

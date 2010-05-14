@@ -18,7 +18,8 @@
 typedef struct
 {
     fourcc		magic;				// RLYT
-	u32			version;			// 0xFEFF0008
+	u16			endian;				// 0xFEFF
+	u16			version;			// 0x0008
 	u32			filesize;			// The filesize of the brlyt.
 	u16			lyt_offset;			// Offset to the lyt1 section.
 	u16			sections;			// Number of sections.

@@ -1037,8 +1037,8 @@ void write_brlan(char *infile, char* outfile)
 		if ( first != NULL )
 			get_value(first, temp1, 0x10);
 		u32 temp1_len = strlen(temp1);
-		if ( temp1_len % 8 )
-			temp1_len += (8 - (temp1_len % 8));
+		if ( temp1_len % 4 )
+			temp1_len += (4 - (temp1_len % 4));
 		fwrite(temp1, temp1_len, 1, fp);
 		//pathead.unk4_offset = be32(be32(pathead.unk3_offset) + temp1_len);
 		pathead.unk4_offset = be32(0x1C + temp1_len);
