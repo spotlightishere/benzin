@@ -990,8 +990,8 @@ int TPL_ConvertFromGDs(const u32 count, char *gds[], char outname[], u32 format,
 		printf("Dimensions: %dx%d\n", width, height);
 		h.width = be16(width);
 		h.height = be16(height);
-		h.min = be32(TPL_MIN_FILTER_NORMAL);
-		h.mag = be32(TPL_MAG_FILTER_NORMAL);
+		h.min = be32(TPL_MIN_FILTER_CLAMP);
+		h.mag = be32(TPL_MAG_FILTER_CLAMP);
 		fwrite(&h.height, 2, 1, out);
 		fwrite(&h.width, 2, 1, out);
 		fwrite(&h.format, 4, 1, out);
@@ -1347,8 +1347,8 @@ int TPL_ConvertFromBMPs(const u32 count, char *bmps[], char outname[], u32 forma
 		printf("Dimensions: %dx%d\n", bi.width, bi.height);
 		h.width = be16(bi.width);
 		h.height = be16(bi.height);
-		h.min = be32(TPL_MIN_FILTER_NORMAL);
-		h.mag = be32(TPL_MAG_FILTER_NORMAL);
+		h.min = be32(TPL_MIN_FILTER_CLAMP);
+		h.mag = be32(TPL_MAG_FILTER_CLAMP);
 		fwrite(&h.height, 2, 1, out);
 		fwrite(&h.width, 2, 1, out);
 		fwrite(&h.format, 4, 1, out);
