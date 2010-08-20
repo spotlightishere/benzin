@@ -888,6 +888,7 @@ int TPL_ConvertFromGDs(const u32 count, char *gds[], char outname[], u32 format,
 	}
 	u8* imagedatas[256];
 	u32 imagesizes[256];
+	u32 curoff = 0;
 	for(i = 0; i < count; i++) {
 		printf("Handling %d/%d\n", i + 1, count);
 		FILE* gdfp = fopen(gds[i], "rb");
@@ -975,7 +976,8 @@ int TPL_ConvertFromGDs(const u32 count, char *gds[], char outname[], u32 format,
 		memset(&h, 0, sizeof(TPL_header));
 		fflush(stdout);
 		h.format = be32(format);
-		h.offs = be32(12 + (8 * count) + (36 * count));
+		h.offs = be32(12 + (8 * count) + (36 * count) + curoff);
+		curoff += ret;
 		printf("Dimensions: %dx%d\n", width, height);
 		h.width = be16(width);
 		h.height = be16(height);
@@ -1197,6 +1199,7 @@ int TPL_ConvertFromBMPs(const u32 count, char *bmps[], char outname[], u32 forma
 	}
 	u8* imagedatas[256];
 	u32 imagesizes[256];
+	u32 curoff = 0;
 	for(i = 0; i < count; i++) {
 		printf("Handling %d/%d\n", i + 1, count);
 		FILE* bmpfp = fopen(bmps[i], "rb");
@@ -1316,7 +1319,8 @@ int TPL_ConvertFromBMPs(const u32 count, char *bmps[], char outname[], u32 forma
 		memset(&h, 0, sizeof(TPL_header));
 		fflush(stdout);
 		h.format = be32(format);
-		h.offs = be32(12 + (8 * count) + (36 * count));
+		h.offs = be32(12 + (8 * count) + (36 * count) + curoff);
+		curoff += ret;
 		printf("Dimensions: %dx%d\n", bi.width, bi.height);
 		h.width = be16(bi.width);
 		h.height = be16(bi.height);
