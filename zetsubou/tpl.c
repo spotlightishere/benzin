@@ -268,7 +268,7 @@ int TPL_ConvertRGB5A3ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmap
 						(*(u32**)bitmapdata)[x + (y * width)] = rgba;
 					}else{
 						// RGB4A3
-						u8 a = (((oldpixel >> 12) & 0x7) * 64) / 7;
+						u8 a = (((oldpixel >> 12) & 0x7) * 255) / 7;
 						u8 r = (((oldpixel >> 8)  & 0xF) * 255) / 15;
 						u8 g = (((oldpixel >> 4)  & 0xF) * 255) / 15;
 						u8 b = (((oldpixel >> 0)  & 0xF) * 255) / 15;
