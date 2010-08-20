@@ -210,10 +210,14 @@ int TPL_ConvertBitMapToRGBA8(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 wi
 		for(x1 = 0; x1 < width; x1 += 4) {
 			for(y = y1; y < (y1 + 4); y++) {
 				for(x = x1; x < (x1 + 4); x++) {
-					if((x >= width) || (y >= height))
-						rgba[z] = 0;
-					else
+					if(x >= width) {
+						//rgba[z] = 0;
+						rgba[z] = rgba[z-1];
+					}else if(y >= height) {
+						rgba[z] = rgba[z-4];
+					}else{
 						rgba[z] = ((u32*)subbitmapdata)[x + (y * width)];
+					}
 					lr[z] = (rgba[z] >> 16)  & 0xFF;
 					lg[z] = (rgba[z] >> 8)  & 0xFF;
 					lb[z] = (rgba[z] >> 0) & 0xFF;
@@ -976,7 +980,12 @@ int TPL_ConvertFromGDs(const u32 count, char *gds[], char outname[], u32 format,
 		memset(&h, 0, sizeof(TPL_header));
 		fflush(stdout);
 		h.format = be32(format);
-		h.offs = be32(12 + (8 * count) + (36 * count) + curoff);
+		//h.offs = be32(12 + (8 * count) + (36 * count) + curoff);
+		u32 temp_off = 12 + (8*count) + (36*count) + curoff;
+		u32 mod = temp_off % 0x20;
+		if(mod)
+			mod = 0x20-mod;
+		h.offs = be32(temp_off + mod);
 		curoff += ret;
 		printf("Dimensions: %dx%d\n", width, height);
 		h.width = be16(width);
@@ -997,6 +1006,15 @@ int TPL_ConvertFromGDs(const u32 count, char *gds[], char outname[], u32 format,
 		fwrite(&h.max_lod, 1, 1, out);
 		fwrite(&h.unpacked, 1, 1, out);
 		fflush(out);
+	}
+	// ADD PADDING TO 0x20 BYTE ALIGNMENT
+	int off = ftell(out);
+	off = off % 0x20;
+	printf("out off: %d\n", off);
+	if(off) {
+		char pad[0x20];
+		memset(pad, 0, 0x20);
+		fwrite(pad, 1, 0x20-off, out);
 	}
 	for(i = 0; i < count; i++) {
 		fflush(stdout);
@@ -1319,7 +1337,12 @@ int TPL_ConvertFromBMPs(const u32 count, char *bmps[], char outname[], u32 forma
 		memset(&h, 0, sizeof(TPL_header));
 		fflush(stdout);
 		h.format = be32(format);
-		h.offs = be32(12 + (8 * count) + (36 * count) + curoff);
+		//h.offs = be32(12 + (8 * count) + (36 * count) + curoff);
+		u32 temp_off = 12 + (8*count) + (36*count) + curoff;
+		u32 mod = temp_off % 0x20;
+		if(mod)
+			mod = 0x20-mod;
+		h.offs = be32(temp_off + mod);
 		curoff += ret;
 		printf("Dimensions: %dx%d\n", bi.width, bi.height);
 		h.width = be16(bi.width);
@@ -1344,6 +1367,15 @@ int TPL_ConvertFromBMPs(const u32 count, char *bmps[], char outname[], u32 forma
 		fflush(bmpfp);
 		fclose(bmpfp);
 		fflush(stdout);
+	}
+	// ADD PADDING TO 0x20 BYTE ALIGNMENT
+	int off = ftell(out);
+	off = off % 0x20;
+	printf("out off: %d\n", off);
+	if(off) {
+		char pad[0x20];
+		memset(pad, 0, 0x20);
+		fwrite(pad, 1, 0x20-off, out);
 	}
 	for(i = 0; i < count; i++) {
 		fflush(stdout);
