@@ -39,9 +39,9 @@ int TPL_ConvertRGB565ToBitMap(u8* tplbuf, u32 tplsize, u32 tplpoint, u8** bitmap
 						continue;
 					u16 oldpixel = *(u16*)(tplbuf + (tplpoint + ((iv++) * 2)));
 					oldpixel = be16(oldpixel);
-					u8 b = ((oldpixel >> 11) & 0x1F) << 3;
-					u8 g = ((oldpixel >> 5)  & 0x3F) << 2;
-					u8 r = ((oldpixel >> 0)  & 0x1F) << 3;
+					u8 b = ((oldpixel>>11) &0x1F) *(255/0x1f);
+					u8 g = ((oldpixel>>5)  &0x3F) *(255/0x3f);
+					u8 r = ((oldpixel>>0)  &0x1F) *(255/0x1f);
 					u8 a = 255;
 					u32 rgba = (r << 0) | (g << 8) | (b << 16) | (a << 24);
 					(*(u32**)bitmapdata)[x + (y * width)] = rgba;
@@ -79,7 +79,7 @@ int TPL_ConvertBitMapToRGB565(u8* bitmapdata, u32 bitmapsize, u8** tplbuf, u32 w
 						u8 b = (rgba >> 16) & 0xFF;
 //						u8 a = (rgba >> 24)  & 0xFF;
 
-						newpixel = ((b >> 3) << 11) | ((g >> 2) << 5) | ((r >> 3) << 0);
+						newpixel = ((b/(255/0x1f)) << 11) | ((g/(255/0x3f)) << 5) | ((r/(255/0x1f)) << 0);
 					}
 					((u16*)writebuf)[iv++] = be16(newpixel);
 				}
