@@ -406,8 +406,9 @@ void parse_brlan(char* filename, char *filenameout)
 			mxmlNewTextf(unk5, 0, "%04x", short_swap_bytes(pathead.unk5a));
 			unk5 = mxmlNewElement(pat_node, "unk5b");
 			mxmlNewTextf(unk5, 0, "%04x", short_swap_bytes(pathead.unk5b));
-			unk6 = mxmlNewElement(pat_node, "unk6");
-			mxmlNewTextf(unk6, 0, "%02x", pathead.unk6);
+			// unk6 == bool lookAtChildren/isDecendingBind
+			unk6 = mxmlNewElement(pat_node, "isDecendingBind");
+			mxmlNewTextf(unk6, 0, "%02x", pathead.isDecendingBind);
 			unk6 = mxmlNewElement(pat_node, "padding");
 			mxmlNewTextf(unk6, 0, "%02x", pathead.padding);
 
@@ -420,10 +421,10 @@ void parse_brlan(char* filename, char *filenameout)
 			strngs1 = mxmlNewElement(pat_node, "first");
 			mxmlNewTextf(strngs1, 0, "%s", str);
 
-			u32 offs = pat1_offset+ be32(pathead.unk4_offset);
+			u32 offs = pat1_offset+ be32(pathead.group_array_offset);
 			strngs2 = mxmlNewElement(pat_node, "seconds");
 			u16 seconds = 0;
-			for(seconds = 0; seconds < short_swap_bytes(pathead.unk2); seconds++)
+			for(seconds = 0; seconds < short_swap_bytes(pathead.group_num); seconds++)
 			{
 				mxml_node_t *info;
 				char strng[0x14];
@@ -440,6 +441,7 @@ void parse_brlan(char* filename, char *filenameout)
 			mxml_node_t * pah_node;
 			pah_node = mxmlNewElement(xmlan, "pah1");
 			BRLAN_fileoffset += be32(*(u32*)(data+BRLAN_fileoffset+4));
+			//FIXME
 
 		}else if(!memcmp(pai1_tag, data+BRLAN_fileoffset, 4)){
 			u32 pai1_offset = BRLAN_fileoffset;
@@ -968,12 +970,12 @@ void write_brlan(char *infile, char* outfile)
 		pathead.magic[3] = '1';
 		pathead.size = 0;
 		pathead.unk1 = 5;
-		pathead.unk2 = 4;
+		pathead.group_num = 4;
 		pathead.unk3_offset = be32(0x1c);
-		pathead.unk4_offset = be32(0x2c);
+		pathead.group_array_offset = be32(0x2c);
 		pathead.unk5a = 0x008c;
 		pathead.unk5b = 0x00a0;
-		pathead.unk6 = 0;
+		pathead.isDecendingBind = 0;
 		pathead.padding = 0;
 		fwrite(&pathead, sizeof(brlan_pat1_universal), 1,fp);
 
@@ -1013,12 +1015,12 @@ void write_brlan(char *infile, char* outfile)
 			pathead.unk5b = strtoul(temp, NULL, 16);
 			pathead.unk5b = short_swap_bytes(pathead.unk5b);
 		}
-		unk6 = mxmlFindElement(pat1_node, pat1_node, "unk6", NULL, NULL, MXML_DESCEND);
+		unk6 = mxmlFindElement(pat1_node, pat1_node, "isDecendingBind", NULL, NULL, MXML_DESCEND);
 		if ( unk6 != NULL )
 		{
 			char temp[256];
 			get_value(unk6, temp, 256);
-			pathead.unk6 = strtoul(temp, NULL, 16);
+			pathead.isDecendingBind = strtoul(temp, NULL, 16);
 			//pathead.unk6 = short_swap_bytes(pathead.unk6);
 		}
 		pad = mxmlFindElement(pat1_node, pat1_node, "padding", NULL, NULL, MXML_DESCEND);
@@ -1040,8 +1042,8 @@ void write_brlan(char *infile, char* outfile)
 		if ( temp1_len % 4 )
 			temp1_len += (4 - (temp1_len % 4));
 		fwrite(temp1, temp1_len, 1, fp);
-		//pathead.unk4_offset = be32(be32(pathead.unk3_offset) + temp1_len);
-		pathead.unk4_offset = be32(0x1C + temp1_len);
+		//pathead.group_array_offset = be32(be32(pathead.unk3_offset) + temp1_len);
+		pathead.group_array_offset = be32(0x1C + temp1_len);
 
 		u32 cnt2 = 0;
 		second = mxmlFindElement(pat1_node, pat1_node, "seconds", NULL, NULL, MXML_DESCEND);
@@ -1070,8 +1072,8 @@ void write_brlan(char *infile, char* outfile)
 			fwrite(temp2, tmp2_size, 1, fp);
 			free(temp2);
 		}
-		pathead.unk2 = cnt2;
-		pathead.unk2 = short_swap_bytes(pathead.unk2);
+		pathead.group_num = cnt2;
+		pathead.group_num = short_swap_bytes(pathead.group_num);
 		u32 temp_offs = ftell(fp);
 		pathead.size = temp_offs - pat1_offset;
 		pathead.size = be32(pathead.size);

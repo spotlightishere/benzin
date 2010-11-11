@@ -76,7 +76,7 @@ typedef struct
 	float		line_space;
 } brlyt_text_chunk;
 
-typedef struct
+typedef struct						// starts @ 0x4c
 {
 	u32			vtx_colors[4];		// [4294967295L, 4294967295L, 4294967295L, 4294967295L]
 	u16			mat_num;

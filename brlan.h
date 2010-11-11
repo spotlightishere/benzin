@@ -67,27 +67,36 @@ typedef struct
 
 typedef struct
 {
-	fourcc		magic;				// "pah1" in ASCII.
+	fourcc		magic;						// "pah1" in ASCII.
 	u32			size;
-	u32			unk1_offset;		// 802b5ca0 offs from pah1
-	u16			unk2;				// 802b5c80
+	u32			animationShareInfo_offset;	// from pah1
+	u16			animationShareInfoNum;		// 802b5c80
 } brlan_pah1_universal;
+
+typedef struct
+{
+	char pane_name[0x10];			// for FindPaneByName()
+	char pad1;						// to fill out hole
+	char group_name[0x10];			// GroupName
+	char pad2[0x3];					// to fill out hole
+} brlan_pah1_animShareInfoArray;	// 0x24 bytes long
 
 typedef struct
 {
 	fourcc		magic;				// "pat1" in ASCII.
 	u32			size;
 	u16			unk1;
-	u16			unk2;				// 802b5c20
+	u16			group_num;			// 802b5c20
 							// number of second strings
 	u32			unk3_offset;		// offs from pat1
 							// offset to first string
-	u32			unk4_offset;		// 802b5c40 offs from pat1
+	u32			group_array_offset;	// 802b5c40 offs from pat1
 							// offset to second string
 							// every 0x14 from here
 	u16			unk5a;
 	u16			unk5b;
-	u8			unk6;				// 802b5c60
+	u8			isDecendingBind;	// 802b5c60
+							// bit31 - IsDecendingBind
 	u8			padding;
 } brlan_pat1_universal;
 
