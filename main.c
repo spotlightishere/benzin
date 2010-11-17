@@ -31,6 +31,13 @@ int main(int argc, char* argv[])
 	u8 type = 3;
 	char *ext;
 
+	if (argc == 2)
+	{
+		if (strcmp(argv[1], "-v") == 0)
+			printf(INFORMATION_TEXT);
+		exit(0);
+	}
+
 	if (argc < 4)
 	{
 		printf("Please use ./benzin r brlytfilename.brlyt xmlytfilename.xmlyt\n");
