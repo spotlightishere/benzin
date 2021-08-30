@@ -1,0 +1,23 @@
+GUIDE TO COMPILING BENZIN FOR WINDOWS
+==================================================
+
+In order to compile Benzin you require:
+1) Cygwin with the GCC package
+2) MiniXML 3.0 or later
+3) Benzin source code
+
+First off, let's make sure we have all the above.
+ 1) Go download Cygwin from http://www.cygwin.com/ (Direct Download Link: http://www.cygwin.com/setup-x86_64.exe)
+ 2) Now run setup.exe and when it gets to the Select Packages screen, click the [+] next to Devel. Scroll down to gcc, and click on the word `Skip'. It should change to some version number. Click next. Do the same for make.
+ 3) Once Cygwin is installed, we will download MiniXML 3.0 or later. As of writing, the latest is version 3.2.
+ 4) Go to https://github.com/michaelrsweet/mxml/releases and download the latest release's .tar.gz. You may choose to wget, or copy to your Cygwin root.
+ 5) Now, go open Cygwin (it should have a shortcut on the desktop). If you are running Vista, you must open it as an administrator.
+ 6) Run `tar -xvf mxml*.tar.gz`
+ 7) Now type `./configure'. This should do several checks, and get everything ready.
+ 8) Type `make'. A bunch of stuff should appear on screen. Just ignore it.
+ 9) Now type `make install'. More stuff should pop up on screen. Ignore that too.
+10) Download Benzin via whatever method is most accessible to you. Git is recommended.
+11) Type `make'
+12) A file called benzin.exe should have been created. That is Benzin all ready for use. You must either use it in the Cygwin window, or you must copy the cygwin1.dll file from your Cygwin root to wherever you put benzin.exe, and then run it in a command prompt.
+13) ????
+14) PROFIT!!!!
