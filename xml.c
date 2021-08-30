@@ -10,6 +10,7 @@
  *  All Rights Reserved, HACKERCHANNEL.                                       *
  ******************************************************************************/
 
+#include <stdbool.h>
 #include <string.h>
 #include <mxml.h>
 
@@ -79,10 +80,41 @@ get_value(mxml_node_t *node,		/* I - Node to get */
 	return buffer;
 }
 
+// When names within tabKeyNames are encountered,
+// we add a tab for their values within our XML output.
+char *tabKeyNames[] = {
+	"rotate", "scale", "translate",
+	"xmlyt", "xmlan", "pai1",
+	"pat1", "pah1", "seconds",
+	"entries", "triplet", "pair",
+	"entry", "pane", "tag",
+	"size", "material", "vtx",
+	"colors", "subs", "usdentry",
+	"font", "wnd4", "wnd4mat",
+	"set", "coordinates", "TevStage",
+	"texture", "TextureSRT", "CoordGen",
+	"ChanControl", "MaterialColor",
+	"TevSwapModeTable", "IndTextureSRT",
+	"IndTextureOrder", "AlphaCompare",
+	"BlendMode", 0};
+
+bool shouldHaveTabKey(mxml_node_t* node) {
+ 	const char* name = mxmlGetElement(node);
+ 	int i = 0;
+ 	while (tabKeyNames[i]) {
+ 	 	if (strcmp(name, tabKeyNames[i]) == 0) {
+ 	 	 	return true;
+ 	 	} else {
+ 	 	 	i++;
+ 	 	}
+ 	}
+
+ 	return false;
+}
+
 const char *whitespace_cb(mxml_node_t *node, int where)
 {
 	/* code by Matt_P */
-	const char *name = mxmlGetElement(node);
 	mxml_node_t * temp = node;
 	char tab_buffer[25];
 	memset( tab_buffer , 0 , 15 );
@@ -94,9 +126,9 @@ const char *whitespace_cb(mxml_node_t *node, int where)
 	}
 	if (where == 3 || where == 1){
 		return "";
-	}else if(((mxmlGetPrevSibling(node) && where == 0) || mxmlGetParent(node)) && !(where == 2 && strcmp(name, "rotate") && strcmp(name, "scale") && strcmp(name, "translate") && strcmp(name, "xmlyt") && strcmp(name, "xmlan") && strcmp(name, "pai1") && strcmp(name, "pat1") && strcmp(name, "pah1") && strcmp(name, "seconds") && strcmp(name, "entries") && strcmp(name, "triplet") && strcmp(name, "pair") && strcmp(name, "entry") && strcmp(name, "pane") && (strcmp(name, "tag") && strcmp(name, "size") && strcmp(name, "material") && strcmp(name, "vtx") && strcmp(name, "colors") && strcmp(name, "subs") && strcmp(name, "usdentry") && strcmp(name, "font") && strcmp(name, "wnd4") && strcmp(name, "wnd4mat") && strcmp(name, "set") && strcmp(name, "coordinates") && strcmp(name, "TevStage") && strcmp(name, "texture") && strcmp(name, "TextureSRT") && strcmp(name, "CoordGen") && strcmp(name, "ChanControl") && strcmp(name, "MaterialColor") && strcmp(name, "TevSwapModeTable") && strcmp(name, "IndTextureSRT") && strcmp(name, "IndTextureOrder") && strcmp(name, "AlphaCompare") && strcmp(name, "BlendMode") )) ){
+	} else if (((mxmlGetPrevSibling(node) && where == 0) || mxmlGetParent(node)) && !(where == 2 && !shouldHaveTabKey(node))) {
 		sprintf( xmlbuff , "\n%s" , tab_buffer );
-	}else{
+	} else {
 		return "";
 	}
 	return xmlbuff;

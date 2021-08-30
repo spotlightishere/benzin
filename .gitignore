@@ -2,3 +2,5 @@
 benzin
 *.brlyt
 *.xmlyt
+
+*.pyc
