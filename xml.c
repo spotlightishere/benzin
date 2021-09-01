@@ -37,8 +37,8 @@ get_value(mxml_node_t *node,		/* I - Node to get */
 	for (current = mxmlGetNextSibling(node); current && ptr < end; current = mxmlGetNextSibling(current)) {
 		mxml_type_t currentType = mxmlGetType(current);
 		if (currentType == MXML_TEXT) {
-			int whitespace;			
-			const char* value = mxmlGetText(current, &whitespace);
+			int whitespace;
+			const char* value = mxmlGetText(node, &whitespace);
 			if (whitespace)
 				*ptr++ = ' ';
 

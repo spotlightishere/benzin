@@ -10,6 +10,7 @@
  *  All Rights Reserved, HACKERCHANNEL.                                       *
  ******************************************************************************/
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -274,14 +275,9 @@ char *textures;
 int numberOfTextures;
 int lengthOfTextures;
 
-static int FourCCsMatch(fourcc cc1, fourcc cc2)
+static bool FourCCsMatch(fourcc cc1, fourcc cc2)
 {
-	int ret = 1;
-	ret &= (cc1[0] == cc2[0]);
-	ret &= (cc1[1] == cc2[1]);
-	ret &= (cc1[2] == cc2[2]);
-	ret &= (cc1[3] == cc2[3]);
-	return ret;
+	return memcmp(cc1, cc2, 4) == 0;
 }
 
 static void BRLYT_ReadDataFromMemoryX(void* destination, void* input, size_t size)
@@ -403,7 +399,7 @@ u16 findTexOffset(char *tex)
 
 void BRLYT_CheckHeaderSanity(brlyt_header header, size_t filesize)
 {
-	if(FourCCsMatch(brlyt_magic, header.magic)) {
+	if(!FourCCsMatch(brlyt_magic, header.magic)) {
 		printf("BRLYT magic doesn't match! expected %.4s\n", brlyt_magic);
 		printf("read magic: %.4s\n", header.magic);
 		exit(1);
@@ -1189,35 +1185,35 @@ void PrintBRLYTEntries(brlyt_entry *entries, int entrycnt, u8* brlyt_file, mxml_
 	mxml_node_t *tag;
 	for(i = 0; i < entrycnt; i++) {
 		tag = mxmlNewElement(xmlyt, "tag");
-		if((FourCCsMatch(entries[i].magic, pan1_magic) == 1)) {
+		if(FourCCsMatch(entries[i].magic, pan1_magic)) {
 			PrintBRLYTEntry_pan1(entries[i], brlyt_file, tag);
-		}else if((FourCCsMatch(entries[i].magic, txt1_magic) == 1)) {
+		}else if(FourCCsMatch(entries[i].magic, txt1_magic)) {
 			PrintBRLYTEntry_txt1(entries[i], brlyt_file, tag);
-		}else if((FourCCsMatch(entries[i].magic, pic1_magic) == 1)) {
+		}else if(FourCCsMatch(entries[i].magic, pic1_magic)) {
 			PrintBRLYTEntry_pic1(entries[i], brlyt_file, tag);
-		}else if((FourCCsMatch(entries[i].magic, wnd1_magic) == 1)) {
+		}else if(FourCCsMatch(entries[i].magic, wnd1_magic)) {
 			PrintBRLYTEntry_wnd1(entries[i], brlyt_file, tag);
-		}else if((FourCCsMatch(entries[i].magic, bnd1_magic) == 1)) {
+		}else if(FourCCsMatch(entries[i].magic, bnd1_magic)) {
 			PrintBRLYTEntry_bnd1(entries[i], brlyt_file, tag);
-		}else if((FourCCsMatch(entries[i].magic, usd1_magic) == 1)) {
+		}else if(FourCCsMatch(entries[i].magic, usd1_magic)) {
 			PrintBRLYTEntry_usd1(entries[i], brlyt_file, tag);
-		}else if((FourCCsMatch(entries[i].magic, lyt1_magic) == 1)) {
+		}else if(FourCCsMatch(entries[i].magic, lyt1_magic)) {
 			PrintBRLYTEntry_lyt1(entries[i], brlyt_file, tag);
-		}else if((FourCCsMatch(entries[i].magic, grp1_magic) == 1)) {
+		}else if(FourCCsMatch(entries[i].magic, grp1_magic)) {
 			PrintBRLYTEntry_grp1(entries[i], brlyt_file, tag);
-		}else if((FourCCsMatch(entries[i].magic, txl1_magic) == 1)) {
+		}else if(FourCCsMatch(entries[i].magic, txl1_magic)) {
 			PrintBRLYTEntry_txl1(entries[i], brlyt_file, tag);
-		}else if((FourCCsMatch(entries[i].magic, fnl1_magic) == 1)) {
+		}else if(FourCCsMatch(entries[i].magic, fnl1_magic)) {
 			PrintBRLYTEntry_fnl1(entries[i], brlyt_file, tag);
-		}else if((FourCCsMatch(entries[i].magic, mat1_magic) == 1)) {
+		}else if(FourCCsMatch(entries[i].magic, mat1_magic)) {
 			PrintBRLYTEntry_mat1(entries[i], brlyt_file, tag);
-		}else if((FourCCsMatch(entries[i].magic, gre1_magic) == 1)) {
+		}else if(FourCCsMatch(entries[i].magic, gre1_magic)) {
 			PrintBRLYTEntry_gre1(entries[i], brlyt_file, tag);
-		}else if((FourCCsMatch(entries[i].magic, grs1_magic) == 1)) {
+		}else if(FourCCsMatch(entries[i].magic, grs1_magic)) {
 			PrintBRLYTEntry_grs1(entries[i], brlyt_file, tag);
-		}else if((FourCCsMatch(entries[i].magic, pae1_magic) == 1)) {
+		}else if(FourCCsMatch(entries[i].magic, pae1_magic)) {
 			PrintBRLYTEntry_pae1(entries[i], brlyt_file, tag);
-		}else if((FourCCsMatch(entries[i].magic, pas1_magic) == 1)) {
+		}else if(FourCCsMatch(entries[i].magic, pas1_magic)) {
 			PrintBRLYTEntry_pas1(entries[i], brlyt_file, tag);
 		}else{
 		}
