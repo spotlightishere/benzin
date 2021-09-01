@@ -46,27 +46,199 @@ char grs1_magic[] = "grs1";
 char pae1_magic[] = "pae1";
 char pas1_magic[] = "pas1";
 char usd1_magic[] = "usd1";
+char brlyt_magic[] = "RLYT";
 
 // CONSTANTS
-char originX[3][15];
-char originY[3][15];
-char wraps[4][20];
-char tgen_types[11][20];
-char tgen_src[21][20];
-char mtxsrc[42][20];
-char tevcolor[4][20];
-char matsrc[2][20];
-char scale[10][20];
-char compare[8][20];
-char aop[5][20];
-char blendmode[5][20];
-char logicop[16][20];
-char blendfactor[8][20];
-char chanid[10][20];
-char tevswapsel[4][20];
+char originX[3][15] = {
+	"Left",
+	"Center",
+	"Right"
+};
+char originY[3][15] = {
+	"Top",
+	"Center",
+	"Bottom"
+};
+char wraps[4][20] = {
+	"GX_CLAMP",
+	"GX_REPEAT",
+	"GX_MIRROR",
+	"GX_MAXTEXWRAPMODE"
+};
+char tgen_types[11][20] = {
+	"GX_TG_MTX3x4",
+	"GX_TG_MTX2x4",
+	"GX_TG_BUMP0",
+	"GX_TG_BUMP1",
+	"GX_TG_BUMP2",
+	"GX_TG_BUMP3",
+	"GX_TG_BUMP4",
+	"GX_TG_BUMP5",
+	"GX_TG_BUMP6",
+	"GX_TG_BUMP7",
+	"GX_TG_SRTG"
+};
+char tgen_src[21][20] = {
+	"GX_TG_POS",
+	"GX_TG_NRM",
+	"GX_TG_BINRM",
+	"GX_TG_TANGEN",
+	"GX_TG_TEX0",
+	"GX_TG_TEX1",
+	"GX_TG_TEX2",
+	"GX_TG_TEX3",
+	"GX_TG_TEX4",
+	"GX_TG_TEX5",
+	"GX_TG_TEX6",
+	"GX_TG_TEX7",
+	"GX_TG_TEXCOORD0",
+	"GX_TG_TEXCOORD1",
+	"GX_TG_TEXCOORD2",
+	"GX_TG_TEXCOORD3",
+	"GX_TG_TEXCOORD4",
+	"GX_TG_TEXCOORD5",
+	"GX_TG_TEXCOORD6",
+	"GX_TG_COLOR0",
+	"GX_TG_COLOR1"
+};
+char mtxsrc[42][20] = {
+	"GX_PNMTX0",
+	"GX_PNMTX1",
+	"GX_PNMTX2",
+	"GX_PNMTX3",
+	"GX_PNMTX4",
+	"GX_PNMTX5",
+	"GX_PNMTX6",
+	"GX_PNMTX7",
+	"GX_PNMTX8",
+	"GX_PNMTX9",
+	"GX_TEXMTX0",
+	"GX_TEXMTX1",
+	"GX_TEXMTX2",
+	"GX_TEXMTX3",
+	"GX_TEXMTX4",
+	"GX_TEXMTX5",
+	"GX_TEXMTX6",
+	"GX_TEXMTX7",
+	"GX_TEXMTX8",
+	"GX_TEXMTX9",
+	"GX_IDENTITY",
+	"GX_DTTMTX0",
+	"GX_DTTMTX1",
+	"GX_DTTMTX2",
+	"GX_DTTMTX3",
+	"GX_DTTMTX4",
+	"GX_DTTMTX5",
+	"GX_DTTMTX6",
+	"GX_DTTMTX7",
+	"GX_DTTMTX8",
+	"GX_DTTMTX9",
+	"GX_DTTMTX1",
+	"GX_DTTMTX1",
+	"GX_DTTMTX12",
+	"GX_DTTMTX13",
+	"GX_DTTMTX14",
+	"GX_DTTMTX15",
+	"GX_DTTMTX16",
+	"GX_DTTMTX17",
+	"GX_DTTMTX18",
+	"GX_DTTMTX19",
+	"GX_DTTIDENTITY"	// actually 125 not 124
+};
+char tevcolor[4][20] = {
+	"GX_CH_RED",
+	"GX_CH_GREEN",
+	"GX_CH_BLUE",
+	"GX_CH_ALPHA"
+};
+char matsrc[2][20] = {
+	"GX_SRC_REG",
+	"GX_SRC_VTX"
+};
+char scale[10][20] = {
+	"GX_ITS_1",
+	"GX_ITS_2",
+	"GX_ITS_4",
+	"GX_ITS_8",
+	"GX_ITS_16",
+	"GX_ITS_32",
+	"GX_ITS_64",
+	"GX_ITS_128",
+	"GX_ITS_256",
+	"GX_MAX_ITSCALE"
+};
+char compare[8][20] = {
+	"GX_NEVER",
+	"GX_LESS",
+	"GX_EQUAL",
+	"GX_LEQUAL",
+	"GX_GREATER",
+	"GX_NEQUAL",
+	"GX_GEQUAL",
+	"GX_ALWAYS"
+};
+char aop[5][20] = {
+	"GX_AOP_AND",
+	"GX_AOP_OR",
+	"GX_AOP_XOR",
+	"GX_AOP_XNOR",
+	"GX_MAX_ALPHAOP"
+};
+char blendmode[5][20] = {
+	"GX_BM_NONE",
+	"GX_BM_BLEND",
+	"GX_BM_LOGIC",
+	"GX_BM_SUBTRACT",
+	"GX_MAX_BLENDMODE"
+};
+char logicop[16][20] = {
+	"GX_LO_CLEAR",
+	"GX_LO_AND",
+	"GX_LO_REVAND",
+	"GX_LO_COPY",
+	"GX_LO_INVAND",
+	"GX_LO_NOOP",
+	"GX_LO_XOR",
+	"GX_LO_OR",
+	"GX_LO_NOR",
+	"GX_LO_EQUIV",
+	"GX_LO_INV",
+	"GX_LO_REVOR",
+	"GX_LO_INVCOPY",
+	"GX_LO_INVOR",
+	"GX_LO_NAND",
+	"GX_LO_SET"
+};
+char blendfactor[8][20] = {
+	"GX_BL_ZERO",
+	"GX_BL_ONE",
+	"GX_BL_SRCCLR",
+	"GX_BL_INVSRCCLR",
+	"GX_BL_SRCALPHA",
+	"GX_BL_INVSRCALPHA",
+	"GX_BL_DSTALPHA",
+	"GX_BL_INVDSTALPHA"
+};
+char chanid[10][20] = {
+	"GX_COLOR0",
+	"GX_COLOR1",
+	"GX_ALPHA0",
+	"GX_ALPHA1",
+	"GX_COLOR0A0",
+	"GX_COLOR1A1",
+	"GX_COLORZERO",
+	"GX_BUMP",
+	"GX_BUMPN",
+	"GX_COLORNULL"
+};
+char tevswapsel[4][20] = {
+	"GX_TEV_SWAP0",
+	"GX_TEV_SWAP1",
+	"GX_TEV_SWAP2",
+	"GX_TEV_SWAP3",
+};
 
-char texcoord[10][20] = 
-{
+char texcoord[10][20] = {
 "GX_TEXCOORD0",
 "GX_TEXCOORD1",
 "GX_TEXCOORD2",
@@ -79,8 +251,7 @@ char texcoord[10][20] =
 "GX_TEXCOORDNULL"
 };
 
-char texmap[11][20] =
-{
+char texmap[11][20] = {
 "GX_TEXMAP0",
 "GX_TEXMAP1",
 "GX_TEXMAP2",
@@ -102,215 +273,6 @@ int lengthOfMaterials;
 char *textures;
 int numberOfTextures;
 int lengthOfTextures;
-
-void SetupConstants( )
-{
-	int o;
-	for ( o = 0 ; o < 3 ; o++ )
-		memset( originX[o] , 0 , 15 );
-	strcpy( originX[0] , "Left" );
-	strcpy( originX[1] , "Center" );
-	strcpy( originX[2] , "Right" );
-
-	for ( o = 0 ; o < 3 ; o++ )
-		memset( originY[o] , 0 , 15 );
-	strcpy( originY[0] , "Top" );
-	strcpy( originY[1] , "Center" );
-	strcpy( originY[2] , "Bottom" );
-
-	for ( o = 0 ; o < 4 ; o++ )
-		memset( wraps[o] , 0 , 20 );
-	strcpy( wraps[0] , "GX_CLAMP" );
-	strcpy( wraps[1] , "GX_REPEAT" );
-	strcpy( wraps[2] , "GX_MIRROR" );
-	strcpy( wraps[3] , "GX_MAXTEXWRAPMODE" );
-
-	for ( o = 0 ; o < 11 ; o++ )
-		memset( tgen_types[o] , 0 , 20 );
-	strcpy( tgen_types[0]  , "GX_TG_MTX3x4" );
-	strcpy( tgen_types[1]  , "GX_TG_MTX2x4" );
-	strcpy( tgen_types[2]  , "GX_TG_BUMP0" );
-	strcpy( tgen_types[3]  , "GX_TG_BUMP1" );
-	strcpy( tgen_types[4]  , "GX_TG_BUMP2" );
-	strcpy( tgen_types[5]  , "GX_TG_BUMP3" );
-	strcpy( tgen_types[6]  , "GX_TG_BUMP4" );
-	strcpy( tgen_types[7]  , "GX_TG_BUMP5" );
-	strcpy( tgen_types[8]  , "GX_TG_BUMP6" );
-	strcpy( tgen_types[9]  , "GX_TG_BUMP7" );
-	strcpy( tgen_types[10] , "GX_TG_SRTG" );
-
-	for ( o = 0 ; o < 21 ; o++ )
-		memset( tgen_src[o] , 0 , 20 );
-	strcpy( tgen_src[0]  , "GX_TG_POS" );
-	strcpy( tgen_src[1]  , "GX_TG_NRM" );
-	strcpy( tgen_src[2]  , "GX_TG_BINRM" );
-	strcpy( tgen_src[3]  , "GX_TG_TANGEN" );
-	strcpy( tgen_src[4]  , "GX_TG_TEX0" );
-	strcpy( tgen_src[5]  , "GX_TG_TEX1" );
-	strcpy( tgen_src[6]  , "GX_TG_TEX2" );
-	strcpy( tgen_src[7]  , "GX_TG_TEX3" );
-	strcpy( tgen_src[8]  , "GX_TG_TEX4" );
-	strcpy( tgen_src[9]  , "GX_TG_TEX5" );
-	strcpy( tgen_src[10] , "GX_TG_TEX6" );
-	strcpy( tgen_src[11] , "GX_TG_TEX7" );
-	strcpy( tgen_src[12] , "GX_TG_TEXCOORD0" );
-	strcpy( tgen_src[13] , "GX_TG_TEXCOORD1" );
-	strcpy( tgen_src[14] , "GX_TG_TEXCOORD2" );
-	strcpy( tgen_src[15] , "GX_TG_TEXCOORD3" );
-	strcpy( tgen_src[16] , "GX_TG_TEXCOORD4" );
-	strcpy( tgen_src[17] , "GX_TG_TEXCOORD5" );
-	strcpy( tgen_src[18] , "GX_TG_TEXCOORD6" );
-	strcpy( tgen_src[19] , "GX_TG_COLOR0" );
-	strcpy( tgen_src[20] , "GX_TG_COLOR1" );
-
-	for ( o = 0 ; o < 42 ; o++ )
-		memset( mtxsrc[o] , 0 , 20 );
-	strcpy( mtxsrc[0]  , "GX_PNMTX0" );
-	strcpy( mtxsrc[1]  , "GX_PNMTX1" );
-	strcpy( mtxsrc[2]  , "GX_PNMTX2" );
-	strcpy( mtxsrc[3]  , "GX_PNMTX3" );
-	strcpy( mtxsrc[4]  , "GX_PNMTX4" );
-	strcpy( mtxsrc[5]  , "GX_PNMTX5" );
-	strcpy( mtxsrc[6]  , "GX_PNMTX6" );
-	strcpy( mtxsrc[7]  , "GX_PNMTX7" );
-	strcpy( mtxsrc[8]  , "GX_PNMTX8" );
-	strcpy( mtxsrc[9]  , "GX_PNMTX9" );
-	strcpy( mtxsrc[10] , "GX_TEXMTX0" );
-	strcpy( mtxsrc[11] , "GX_TEXMTX1" );
-	strcpy( mtxsrc[12] , "GX_TEXMTX2" );
-	strcpy( mtxsrc[13] , "GX_TEXMTX3" );
-	strcpy( mtxsrc[14] , "GX_TEXMTX4" );
-	strcpy( mtxsrc[15] , "GX_TEXMTX5" );
-	strcpy( mtxsrc[16] , "GX_TEXMTX6" );
-	strcpy( mtxsrc[17] , "GX_TEXMTX7" );
-	strcpy( mtxsrc[18] , "GX_TEXMTX8" );
-	strcpy( mtxsrc[19] , "GX_TEXMTX9" );
-	strcpy( mtxsrc[20] , "GX_IDENTITY" );
-	strcpy( mtxsrc[21] , "GX_DTTMTX0" );
-	strcpy( mtxsrc[22] , "GX_DTTMTX1" );
-	strcpy( mtxsrc[23] , "GX_DTTMTX2" );
-	strcpy( mtxsrc[24] , "GX_DTTMTX3" );
-	strcpy( mtxsrc[25] , "GX_DTTMTX4" );
-	strcpy( mtxsrc[26] , "GX_DTTMTX5" );
-	strcpy( mtxsrc[27] , "GX_DTTMTX6" );
-	strcpy( mtxsrc[28] , "GX_DTTMTX7" );
-	strcpy( mtxsrc[29] , "GX_DTTMTX8" );
-	strcpy( mtxsrc[30] , "GX_DTTMTX9" );
-	strcpy( mtxsrc[31] , "GX_DTTMTX1" );
-	strcpy( mtxsrc[32] , "GX_DTTMTX1" );
-	strcpy( mtxsrc[33] , "GX_DTTMTX12" );
-	strcpy( mtxsrc[34] , "GX_DTTMTX13" );
-	strcpy( mtxsrc[35] , "GX_DTTMTX14" );
-	strcpy( mtxsrc[36] , "GX_DTTMTX15" );
-	strcpy( mtxsrc[37] , "GX_DTTMTX16" );
-	strcpy( mtxsrc[38] , "GX_DTTMTX17" );
-	strcpy( mtxsrc[39] , "GX_DTTMTX18" );
-	strcpy( mtxsrc[40] , "GX_DTTMTX19" );
-	strcpy( mtxsrc[41] , "GX_DTTIDENTITY" );	// actually 125 not 124
-
-	for ( o = 0 ; o < 4 ; o++ )
-		memset( tevcolor[o] , 0 , 20 );
-	strcpy( tevcolor[0]  , "GX_CH_RED" );
-	strcpy( tevcolor[1]  , "GX_CH_GREEN" );
-	strcpy( tevcolor[2]  , "GX_CH_BLUE" );
-	strcpy( tevcolor[3]  , "GX_CH_ALPHA" );
-
-	for ( o = 0 ; o < 2 ; o++ )
-		memset( matsrc[o] , 0 , 20 );
-	strcpy( matsrc[0]  , "GX_SRC_REG" );
-	strcpy( matsrc[1]  , "GX_SRC_VTX" );
-
-	for ( o = 0 ; o < 10 ; o++ )
-		memset( scale[o] , 0 , 20 );
-	strcpy( scale[0]  , "GX_ITS_1" );
-	strcpy( scale[1]  , "GX_ITS_2" );
-	strcpy( scale[2]  , "GX_ITS_4" );
-	strcpy( scale[3]  , "GX_ITS_8" );
-	strcpy( scale[4]  , "GX_ITS_16" );
-	strcpy( scale[5]  , "GX_ITS_32" );
-	strcpy( scale[6]  , "GX_ITS_64" );
-	strcpy( scale[7]  , "GX_ITS_128" );
-	strcpy( scale[8]  , "GX_ITS_256" );
-	strcpy( scale[9]  , "GX_MAX_ITSCALE" );
-
-	for ( o = 0 ; o < 8 ; o++ )
-		memset( compare[o] , 0 , 20 );
-	strcpy( compare[0]  , "GX_NEVER" );
-	strcpy( compare[1]  , "GX_LESS" );
-	strcpy( compare[2]  , "GX_EQUAL" );
-	strcpy( compare[3]  , "GX_LEQUAL" );
-	strcpy( compare[4]  , "GX_GREATER" );
-	strcpy( compare[5]  , "GX_NEQUAL" );
-	strcpy( compare[6]  , "GX_GEQUAL" );
-	strcpy( compare[7]  , "GX_ALWAYS" );
-
-	for ( o = 0 ; o < 5 ; o++ )
-		memset( aop[o] , 0 , 20 );
-	strcpy( aop[0]  , "GX_AOP_AND" );
-	strcpy( aop[1]  , "GX_AOP_OR" );
-	strcpy( aop[2]  , "GX_AOP_XOR" );
-	strcpy( aop[3]  , "GX_AOP_XNOR" );
-	strcpy( aop[4]  , "GX_MAX_ALPHAOP" );
-
-	for ( o = 0 ; o < 5 ; o++ )
-		memset( blendmode[o] , 0 , 20 );
-	strcpy( blendmode[0]  , "GX_BM_NONE" );
-	strcpy( blendmode[1]  , "GX_BM_BLEND" );
-	strcpy( blendmode[2]  , "GX_BM_LOGIC" );
-	strcpy( blendmode[3]  , "GX_BM_SUBTRACT" );
-	strcpy( blendmode[4]  , "GX_MAX_BLENDMODE" );
-
-	for ( o = 0 ; o < 8 ; o++ )
-		memset( blendfactor[o] , 0 , 20 );
-	strcpy( blendfactor[0]  , "GX_BL_ZERO" );
-	strcpy( blendfactor[1]  , "GX_BL_ONE" );
-	strcpy( blendfactor[2]  , "GX_BL_SRCCLR" );
-	strcpy( blendfactor[3]  , "GX_BL_INVSRCCLR" );
-	strcpy( blendfactor[4]  , "GX_BL_SRCALPHA" );
-	strcpy( blendfactor[5]  , "GX_BL_INVSRCALPHA" );
-	strcpy( blendfactor[6]  , "GX_BL_DSTALPHA" );
-	strcpy( blendfactor[7]  , "GX_BL_INVDSTALPHA" );
-
-	for ( o = 0 ; o < 16 ; o++ )
-		memset( logicop[o] , 0 , 20 );
-	strcpy( logicop[0]   , "GX_LO_CLEAR" );
-	strcpy( logicop[1]   , "GX_LO_AND" );
-	strcpy( logicop[2]   , "GX_LO_REVAND" );
-	strcpy( logicop[3]   , "GX_LO_COPY" );
-	strcpy( logicop[4]   , "GX_LO_INVAND" );
-	strcpy( logicop[5]   , "GX_LO_NOOP" );
-	strcpy( logicop[6]   , "GX_LO_XOR" );
-	strcpy( logicop[7]   , "GX_LO_OR" );
-	strcpy( logicop[8]   , "GX_LO_NOR" );
-	strcpy( logicop[9]   , "GX_LO_EQUIV" );
-	strcpy( logicop[10]  , "GX_LO_INV" );
-	strcpy( logicop[11]  , "GX_LO_REVOR" );
-	strcpy( logicop[12]  , "GX_LO_INVCOPY" );
-	strcpy( logicop[13]  , "GX_LO_INVOR" );
-	strcpy( logicop[14]  , "GX_LO_NAND" );
-	strcpy( logicop[15]  , "GX_LO_SET" );
-
-	for ( o = 0 ; o < 10 ; o++ )
-		memset( chanid[o] , 0 , 20 );
-	strcpy( chanid[0]  , "GX_COLOR0" );
-	strcpy( chanid[1]  , "GX_COLOR1" );
-	strcpy( chanid[2]  , "GX_ALPHA0" );
-	strcpy( chanid[3]  , "GX_ALPHA1" );
-	strcpy( chanid[4]  , "GX_COLOR0A0" );
-	strcpy( chanid[5]  , "GX_COLOR1A1" );
-	strcpy( chanid[6]  , "GX_COLORZERO" );
-	strcpy( chanid[7]  , "GX_BUMP" );
-	strcpy( chanid[8]  , "GX_BUMPN" );
-	strcpy( chanid[9]  , "GX_COLORNULL" );
-	
-	for ( o = 0 ; o < 4 ; o++ )
-                memset( tevswapsel[o] , 0 , 20 );
-        strcpy( tevswapsel[0]  , "GX_TEV_SWAP0" );
-        strcpy( tevswapsel[1]  , "GX_TEV_SWAP1" );
-        strcpy( tevswapsel[2]  , "GX_TEV_SWAP2" );
-        strcpy( tevswapsel[3]  , "GX_TEV_SWAP3" );
-	
-}
 
 static int FourCCsMatch(fourcc cc1, fourcc cc2)
 {
@@ -439,26 +401,21 @@ u16 findTexOffset(char *tex)
 	return i;
 }
 
-int BRLYT_ReadEntries(u8* brlyt_file, size_t file_size, brlyt_header header, brlyt_entry* entries)
-{
-	return 0;
-}
-
 void BRLYT_CheckHeaderSanity(brlyt_header header, size_t filesize)
 {
-	if((header.magic[0] != 'R') || (header.magic[1] != 'L') || (header.magic[2] != 'Y') || (header.magic[3] != 'T')) {
-		printf("BRLYT magic doesn't match! %.4s\n", header.magic);
-		printf("magic: %.4s\n", header.magic);
+	if(FourCCsMatch(brlyt_magic, header.magic)) {
+		printf("BRLYT magic doesn't match! expected %.4s\n", brlyt_magic);
+		printf("read magic: %.4s\n", header.magic);
 		exit(1);
 	}
-	if(header.endian != short_swap_bytes(0xFEFF)){
+	if(header.endian != be16(0xFEFF)){
 		printf("BRLYT endian is not set for big\n");
 		printf("endian: %04x\n", short_swap_bytes(header.endian) );
 		exit(1);
 	}
-	if((header.version != short_swap_bytes(0x0008) )&&(header.version != short_swap_bytes(0x000a))){
+	if((header.version != be16(0x0008)) && (header.version != be16(0x000a))){
 		printf("BRLYT version not right\n");
-		printf("version: %04x\n", short_swap_bytes(header.version) );
+		printf("version: %04x\n", be16(header.version) );
 		exit(1);
 	}
 	if(filesize != be32(header.filesize)) {
@@ -1269,8 +1226,6 @@ void PrintBRLYTEntries(brlyt_entry *entries, int entrycnt, u8* brlyt_file, mxml_
 
 void parse_brlyt(char *filename, char *filenameout)
 {
-	SetupConstants();
-
 	materials = (char*)malloc(12);
 	numberOfMaterials = 0;
 	lengthOfMaterials = 0;
@@ -3742,8 +3697,6 @@ void WriteBRLYTHeader(brlyt_header rlythead, FILE* fp)
 
 void write_brlyt(char *infile, char *outfile)
 {
-	SetupConstants();
-
 	u32 fileOffset = 0;
 	FILE* fpx = fopen(infile, "r");
 	if(fpx == NULL) {
@@ -3799,8 +3752,9 @@ void write_brlyt(char *infile, char *outfile)
 	for(node = mxmlFindElement(tree, tree, "tag", NULL, NULL, MXML_DESCEND); node != NULL; node = mxmlFindElement(node, tree, "tag", NULL, NULL, MXML_DESCEND)) {
 
 		char tempType[4];
-		if(mxmlElementGetAttr(node, "type") != NULL)
-			strcpy(tempType, mxmlElementGetAttr(node, "type"));
+		const char* typeValue = mxmlElementGetAttr(node, "type");
+		if(typeValue != NULL)
+			strncpy(tempType, typeValue, 4);
 		else{
 			printf("No type attribute found!\n");
 			exit(1);
@@ -3850,4 +3804,3 @@ void make_brlyt(char* infile, char* outfile)
 	free(textures);
 	printf("\x1b[34mParsing XMLYT @ \x1b[0m%s complete.\n", infile);
 }
-

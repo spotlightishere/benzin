@@ -17,7 +17,7 @@
 
 typedef struct
 {
-    fourcc		magic;				// RLYT
+	fourcc		magic;				// RLYT
 	u16			endian;				// 0xFEFF
 	u16			version;			// 0x0008
 	u32			filesize;			// The filesize of the brlyt.
@@ -341,4 +341,3 @@ void parse_brlyt(char *filename, char *filenameout);
 void make_brlyt(char* infile, char* outfile);
 
 #endif //BRLYT_H_
-
